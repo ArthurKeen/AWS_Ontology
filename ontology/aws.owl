@@ -22,13 +22,102 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
     
-    <owl:ObjectProperty rdf:about="#hasService">
-        <rdfs:label>has service</rdfs:label>
-        <rdfs:comment>Relates an AWS account to its services</rdfs:comment>
-        <rdfs:domain rdf:resource="#AWSAccount"/>
-        <rdfs:range rdf:resource="#AWSService"/>
-    </owl:ObjectProperty>
+    <!-- Structural/Compositional Properties -->
     
+    <owl:ObjectProperty rdf:about="#hasRegion">
+        <rdfs:label>has region</rdfs:label>
+        <rdfs:comment>Relates an AWS account to its regions</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSAccount"/>
+        <rdfs:range rdf:resource="#AWSRegion"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasAvailabilityZone">
+        <rdfs:label>has availability zone</rdfs:label>
+        <rdfs:comment>Relates a region to its availability zones</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSRegion"/>
+        <rdfs:range rdf:resource="#AvailabilityZone"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#contains">
+        <rdfs:label>contains</rdfs:label>
+        <rdfs:comment>General containment relationship</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#attachedTo">
+        <rdfs:label>attached to</rdfs:label>
+        <rdfs:comment>Relates resources that are attached to other resources</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#belongsToVPC">
+        <rdfs:label>belongs to VPC</rdfs:label>
+        <rdfs:comment>Relates resources to their VPC</rdfs:comment>
+        <rdfs:range rdf:resource="#VPC"/>
+    </owl:ObjectProperty>
+
+    <!-- Access/Permission Properties -->
+
+    <owl:ObjectProperty rdf:about="#canAssumeRole">
+        <rdfs:label>can assume role</rdfs:label>
+        <rdfs:comment>Indicates which roles can be assumed</rdfs:comment>
+        <rdfs:range rdf:resource="#IAMRole"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasPolicy">
+        <rdfs:label>has policy</rdfs:label>
+        <rdfs:comment>Relates IAM entities to their policies</rdfs:comment>
+        <rdfs:range rdf:resource="#IAMPolicy"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#appliesTo">
+        <rdfs:label>applies to</rdfs:label>
+        <rdfs:comment>Relates security groups to resources</rdfs:comment>
+        <rdfs:domain rdf:resource="#EC2SecurityGroup"/>
+    </owl:ObjectProperty>
+
+    <!-- Operational/Functional Properties -->
+
+    <owl:ObjectProperty rdf:about="#uses">
+        <rdfs:label>uses</rdfs:label>
+        <rdfs:comment>Indicates usage relationship between resources</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#manages">
+        <rdfs:label>manages</rdfs:label>
+        <rdfs:comment>Indicates management relationship between resources</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#monitors">
+        <rdfs:label>monitors</rdfs:label>
+        <rdfs:comment>Relates monitoring resources to their targets</rdfs:comment>
+        <rdfs:domain rdf:resource="#CloudWatchAlarm"/>
+        <rdfs:range rdf:resource="#CloudWatchMetric"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#logsActivityOf">
+        <rdfs:label>logs activity of</rdfs:label>
+        <rdfs:comment>Relates logging resources to their subjects</rdfs:comment>
+        <rdfs:domain rdf:resource="#CloudTrailLog"/>
+        <rdfs:range rdf:resource="#AWSAccount"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#routesTrafficThrough">
+        <rdfs:label>routes traffic through</rdfs:label>
+        <rdfs:comment>Indicates traffic routing relationships</rdfs:comment>
+        <rdfs:domain rdf:resource="#RouteTable"/>
+    </owl:ObjectProperty>
+
+    <!-- Dependency Properties -->
+
+    <owl:ObjectProperty rdf:about="#dependsOn">
+        <rdfs:label>depends on</rdfs:label>
+        <rdfs:comment>General dependency relationship between resources</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#isSourceFor">
+        <rdfs:label>is source for</rdfs:label>
+        <rdfs:comment>Indicates source relationship between resources</rdfs:comment>
+    </owl:ObjectProperty>
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -37,44 +126,220 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    <!-- Class: AWSAccount -->
+    <!-- Infrastructure Classes -->
+
     <owl:Class rdf:about="#AWSAccount">
         <rdfs:label>AWS Account</rdfs:label>
         <rdfs:comment>An AWS account that can contain multiple services and resources</rdfs:comment>
     </owl:Class>
 
-    <!-- Class: AWSService -->
-    <owl:Class rdf:about="#AWSService">
-        <rdfs:label>AWS Service</rdfs:label>
-        <rdfs:comment>Base class for all AWS services</rdfs:comment>
+    <owl:Class rdf:about="#AWSRegion">
+        <rdfs:label>AWS Region</rdfs:label>
+        <rdfs:comment>A geographical region containing AWS resources</rdfs:comment>
     </owl:Class>
 
-    <!-- Class: ComputeService -->
-    <owl:Class rdf:about="#ComputeService">
-        <rdfs:label>Compute Service</rdfs:label>
-        <rdfs:subClassOf rdf:resource="#AWSService"/>
-        <rdfs:comment>AWS services that provide compute capabilities</rdfs:comment>
+    <owl:Class rdf:about="#AvailabilityZone">
+        <rdfs:label>Availability Zone</rdfs:label>
+        <rdfs:comment>An isolated location within a region</rdfs:comment>
     </owl:Class>
 
-    <!-- Class: StorageService -->
-    <owl:Class rdf:about="#StorageService">
-        <rdfs:label>Storage Service</rdfs:label>
-        <rdfs:subClassOf rdf:resource="#AWSService"/>
-        <rdfs:comment>AWS services that provide storage capabilities</rdfs:comment>
+    <!-- Compute Classes -->
+
+    <owl:Class rdf:about="#EC2Instance">
+        <rdfs:label>EC2 Instance</rdfs:label>
+        <rdfs:comment>An Amazon EC2 virtual machine instance</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#ComputeResource"/>
     </owl:Class>
 
-    <!-- Class: NetworkingService -->
-    <owl:Class rdf:about="#NetworkingService">
-        <rdfs:label>Networking Service</rdfs:label>
-        <rdfs:subClassOf rdf:resource="#AWSService"/>
-        <rdfs:comment>AWS services that provide networking capabilities</rdfs:comment>
+    <owl:Class rdf:about="#EC2AMI">
+        <rdfs:label>EC2 AMI</rdfs:label>
+        <rdfs:comment>An Amazon Machine Image for EC2 instances</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#ComputeResource"/>
     </owl:Class>
 
-    <!-- Class: SecurityService -->
-    <owl:Class rdf:about="#SecurityService">
-        <rdfs:label>Security Service</rdfs:label>
-        <rdfs:subClassOf rdf:resource="#AWSService"/>
-        <rdfs:comment>AWS services that provide security capabilities</rdfs:comment>
+    <owl:Class rdf:about="#EC2SecurityGroup">
+        <rdfs:label>EC2 Security Group</rdfs:label>
+        <rdfs:comment>A security group controlling EC2 instance access</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#SecurityResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#EC2LoadBalancer">
+        <rdfs:label>EC2 Load Balancer</rdfs:label>
+        <rdfs:comment>A load balancer distributing traffic to EC2 instances</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
+    </owl:Class>
+
+    <!-- Storage Classes -->
+
+    <owl:Class rdf:about="#S3Bucket">
+        <rdfs:label>S3 Bucket</rdfs:label>
+        <rdfs:comment>An Amazon S3 storage bucket</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#StorageResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#S3Object">
+        <rdfs:label>S3 Object</rdfs:label>
+        <rdfs:comment>An object stored in an S3 bucket</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#StorageResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#EBSVolume">
+        <rdfs:label>EBS Volume</rdfs:label>
+        <rdfs:comment>An Elastic Block Store volume</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#StorageResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#EBSSnapshot">
+        <rdfs:label>EBS Snapshot</rdfs:label>
+        <rdfs:comment>A snapshot of an EBS volume</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#StorageResource"/>
+    </owl:Class>
+
+    <!-- Database Classes -->
+
+    <owl:Class rdf:about="#RDSInstance">
+        <rdfs:label>RDS Instance</rdfs:label>
+        <rdfs:comment>An Amazon RDS database instance</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#DatabaseResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#RDSDatabase">
+        <rdfs:label>RDS Database</rdfs:label>
+        <rdfs:comment>A database within an RDS instance</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#DatabaseResource"/>
+    </owl:Class>
+
+    <!-- Identity Classes -->
+
+    <owl:Class rdf:about="#IAMUser">
+        <rdfs:label>IAM User</rdfs:label>
+        <rdfs:comment>An IAM user entity</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#IdentityResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#IAMRole">
+        <rdfs:label>IAM Role</rdfs:label>
+        <rdfs:comment>An IAM role entity</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#IdentityResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#IAMPolicy">
+        <rdfs:label>IAM Policy</rdfs:label>
+        <rdfs:comment>An IAM policy document</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#IdentityResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#IAMGroup">
+        <rdfs:label>IAM Group</rdfs:label>
+        <rdfs:comment>An IAM user group</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#IdentityResource"/>
+    </owl:Class>
+
+    <!-- Networking Classes -->
+
+    <owl:Class rdf:about="#VPC">
+        <rdfs:label>VPC</rdfs:label>
+        <rdfs:comment>A Virtual Private Cloud</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#Subnet">
+        <rdfs:label>Subnet</rdfs:label>
+        <rdfs:comment>A subnet within a VPC</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#RouteTable">
+        <rdfs:label>Route Table</rdfs:label>
+        <rdfs:comment>A VPC route table</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#InternetGateway">
+        <rdfs:label>Internet Gateway</rdfs:label>
+        <rdfs:comment>A VPC internet gateway</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#NATGateway">
+        <rdfs:label>NAT Gateway</rdfs:label>
+        <rdfs:comment>A VPC NAT gateway</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
+    </owl:Class>
+
+    <!-- Monitoring Classes -->
+
+    <owl:Class rdf:about="#CloudWatchMetric">
+        <rdfs:label>CloudWatch Metric</rdfs:label>
+        <rdfs:comment>A CloudWatch metric</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#MonitoringResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#CloudWatchAlarm">
+        <rdfs:label>CloudWatch Alarm</rdfs:label>
+        <rdfs:comment>A CloudWatch alarm</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#MonitoringResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#CloudTrailLog">
+        <rdfs:label>CloudTrail Log</rdfs:label>
+        <rdfs:comment>A CloudTrail log entry</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#MonitoringResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#LambdaFunction">
+        <rdfs:label>Lambda Function</rdfs:label>
+        <rdfs:comment>An AWS Lambda function</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#ComputeResource"/>
+    </owl:Class>
+
+    <!-- Base Resource Classes -->
+
+    <owl:Class rdf:about="#AWSResource">
+        <rdfs:label>AWS Resource</rdfs:label>
+        <rdfs:comment>Base class for all AWS resources</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ComputeResource">
+        <rdfs:label>Compute Resource</rdfs:label>
+        <rdfs:comment>Base class for compute resources</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#AWSResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#StorageResource">
+        <rdfs:label>Storage Resource</rdfs:label>
+        <rdfs:comment>Base class for storage resources</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#AWSResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#NetworkingResource">
+        <rdfs:label>Networking Resource</rdfs:label>
+        <rdfs:comment>Base class for networking resources</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#AWSResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#SecurityResource">
+        <rdfs:label>Security Resource</rdfs:label>
+        <rdfs:comment>Base class for security resources</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#AWSResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#IdentityResource">
+        <rdfs:label>Identity Resource</rdfs:label>
+        <rdfs:comment>Base class for identity and access management resources</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#AWSResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#DatabaseResource">
+        <rdfs:label>Database Resource</rdfs:label>
+        <rdfs:comment>Base class for database resources</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#AWSResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#MonitoringResource">
+        <rdfs:label>Monitoring Resource</rdfs:label>
+        <rdfs:comment>Base class for monitoring and logging resources</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#AWSResource"/>
     </owl:Class>
 
 </rdf:RDF> 
