@@ -1,0 +1,236 @@
+@prefix : <http://www.semanticweb.org/aws-ontology#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix aws: <http://www.semanticweb.org/aws-ontology#> .
+@base <http://www.semanticweb.org/aws-ontology> .
+
+# Ontology Declaration
+<http://www.semanticweb.org/aws-ontology> rdf:type owl:Ontology ;
+    rdfs:label "AWS Resource Ontology" ;
+    rdfs:comment "An ontology for describing AWS resources, services, and their relationships." ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+# Base Object Properties
+:hasRegion rdf:type owl:ObjectProperty ;
+    rdfs:label "has region" ;
+    rdfs:comment "Relates an AWS account to its regions" ;
+    rdfs:domain :AWSAccount ;
+    rdfs:range :AWSRegion .
+
+:hasAvailabilityZone rdf:type owl:ObjectProperty ;
+    rdfs:label "has availability zone" ;
+    rdfs:comment "Relates a region to its availability zones" ;
+    rdfs:domain :AWSRegion ;
+    rdfs:range :AvailabilityZone .
+
+:contains rdf:type owl:ObjectProperty ;
+    rdfs:label "contains" ;
+    rdfs:comment "General containment relationship" .
+
+:attachedTo rdf:type owl:ObjectProperty ;
+    rdfs:label "attached to" ;
+    rdfs:comment "Relates resources that are attached to other resources" .
+
+:belongsToVPC rdf:type owl:ObjectProperty ;
+    rdfs:label "belongs to VPC" ;
+    rdfs:comment "Relates resources to their VPC" ;
+    rdfs:range :VPC .
+
+# IAM-Specific Object Properties
+:hasPolicyAttachment rdf:type owl:ObjectProperty ;
+    rdfs:label "has policy attachment" ;
+    rdfs:comment "Relates IAM entities to their attached policies" ;
+    rdfs:domain [ rdf:type owl:Class ;
+                  owl:unionOf ( :IAMUser :IAMRole :IAMGroup )
+                ] ;
+    rdfs:range :IAMPolicy .
+
+:hasPermissionBoundary rdf:type owl:ObjectProperty ;
+    rdfs:label "has permission boundary" ;
+    rdfs:comment "Relates IAM entities to their permission boundary policies" ;
+    rdfs:domain [ rdf:type owl:Class ;
+                  owl:unionOf ( :IAMUser :IAMRole )
+                ] ;
+    rdfs:range :IAMPermissionBoundary .
+
+:hasTrustRelationship rdf:type owl:ObjectProperty ;
+    rdfs:label "has trust relationship" ;
+    rdfs:comment "Relates IAM roles to their trust policies" ;
+    rdfs:domain :IAMRole ;
+    rdfs:range :IAMTrustPolicy .
+
+:memberOf rdf:type owl:ObjectProperty ;
+    rdfs:label "member of" ;
+    rdfs:comment "Relates IAM users to their groups" ;
+    rdfs:domain :IAMUser ;
+    rdfs:range :IAMGroup .
+
+:controlledByServiceControlPolicy rdf:type owl:ObjectProperty ;
+    rdfs:label "controlled by service control policy" ;
+    rdfs:comment "Relates AWS accounts to service control policies" ;
+    rdfs:domain :AWSAccount ;
+    rdfs:range :ServiceControlPolicy .
+
+#################################################################
+#    Data Properties
+#################################################################
+
+:policyDocument rdf:type owl:DatatypeProperty ;
+    rdfs:label "policy document" ;
+    rdfs:comment "The JSON policy document content" ;
+    rdfs:domain :IAMPolicy ;
+    rdfs:range xsd:string .
+
+:maxSessionDuration rdf:type owl:DatatypeProperty ;
+    rdfs:label "max session duration" ;
+    rdfs:comment "Maximum session duration in seconds" ;
+    rdfs:domain :IAMRole ;
+    rdfs:range xsd:integer .
+
+#################################################################
+#    Classes
+#################################################################
+
+# Base Resource Classes
+:AWSResource rdf:type owl:Class ;
+    rdfs:label "AWS Resource" ;
+    rdfs:comment "Base class for all AWS resources" .
+
+:ComputeResource rdf:type owl:Class ;
+    rdfs:label "Compute Resource" ;
+    rdfs:comment "Base class for compute resources" ;
+    rdfs:subClassOf :AWSResource .
+
+:StorageResource rdf:type owl:Class ;
+    rdfs:label "Storage Resource" ;
+    rdfs:comment "Base class for storage resources" ;
+    rdfs:subClassOf :AWSResource .
+
+:NetworkingResource rdf:type owl:Class ;
+    rdfs:label "Networking Resource" ;
+    rdfs:comment "Base class for networking resources" ;
+    rdfs:subClassOf :AWSResource .
+
+:SecurityResource rdf:type owl:Class ;
+    rdfs:label "Security Resource" ;
+    rdfs:comment "Base class for security resources" ;
+    rdfs:subClassOf :AWSResource .
+
+:IdentityResource rdf:type owl:Class ;
+    rdfs:label "Identity Resource" ;
+    rdfs:comment "Base class for identity and access management resources" ;
+    rdfs:subClassOf :AWSResource .
+
+:DatabaseResource rdf:type owl:Class ;
+    rdfs:label "Database Resource" ;
+    rdfs:comment "Base class for database resources" ;
+    rdfs:subClassOf :AWSResource .
+
+:MonitoringResource rdf:type owl:Class ;
+    rdfs:label "Monitoring Resource" ;
+    rdfs:comment "Base class for monitoring and logging resources" ;
+    rdfs:subClassOf :AWSResource .
+
+# Infrastructure Classes
+:AWSAccount rdf:type owl:Class ;
+    rdfs:label "AWS Account" ;
+    rdfs:comment "An AWS account that can contain multiple services and resources" .
+
+:AWSRegion rdf:type owl:Class ;
+    rdfs:label "AWS Region" ;
+    rdfs:comment "A geographical region containing AWS resources" .
+
+:AvailabilityZone rdf:type owl:Class ;
+    rdfs:label "Availability Zone" ;
+    rdfs:comment "An isolated location within a region" .
+
+# IAM Classes
+:IAMPolicy rdf:type owl:Class ;
+    rdfs:label "IAM Policy" ;
+    rdfs:comment "Base class for all IAM policies" ;
+    rdfs:subClassOf :IdentityResource .
+
+:ManagedPolicy rdf:type owl:Class ;
+    rdfs:label "Managed Policy" ;
+    rdfs:comment "An IAM managed policy (AWS or Customer managed)" ;
+    rdfs:subClassOf :IAMPolicy .
+
+:AWSManagedPolicy rdf:type owl:Class ;
+    rdfs:label "AWS Managed Policy" ;
+    rdfs:comment "An AWS-provided managed policy" ;
+    rdfs:subClassOf :ManagedPolicy .
+
+:CustomerManagedPolicy rdf:type owl:Class ;
+    rdfs:label "Customer Managed Policy" ;
+    rdfs:comment "A customer-created managed policy" ;
+    rdfs:subClassOf :ManagedPolicy .
+
+:InlinePolicy rdf:type owl:Class ;
+    rdfs:label "Inline Policy" ;
+    rdfs:comment "An inline policy embedded in an IAM entity" ;
+    rdfs:subClassOf :IAMPolicy .
+
+:IAMPermissionBoundary rdf:type owl:Class ;
+    rdfs:label "Permission Boundary" ;
+    rdfs:comment "A policy used as a permissions boundary" ;
+    rdfs:subClassOf :IAMPolicy .
+
+:IAMTrustPolicy rdf:type owl:Class ;
+    rdfs:label "Trust Policy" ;
+    rdfs:comment "A policy defining which principals can assume a role" ;
+    rdfs:subClassOf :IAMPolicy .
+
+:ServiceControlPolicy rdf:type owl:Class ;
+    rdfs:label "Service Control Policy" ;
+    rdfs:comment "An AWS Organizations service control policy" ;
+    rdfs:subClassOf :IAMPolicy .
+
+:PolicyStatement rdf:type owl:Class ;
+    rdfs:label "Policy Statement" ;
+    rdfs:comment "A statement within an IAM policy" ;
+    rdfs:subClassOf :IdentityResource .
+
+# Policy Statement Components
+:Effect rdf:type owl:Class ;
+    rdfs:label "Effect" ;
+    rdfs:comment "The effect of a policy statement (Allow/Deny)" .
+
+:Action rdf:type owl:Class ;
+    rdfs:label "Action" ;
+    rdfs:comment "An AWS API action" .
+
+:Resource rdf:type owl:Class ;
+    rdfs:label "Resource" ;
+    rdfs:comment "An AWS resource ARN" .
+
+:Condition rdf:type owl:Class ;
+    rdfs:label "Condition" ;
+    rdfs:comment "A condition for policy evaluation" .
+
+# Other AWS Service Classes
+:EC2Instance rdf:type owl:Class ;
+    rdfs:label "EC2 Instance" ;
+    rdfs:comment "An Amazon EC2 virtual machine instance" ;
+    rdfs:subClassOf :ComputeResource .
+
+:S3Bucket rdf:type owl:Class ;
+    rdfs:label "S3 Bucket" ;
+    rdfs:comment "An Amazon S3 storage bucket" ;
+    rdfs:subClassOf :StorageResource .
+
+:VPC rdf:type owl:Class ;
+    rdfs:label "VPC" ;
+    rdfs:comment "A Virtual Private Cloud" ;
+    rdfs:subClassOf :NetworkingResource .
+
+:CloudWatchMetric rdf:type owl:Class ;
+    rdfs:label "CloudWatch Metric" ;
+    rdfs:comment "A CloudWatch metric" ;
+    rdfs:subClassOf :MonitoringResource . 
