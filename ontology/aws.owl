@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/aws-ontology#"
+     xml:base="http://www.semanticweb.org/aws-ontology"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:aws="http://www.semanticweb.org/aws-ontology#">
+    
+    <owl:Ontology rdf:about="http://www.semanticweb.org/aws-ontology">
+        <rdfs:label>AWS Resource Ontology</rdfs:label>
+        <rdfs:comment>An ontology for describing AWS resources, services, and their relationships.</rdfs:comment>
+        <owl:versionInfo>0.1.0</owl:versionInfo>
+    </owl:Ontology>
+    
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+    
+    <owl:ObjectProperty rdf:about="#hasService">
+        <rdfs:label>has service</rdfs:label>
+        <rdfs:comment>Relates an AWS account to its services</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSAccount"/>
+        <rdfs:range rdf:resource="#AWSService"/>
+    </owl:ObjectProperty>
+    
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <!-- Class: AWSAccount -->
+    <owl:Class rdf:about="#AWSAccount">
+        <rdfs:label>AWS Account</rdfs:label>
+        <rdfs:comment>An AWS account that can contain multiple services and resources</rdfs:comment>
+    </owl:Class>
+
+    <!-- Class: AWSService -->
+    <owl:Class rdf:about="#AWSService">
+        <rdfs:label>AWS Service</rdfs:label>
+        <rdfs:comment>Base class for all AWS services</rdfs:comment>
+    </owl:Class>
+
+    <!-- Class: ComputeService -->
+    <owl:Class rdf:about="#ComputeService">
+        <rdfs:label>Compute Service</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#AWSService"/>
+        <rdfs:comment>AWS services that provide compute capabilities</rdfs:comment>
+    </owl:Class>
+
+    <!-- Class: StorageService -->
+    <owl:Class rdf:about="#StorageService">
+        <rdfs:label>Storage Service</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#AWSService"/>
+        <rdfs:comment>AWS services that provide storage capabilities</rdfs:comment>
+    </owl:Class>
+
+    <!-- Class: NetworkingService -->
+    <owl:Class rdf:about="#NetworkingService">
+        <rdfs:label>Networking Service</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#AWSService"/>
+        <rdfs:comment>AWS services that provide networking capabilities</rdfs:comment>
+    </owl:Class>
+
+    <!-- Class: SecurityService -->
+    <owl:Class rdf:about="#SecurityService">
+        <rdfs:label>Security Service</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#AWSService"/>
+        <rdfs:comment>AWS services that provide security capabilities</rdfs:comment>
+    </owl:Class>
+
+</rdf:RDF> 
