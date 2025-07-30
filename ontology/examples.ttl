@@ -1,0 +1,205 @@
+@prefix : <http://www.semanticweb.org/aws-ontology#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Example AWS Account Structure
+:ProductionAccount rdf:type :AWSAccount ;
+    rdfs:label "Production AWS Account" ;
+    :hasRegion :UsEast1Region ;
+    :controlledByServiceControlPolicy :ProdRestrictedRegionsPolicy .
+
+:UsEast1Region rdf:type :AWSRegion ;
+    rdfs:label "us-east-1" ;
+    :hasAvailabilityZone :UsEast1a, :UsEast1b, :UsEast1c .
+
+:UsEast1a rdf:type :AvailabilityZone ;
+    rdfs:label "us-east-1a" .
+
+:UsEast1b rdf:type :AvailabilityZone ;
+    rdfs:label "us-east-1b" .
+
+:UsEast1c rdf:type :AvailabilityZone ;
+    rdfs:label "us-east-1c" .
+
+# Example IAM Users and Groups
+:DevOpsTeam rdf:type :IAMGroup ;
+    rdfs:label "DevOps Team" ;
+    :hasPolicyAttachment :DevOpsCustomPolicy .
+
+:SecurityTeam rdf:type :IAMGroup ;
+    rdfs:label "Security Team" ;
+    :hasPolicyAttachment :SecurityAuditPolicy .
+
+:JohnDoe rdf:type :IAMUser ;
+    rdfs:label "John Doe" ;
+    :memberOf :DevOpsTeam ;
+    :hasPolicyAttachment :JohnInlinePolicy ;
+    :hasPermissionBoundary :DeveloperBoundary .
+
+:SecurityAdmin rdf:type :IAMUser ;
+    rdfs:label "Security Admin" ;
+    :memberOf :SecurityTeam ;
+    :hasPolicyAttachment :AWSSecurityAuditPolicy .
+
+# Example IAM Roles
+:EC2ServiceRole rdf:type :IAMRole ;
+    rdfs:label "EC2 Service Role" ;
+    :hasPolicyAttachment :EC2BasicAccessPolicy ;
+    :hasTrustRelationship :EC2TrustPolicy ;
+    :maxSessionDuration "3600"^^xsd:integer .
+
+:LambdaExecutionRole rdf:type :IAMRole ;
+    rdfs:label "Lambda Execution Role" ;
+    :hasPolicyAttachment :LambdaBasicExecution, :S3ReadOnlyAccess ;
+    :hasTrustRelationship :LambdaTrustPolicy .
+
+# Example Managed Policies
+:AWSSecurityAuditPolicy rdf:type :AWSManagedPolicy ;
+    rdfs:label "AWS Security Audit" ;
+    :policyDocument """
+    {
+        "Version": "2012-10-17",
+        "Statement": [{
+            "Effect": "Allow",
+            "Action": [
+                "security-hub:Get*",
+                "securityhub:List*",
+                "cloudtrail:LookupEvents"
+            ],
+            "Resource": "*"
+        }]
+    }"""^^xsd:string .
+
+:DevOpsCustomPolicy rdf:type :CustomerManagedPolicy ;
+    rdfs:label "DevOps Team Policy" ;
+    :policyDocument """
+    {
+        "Version": "2012-10-17",
+        "Statement": [{
+            "Effect": "Allow",
+            "Action": [
+                "ec2:Describe*",
+                "cloudwatch:Get*",
+                "cloudwatch:List*"
+            ],
+            "Resource": "*"
+        }]
+    }"""^^xsd:string .
+
+# Example Inline Policies
+:JohnInlinePolicy rdf:type :InlinePolicy ;
+    rdfs:label "John's Inline Policy" ;
+    :policyDocument """
+    {
+        "Version": "2012-10-17",
+        "Statement": [{
+            "Effect": "Allow",
+            "Action": ["s3:GetObject"],
+            "Resource": "arn:aws:s3:::company-artifacts/*"
+        }]
+    }"""^^xsd:string .
+
+# Example Permission Boundaries
+:DeveloperBoundary rdf:type :IAMPermissionBoundary ;
+    rdfs:label "Developer Permission Boundary" ;
+    :policyDocument """
+    {
+        "Version": "2012-10-17",
+        "Statement": [{
+            "Effect": "Allow",
+            "Action": [
+                "s3:*",
+                "ec2:Describe*",
+                "cloudwatch:*"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Deny",
+            "Action": [
+                "iam:*",
+                "organizations:*"
+            ],
+            "Resource": "*"
+        }]
+    }"""^^xsd:string .
+
+# Example Trust Policies
+:EC2TrustPolicy rdf:type :IAMTrustPolicy ;
+    rdfs:label "EC2 Trust Policy" ;
+    :policyDocument """
+    {
+        "Version": "2012-10-17",
+        "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "ec2.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }]
+    }"""^^xsd:string .
+
+:LambdaTrustPolicy rdf:type :IAMTrustPolicy ;
+    rdfs:label "Lambda Trust Policy" ;
+    :policyDocument """
+    {
+        "Version": "2012-10-17",
+        "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "lambda.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }]
+    }"""^^xsd:string .
+
+# Example Service Control Policy
+:ProdRestrictedRegionsPolicy rdf:type :ServiceControlPolicy ;
+    rdfs:label "Production Restricted Regions" ;
+    :policyDocument """
+    {
+        "Version": "2012-10-17",
+        "Statement": [{
+            "Effect": "Deny",
+            "Action": "*",
+            "Resource": "*",
+            "Condition": {
+                "StringNotEquals": {
+                    "aws:RequestedRegion": ["us-east-1", "us-west-2"]
+                }
+            }
+        }]
+    }"""^^xsd:string .
+
+# Example Infrastructure Resources
+:ProductionVPC rdf:type :VPC ;
+    rdfs:label "Production VPC" ;
+    :contains :ProdPublicSubnet, :ProdPrivateSubnet .
+
+:WebServerInstance rdf:type :EC2Instance ;
+    rdfs:label "Web Server" ;
+    :belongsToVPC :ProductionVPC ;
+    :attachedTo :WebServerVolume .
+
+:WebServerVolume rdf:type :EBSVolume ;
+    rdfs:label "Web Server Root Volume" .
+
+:CompanyArtifacts rdf:type :S3Bucket ;
+    rdfs:label "Company Artifacts Bucket" .
+
+# Example Policy Statement Components
+:AllowEC2Describe rdf:type :PolicyStatement ;
+    :hasEffect :Allow ;
+    :hasAction :EC2DescribeAction ;
+    :hasResource :AllResourcesWildcard .
+
+:Allow rdf:type :Effect ;
+    rdfs:label "Allow" .
+
+:EC2DescribeAction rdf:type :Action ;
+    rdfs:label "ec2:Describe*" .
+
+:AllResourcesWildcard rdf:type :Resource ;
+    rdfs:label "*" . 
