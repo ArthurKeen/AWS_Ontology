@@ -7,6 +7,9 @@ owlready2>=0.45
 feedparser>=6.0.0
 requests>=2.25.0
 
+# Dependencies for automation and scheduling
+schedule>=1.2.0
+
 # Optional dependencies for testing
 # Install with: pip install -r requirements.txt
 # For reasoning tests (optional):

@@ -1,0 +1,82 @@
+[Unit]
+Description=AWS Ontology Monitoring Service
+Documentation=https://github.com/ArthurKeen/AWS_Ontology
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ontology
+Group=ontology
+WorkingDirectory=/opt/aws-ontology
+Environment=PATH=/opt/aws-ontology/venv/bin:/usr/local/bin:/usr/bin:/bin
+Environment=VIRTUAL_ENV=/opt/aws-ontology/venv
+ExecStart=/opt/aws-ontology/venv/bin/python automation/schedule_monitoring.py --start-daemon --config automation/config.json
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=aws-ontology-monitor
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/aws-ontology/automation/logs /opt/aws-ontology/automation/reports /opt/aws-ontology/monitoring
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+
+[Install]
+WantedBy=multi-user.target
+
+# =====================================================
+# Installation Instructions for Linux/Ubuntu/CentOS
+# =====================================================
+#
+# 1. Create dedicated user (recommended):
+#    sudo useradd -r -s /bin/false -d /opt/aws-ontology ontology
+#
+# 2. Install the ontology project:
+#    sudo mkdir -p /opt/aws-ontology
+#    sudo cp -r /path/to/AWS_Ontology/* /opt/aws-ontology/
+#    sudo chown -R ontology:ontology /opt/aws-ontology
+#
+# 3. Set up Python environment:
+#    sudo -u ontology python3 -m venv /opt/aws-ontology/venv
+#    sudo -u ontology /opt/aws-ontology/venv/bin/pip install -r /opt/aws-ontology/requirements.txt
+#    sudo -u ontology /opt/aws-ontology/venv/bin/pip install schedule
+#
+# 4. Create configuration:
+#    sudo -u ontology /opt/aws-ontology/venv/bin/python /opt/aws-ontology/automation/schedule_monitoring.py --create-config
+#
+# 5. Install systemd service:
+#    sudo cp automation/aws-ontology-monitor.service /etc/systemd/system/
+#    sudo systemctl daemon-reload
+#    sudo systemctl enable aws-ontology-monitor
+#    sudo systemctl start aws-ontology-monitor
+#
+# 6. Check status:
+#    sudo systemctl status aws-ontology-monitor
+#    sudo journalctl -u aws-ontology-monitor -f
+#
+# 7. Configure log rotation (optional):
+#    Create /etc/logrotate.d/aws-ontology-monitor:
+#    /opt/aws-ontology/automation/logs/*.log {
+#        daily
+#        rotate 30
+#        compress
+#        missingok
+#        notifempty
+#        create 644 ontology ontology
+#    }
+#
+# Service Management Commands:
+# - Start: sudo systemctl start aws-ontology-monitor
+# - Stop: sudo systemctl stop aws-ontology-monitor
+# - Restart: sudo systemctl restart aws-ontology-monitor  
+# - Status: sudo systemctl status aws-ontology-monitor
+# - Logs: sudo journalctl -u aws-ontology-monitor
+# - Follow logs: sudo journalctl -u aws-ontology-monitor -f 

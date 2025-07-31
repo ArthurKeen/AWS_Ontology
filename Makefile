@@ -1,6 +1,6 @@
 # AWS Ontology Project Makefile
 
-.PHONY: help test test-all test-sync test-quality test-examples test-performance sync-check sync-ttl-to-owl sync-owl-to-ttl install-deps setup-hooks monitor-changes clean
+.PHONY: help test test-all test-sync test-quality test-examples test-performance sync-check sync-ttl-to-owl sync-owl-to-ttl install-deps setup-hooks monitor-changes schedule-setup schedule-daemon schedule-test clean
 
 # Default target
 help:
@@ -19,15 +19,22 @@ help:
 	@echo "  sync-ttl-to-owl - Convert TTL to OWL format"
 	@echo "  sync-owl-to-ttl - Convert OWL to TTL format"
 	@echo ""
-	@echo "Development:"
-	@echo "  install-deps   - Install Python dependencies"
-	@echo "  setup-hooks    - Install Git pre-commit hooks"
-	@echo "  transform      - Run ArangoDB transformation (requires ArangoDB)"
-	@echo ""
 	@echo "Monitoring:"
 	@echo "  monitor-changes - Monitor AWS changes (last 7 days)"
 	@echo "  monitor-weekly  - Generate weekly AWS change report"
 	@echo "  monitor-all     - Monitor all sources and generate report"
+	@echo ""
+	@echo "Automation:"
+	@echo "  schedule-setup  - Create sample automation configuration"
+	@echo "  schedule-daemon - Start automated monitoring daemon"
+	@echo "  schedule-test   - Test automation setup"
+	@echo "  schedule-daily  - Run daily monitoring once"
+	@echo "  schedule-weekly - Run weekly report once"
+	@echo ""
+	@echo "Development:"
+	@echo "  install-deps   - Install Python dependencies"
+	@echo "  setup-hooks    - Install Git pre-commit hooks"
+	@echo "  transform      - Run ArangoDB transformation (requires ArangoDB)"
 	@echo ""
 	@echo "Maintenance:"
 	@echo "  clean          - Clean temporary files"
@@ -101,6 +108,32 @@ monitor-all:
 	@echo "Monitoring all AWS sources..."
 	python tools/monitor_aws_changes.py --source all --compare --output monitoring/comprehensive_report.json
 
+# Create sample automation configuration
+schedule-setup:
+	@echo "Creating sample automation configuration..."
+	mkdir -p automation
+	python automation/schedule_monitoring.py --create-config --config automation/config.json
+
+# Start automated monitoring daemon
+schedule-daemon:
+	@echo "Starting automated monitoring daemon..."
+	python automation/schedule_monitoring.py --start-daemon --config automation/config.json
+
+# Test automation setup
+schedule-test:
+	@echo "Testing automation setup..."
+	python automation/schedule_monitoring.py --run-once daily --config automation/config.json
+
+# Run daily monitoring once
+schedule-daily:
+	@echo "Running daily monitoring task..."
+	python automation/schedule_monitoring.py --run-once daily --config automation/config.json
+
+# Run weekly report once
+schedule-weekly:
+	@echo "Running weekly report task..."
+	python automation/schedule_monitoring.py --run-once weekly --config automation/config.json
+
 # Run ArangoDB transformation
 transform:
 	@echo "Running ArangoDB transformation..."
@@ -112,5 +145,5 @@ clean:
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name "__pycache__" -delete
 	find . -type f -name "*.tmp" -delete
-	@echo "Creating monitoring directory..."
-	mkdir -p monitoring 
+	@echo "Creating monitoring and automation directories..."
+	mkdir -p monitoring automation/logs automation/reports 

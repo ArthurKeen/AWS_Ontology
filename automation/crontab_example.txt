@@ -1,0 +1,116 @@
+# AWS Ontology Monitoring - Cron Job Examples
+# 
+# Add these entries to your crontab with: crontab -e
+# Adjust paths to match your installation directory
+#
+# IMPORTANT: Set these environment variables at the top of your crontab:
+# PATH=/usr/local/bin:/usr/bin:/bin
+# SHELL=/bin/bash
+# HOME=/Users/yourusername
+# PROJECT_DIR=/Users/yourusername/code/AWS_Ontology
+
+# =====================================================
+# OPTION 1: Individual Cron Jobs (Simple)
+# =====================================================
+
+# Daily AWS change monitoring at 9:00 AM
+0 9 * * * cd $PROJECT_DIR && source venv/bin/activate && make monitor-changes > automation/logs/daily_$(date +\%Y\%m\%d).log 2>&1
+
+# Weekly comprehensive report every Monday at 8:00 AM  
+0 8 * * 1 cd $PROJECT_DIR && source venv/bin/activate && make monitor-weekly > automation/logs/weekly_$(date +\%Y\%m\%d).log 2>&1
+
+# Monthly quality check on the 1st of each month at 7:00 AM
+0 7 1 * * cd $PROJECT_DIR && source venv/bin/activate && make test-all > automation/logs/monthly_$(date +\%Y\%m).log 2>&1
+
+# Quarterly sync check every 3 months on the 1st at 6:00 AM
+0 6 1 */3 * cd $PROJECT_DIR && source venv/bin/activate && make sync-check > automation/logs/quarterly_$(date +\%Y\%m).log 2>&1
+
+# =====================================================
+# OPTION 2: Using the Scheduler Script
+# =====================================================
+
+# Run daily monitoring using the scheduler
+0 9 * * * cd $PROJECT_DIR && source venv/bin/activate && python automation/schedule_monitoring.py --run-once daily
+
+# Weekly report
+0 8 * * 1 cd $PROJECT_DIR && source venv/bin/activate && python automation/schedule_monitoring.py --run-once weekly
+
+# Monthly quality check
+0 7 1 * * cd $PROJECT_DIR && source venv/bin/activate && python automation/schedule_monitoring.py --run-once monthly
+
+# =====================================================
+# OPTION 3: Long-running Daemon (Alternative)
+# =====================================================
+
+# Start the scheduler daemon at system boot
+@reboot cd $PROJECT_DIR && source venv/bin/activate && python automation/schedule_monitoring.py --start-daemon > automation/logs/daemon.log 2>&1 &
+
+# =====================================================
+# Additional Maintenance Tasks
+# =====================================================
+
+# Clean up old log files (keep last 30 days)
+0 2 * * 0 find $PROJECT_DIR/automation/logs -name "*.log" -mtime +30 -delete
+
+# Clean up old reports (keep last 90 days)  
+0 2 * * 0 find $PROJECT_DIR/automation/reports -name "*.json" -mtime +90 -delete
+
+# Weekly backup of the ontology files
+0 3 * * 0 cd $PROJECT_DIR && tar -czf backups/ontology_backup_$(date +\%Y\%m\%d).tar.gz ontology/
+
+# =====================================================
+# Email Notifications (if system sendmail configured)
+# =====================================================
+
+# Send daily summary via email (requires sendmail setup)
+# 30 9 * * * cd $PROJECT_DIR && tail -20 automation/logs/daily_$(date +\%Y\%m\%d).log | mail -s "AWS Ontology Daily Report" your-email@example.com
+
+# =====================================================
+# Testing and Validation
+# =====================================================
+
+# Test cron job setup (runs every 5 minutes for testing)
+# */5 * * * * cd $PROJECT_DIR && echo "Cron test at $(date)" >> automation/logs/cron_test.log
+
+# =====================================================
+# Environment Variables for Cron
+# =====================================================
+# 
+# Add these at the top of your crontab:
+#
+# # Set PATH to include common binary locations
+# PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin
+# 
+# # Set shell
+# SHELL=/bin/bash
+# 
+# # Set home directory
+# HOME=/Users/yourusername
+# 
+# # Project directory (adjust path as needed)
+# PROJECT_DIR=/Users/yourusername/code/AWS_Ontology
+# 
+# # Python virtual environment
+# VIRTUAL_ENV=/Users/yourusername/code/AWS_Ontology/venv
+# 
+# # Email for cron job output (optional)
+# MAILTO=your-email@example.com
+
+# =====================================================
+# Installation Instructions
+# =====================================================
+#
+# 1. Copy the desired cron jobs from above
+# 2. Edit the paths to match your installation
+# 3. Open crontab: crontab -e
+# 4. Add environment variables at the top
+# 5. Add your selected cron jobs
+# 6. Save and exit
+# 7. Verify with: crontab -l
+# 8. Check logs in automation/logs/ directory
+#
+# For debugging cron issues:
+# - Check system logs: tail -f /var/log/cron (Linux) or Console.app (macOS)
+# - Test commands manually first
+# - Ensure all paths are absolute
+# - Verify permissions on scripts and directories 
