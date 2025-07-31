@@ -33,8 +33,7 @@ The AWS Ontology project creates a comprehensive semantic model of AWS infrastru
 ├── tests/
 │   └── test_format_sync.py  # Synchronization test suite
 └── tools/
-    ├── README.md            # Tools documentation
-    ├── transform_ontology.py # ArangoRDF transformation script
+    ├── monitor_aws_changes.py # AWS change monitoring tool
     ├── sync_formats.py      # Format synchronization utility
     └── setup_git_hooks.py   # Git hooks installation script
 ```
@@ -255,13 +254,16 @@ These examples demonstrate how to:
 
 ## ArangoDB Integration
 
-The project includes tools for transforming the ontology into ArangoDB graph schemas using the ArangoRDF library. Three transformation patterns are supported:
+The AWS Ontology can be integrated with ArangoDB graph databases for advanced querying and analysis. 
 
-- **RPT (Resource Pattern Transformation)**: Simple graph structure
-- **PGT (Property Graph Transformation)**: Balanced RDF and property graph features
-- **LPGT (Labeled Property Graph Transformation)**: Full RDF semantics preservation
+**Note**: ArangoDB integration tools have been moved to a separate repository to maintain clear separation between the open-source ontology and proprietary implementation details.
 
-See `tools/README.md` for detailed usage instructions.
+For ArangoDB transformations and graph database integration:
+- Contact the maintainer for access to integration tools
+- Supports RPT, PGT, and LPGT transformation patterns
+- Optimized for AWS resource relationship analysis
+
+The core ontology in this repository provides the semantic foundation that can be transformed into various graph database formats.
 
 ## Quick Reference
 

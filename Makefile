@@ -34,7 +34,6 @@ help:
 	@echo "Development:"
 	@echo "  install-deps   - Install Python dependencies"
 	@echo "  setup-hooks    - Install Git pre-commit hooks"
-	@echo "  transform      - Run ArangoDB transformation (requires ArangoDB)"
 	@echo ""
 	@echo "Maintenance:"
 	@echo "  clean          - Clean temporary files"
@@ -134,10 +133,7 @@ schedule-weekly:
 	@echo "Running weekly report task..."
 	python automation/schedule_monitoring.py --run-once weekly --config automation/config.json
 
-# Run ArangoDB transformation
-transform:
-	@echo "Running ArangoDB transformation..."
-	python tools/transform_ontology.py
+# Note: ArangoDB transformation moved to separate private repository
 
 # Clean temporary files
 clean:

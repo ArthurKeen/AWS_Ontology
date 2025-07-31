@@ -1,6 +1,4 @@
-arangordf>=0.1.0
 rdflib>=6.0.0
-python-arango>=7.5.0
 owlready2>=0.45
 
 # Dependencies for AWS change monitoring
