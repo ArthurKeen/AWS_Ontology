@@ -23,7 +23,9 @@ The AWS Ontology project creates a comprehensive semantic model of AWS infrastru
 ├── .githooks/
 │   └── pre-commit           # Git pre-commit hook for sync checking
 ├── docs/
-│   └── PRD.md               # Product Requirements Document
+│   ├── PRD.md               # Product Requirements Document
+│   ├── MAINTENANCE_STRATEGY.md # Detailed maintenance processes
+│   └── USAGE_GUIDE.md       # Step-by-step usage instructions
 ├── ontology/
 │   ├── aws.owl              # Ontology in OWL/XML format
 │   ├── aws.ttl              # Ontology in Turtle format
@@ -260,6 +262,34 @@ The project includes tools for transforming the ontology into ArangoDB graph sch
 - **LPGT (Labeled Property Graph Transformation)**: Full RDF semantics preservation
 
 See `tools/README.md` for detailed usage instructions.
+
+## Quick Reference
+
+### Essential Commands
+
+```bash
+# Setup (one-time)
+make install-deps && make setup-hooks
+
+# Daily workflow
+make test           # Run essential tests
+make monitor-changes # Check AWS updates
+
+# Development
+make sync-check     # Verify OWL/TTL sync
+make test-all       # Full test suite
+make monitor-weekly # Comprehensive change report
+
+# Help
+make help          # Show all commands
+```
+
+### Key Files
+- `ontology/aws.ttl` - Main ontology (human-readable)
+- `ontology/aws.owl` - Main ontology (OWL/XML format)
+- `ontology/examples.ttl` - Example AWS resources
+- `docs/USAGE_GUIDE.md` - **Detailed usage instructions**
+- `docs/MAINTENANCE_STRATEGY.md` - Maintenance processes
 
 ## Getting Started
 
