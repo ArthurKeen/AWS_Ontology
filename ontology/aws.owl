@@ -315,6 +315,8 @@
     <owl:ObjectProperty rdf:about="#appliesTo">
         <rdfs:label>applies to</rdfs:label>
         <rdfs:comment>Indicates that a policy or security group applies to a resource</rdfs:comment>
+        <rdfs:domain rdf:resource="#SecurityResource"/>
+        <rdfs:range rdf:resource="#AWSResource"/>
     </owl:ObjectProperty>
 
     <!-- API & Integration Object Properties -->
@@ -385,6 +387,8 @@
     <owl:ObjectProperty rdf:about="#activityOf">
         <rdfs:label>activity of</rdfs:label>
         <rdfs:comment>Inverse of has activity</rdfs:comment>
+        <rdfs:domain rdf:resource="#StepFunctionActivity"/>
+        <rdfs:range rdf:resource="#StepFunction"/>
         <owl:inverseOf rdf:resource="#hasActivity"/>
     </owl:ObjectProperty>
 

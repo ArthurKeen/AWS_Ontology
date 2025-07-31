@@ -84,6 +84,8 @@
 :activityOf a owl:ObjectProperty ;
     rdfs:label "activity of" ;
     rdfs:comment "Inverse of has activity" ;
+    rdfs:domain :StepFunctionActivity ;
+    rdfs:range :StepFunction ;
     owl:inverseOf :hasActivity .
 
 :apiGatewayType a owl:DatatypeProperty,
@@ -95,7 +97,9 @@
 
 :appliesTo a owl:ObjectProperty ;
     rdfs:label "applies to" ;
-    rdfs:comment "Indicates that a policy or security group applies to a resource" .
+    rdfs:comment "Indicates that a policy or security group applies to a resource" ;
+    rdfs:domain :SecurityResource ;
+    rdfs:range :AWSResource .
 
 :approvalRequired a owl:DatatypeProperty ;
     rdfs:label "approval required" ;
@@ -808,11 +812,6 @@
     rdfs:comment "An AWS Organizations service control policy" ;
     rdfs:subClassOf :IAMPolicy .
 
-:StepFunctionActivity a owl:Class ;
-    rdfs:label "Step Function Activity" ;
-    rdfs:comment "A Step Functions activity representing a task that can be implemented by external workers" ;
-    rdfs:subClassOf :ComputeResource .
-
 :VPC a owl:Class ;
     rdfs:label "VPC" ;
     rdfs:comment "A Virtual Private Cloud" ;
@@ -1059,6 +1058,11 @@
     rdfs:comment "An SNS subscription connecting a topic to an endpoint" ;
     rdfs:subClassOf :IntegrationResource .
 
+:StepFunctionActivity a owl:Class ;
+    rdfs:label "Step Function Activity" ;
+    rdfs:comment "A Step Functions activity representing a task that can be implemented by external workers" ;
+    rdfs:subClassOf :ComputeResource .
+
 :hasActivity a owl:ObjectProperty ;
     rdfs:label "has activity" ;
     rdfs:comment "Relates a Step Function to its activities" ;
@@ -1159,10 +1163,10 @@
     rdfs:comment "An ECS service that runs and maintains tasks" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:cardinality "1"^^xsd:nonNegativeInteger ;
-            owl:onProperty :hasTaskDefinition ],
+            owl:onProperty :runsOnCluster ],
         [ a owl:Restriction ;
             owl:cardinality "1"^^xsd:nonNegativeInteger ;
-            owl:onProperty :runsOnCluster ],
+            owl:onProperty :hasTaskDefinition ],
         :ComputeResource .
 
 :EventBridgeRule a owl:Class ;
@@ -1186,23 +1190,6 @@
     rdfs:comment "An Amazon Simple Queue Service message queue" ;
     rdfs:subClassOf :IntegrationResource .
 
-:SecurityResource a owl:Class ;
-    rdfs:label "Security Resource" ;
-    rdfs:comment "Base class for security resources" ;
-    rdfs:subClassOf :AWSResource ;
-    owl:disjointWith :DatabaseResource,
-        :IdentityResource,
-        :IntegrationResource,
-        :MonitoringResource .
-
-:StepFunction a owl:Class ;
-    rdfs:label "Step Function" ;
-    rdfs:comment "An AWS Step Functions state machine for coordinating distributed services" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:minCardinality "1"^^xsd:nonNegativeInteger ;
-            owl:onProperty :hasActivity ],
-        :ComputeResource .
-
 :ECSTaskDefinition a owl:Class ;
     rdfs:label "ECS Task Definition" ;
     rdfs:comment "A blueprint for ECS tasks specifying containers and resources" ;
@@ -1220,6 +1207,23 @@
             owl:cardinality "1"^^xsd:nonNegativeInteger ;
             owl:onProperty :hasEffect ],
         :IdentityResource .
+
+:SecurityResource a owl:Class ;
+    rdfs:label "Security Resource" ;
+    rdfs:comment "Base class for security resources" ;
+    rdfs:subClassOf :AWSResource ;
+    owl:disjointWith :DatabaseResource,
+        :IdentityResource,
+        :IntegrationResource,
+        :MonitoringResource .
+
+:StepFunction a owl:Class ;
+    rdfs:label "Step Function" ;
+    rdfs:comment "An AWS Step Functions state machine for coordinating distributed services" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+            owl:onProperty :hasActivity ],
+        :ComputeResource .
 
 :DatabaseResource a owl:Class ;
     rdfs:label "Database Resource" ;

@@ -5,7 +5,8 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 # Import the AWS Ontology
-<http://www.semanticweb.org/aws-ontology> owl:imports <file:aws.owl> .
+<http://www.semanticweb.org/aws-ontology> a owl:Ontology ;
+    owl:imports <file:aws.owl> .
 
 # Example AWS Account Structure
 :ProductionAccount rdf:type :AWSAccount ;
