@@ -226,10 +226,10 @@ make test-performance # Performance benchmarks
 
 ### Graph Database Transformations
 The ontology supports multiple graph database representations:
-- **RDF Triplestores**: Direct loading as RDF/OWL (Stardog, GraphDB, Virtuoso, Blazegraph)
-- **Labeled Property Graphs (LPG)**: Transform to property graph format with labeled nodes and edges
-- **Property Graphs (PG)**: Convert to simple property graph structures for graph analytics
-- **Custom Transformations**: Flexible transformation patterns for specific use cases
+- **RDF Triplestores**: Direct loading as RDF/OWL with full semantic reasoning support
+- **Labeled Property Graphs (LPG)**: Transform to property graph format with labeled nodes and edges for modern graph databases
+- **Property Graphs (PG)**: Convert to property graph structures optimized for performance and graph analytics
+- **Custom Transformations**: Flexible transformation patterns for domain-specific use cases and requirements
 
 ### Analysis Tools
 - **Python**: rdflib, owlready2, networkx
