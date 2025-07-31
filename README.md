@@ -9,6 +9,7 @@ The AWS Ontology project creates a comprehensive semantic model of AWS infrastru
 - Automated reasoning about AWS architectures
 - Semantic querying of AWS configurations
 - Security analysis and compliance validation
+- Graph database transformation and analysis
 - Documentation and learning resources
 
 ## Repository Structure
@@ -17,12 +18,16 @@ The AWS Ontology project creates a comprehensive semantic model of AWS infrastru
 .
 ├── README.md                 # Project documentation
 ├── LICENSE                   # MIT License
+├── requirements.txt          # Python dependencies for tools
 ├── docs/
 │   └── PRD.md               # Product Requirements Document
-└── ontology/
-    ├── aws.owl              # Ontology in OWL/XML format
-    ├── aws.ttl              # Ontology in Turtle format
-    └── examples.ttl         # Example instances in Turtle format
+├── ontology/
+│   ├── aws.owl              # Ontology in OWL/XML format
+│   ├── aws.ttl              # Ontology in Turtle format
+│   └── examples.ttl         # Example instances in Turtle format
+└── tools/
+    ├── README.md            # Tools documentation
+    └── transform_ontology.py # ArangoRDF transformation script
 ```
 
 ## Ontology Components
@@ -79,10 +84,22 @@ These examples demonstrate how to:
 - Define policy documents
 - Structure security configurations
 
+## ArangoDB Integration
+
+The project includes tools for transforming the ontology into ArangoDB graph schemas using the ArangoRDF library. Three transformation patterns are supported:
+
+- **RPT (Resource Pattern Transformation)**: Simple graph structure
+- **PGT (Property Graph Transformation)**: Balanced RDF and property graph features
+- **LPGT (Labeled Property Graph Transformation)**: Full RDF semantics preservation
+
+See `tools/README.md` for detailed usage instructions.
+
 ## Getting Started
 
 ### Prerequisites
-- An OWL ontology editor (e.g., Protégé)
+- An OWL ontology editor (e.g., Protégé) for ontology viewing/editing
+- Python 3.7+ for transformation tools
+- ArangoDB for graph database transformation (optional)
 - A SPARQL query engine for semantic queries
 - Basic understanding of AWS services
 
@@ -91,6 +108,11 @@ These examples demonstrate how to:
 2. Open either `aws.owl` or `aws.ttl` in your ontology editor
 3. Review `examples.ttl` for usage patterns
 4. Use SPARQL queries to analyze configurations
+
+### Using ArangoDB Transformation
+1. Install dependencies: `pip install -r requirements.txt`
+2. Install and start ArangoDB
+3. Run transformation: `python tools/transform_ontology.py`
 
 ## Development
 
@@ -112,9 +134,10 @@ When making changes:
 Planned enhancements include:
 - Additional AWS service coverage
 - More example configurations
+- AQL query templates for ArangoDB
 - SPARQL query templates
-- Validation rules
-- Integration with AWS tools
+- Validation rules and constraints
+- Advanced security analysis patterns
 
 ## Contact
 
