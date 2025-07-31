@@ -19,15 +19,19 @@ The AWS Ontology project creates a comprehensive semantic model of AWS infrastru
 ├── README.md                 # Project documentation
 ├── LICENSE                   # MIT License
 ├── requirements.txt          # Python dependencies for tools
+├── Makefile                  # Common tasks and commands
 ├── docs/
 │   └── PRD.md               # Product Requirements Document
 ├── ontology/
 │   ├── aws.owl              # Ontology in OWL/XML format
 │   ├── aws.ttl              # Ontology in Turtle format
 │   └── examples.ttl         # Example instances in Turtle format
+├── tests/
+│   └── test_format_sync.py  # Synchronization test suite
 └── tools/
     ├── README.md            # Tools documentation
-    └── transform_ontology.py # ArangoRDF transformation script
+    ├── transform_ontology.py # ArangoRDF transformation script
+    └── sync_formats.py      # Format synchronization utility
 ```
 
 ## Ontology Components
@@ -69,6 +73,36 @@ The ontology is maintained in two formats:
 
 Both formats are kept in sync and contain identical information. Choose the format that best suits your tools and needs.
 
+## Testing and Quality Assurance
+
+### Format Synchronization Testing
+The project includes comprehensive tests to ensure OWL and TTL formats remain synchronized:
+
+```bash
+# Run all tests
+make test
+
+# Test format synchronization specifically
+make test-sync
+
+# Check synchronization status
+make sync-check
+```
+
+### Synchronization Tools
+Use the included tools to maintain format synchronization:
+
+```bash
+# Convert TTL to OWL
+make sync-ttl-to-owl
+
+# Convert OWL to TTL
+make sync-owl-to-ttl
+
+# Manual synchronization check
+python tools/sync_formats.py check
+```
+
 ## Example Data
 
 The `examples.ttl` file provides comprehensive examples of:
@@ -98,7 +132,7 @@ See `tools/README.md` for detailed usage instructions.
 
 ### Prerequisites
 - An OWL ontology editor (e.g., Protégé) for ontology viewing/editing
-- Python 3.7+ for transformation tools
+- Python 3.7+ for transformation tools and testing
 - ArangoDB for graph database transformation (optional)
 - A SPARQL query engine for semantic queries
 - Basic understanding of AWS services
@@ -109,10 +143,26 @@ See `tools/README.md` for detailed usage instructions.
 3. Review `examples.ttl` for usage patterns
 4. Use SPARQL queries to analyze configurations
 
+### Setting Up Development Environment
+1. Install dependencies:
+   ```bash
+   # For macOS with Homebrew-managed Python
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   
+   # Or use the Makefile (requires virtual environment)
+   make install-deps
+   ```
+
+2. Run tests to verify setup:
+   ```bash
+   make test
+   ```
+
 ### Using ArangoDB Transformation
-1. Install dependencies: `pip install -r requirements.txt`
-2. Install and start ArangoDB
-3. Run transformation: `python tools/transform_ontology.py`
+1. Install and start ArangoDB
+2. Run transformation: `make transform`
 
 ## Development
 
@@ -120,14 +170,20 @@ See `tools/README.md` for detailed usage instructions.
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Submit a pull request
+4. Run tests: `make test`
+5. Submit a pull request
 
 ### Maintaining Formats
 When making changes:
 1. Update both `.owl` and `.ttl` formats
-2. Ensure formats remain synchronized
+2. Ensure formats remain synchronized using `make test-sync`
 3. Update examples if necessary
 4. Document significant changes
+
+### Quality Assurance
+- Run synchronization tests before committing: `make test-sync`
+- Use format conversion tools when needed: `make sync-ttl-to-owl` or `make sync-owl-to-ttl`
+- Validate OWL compliance with standard reasoners
 
 ## Future Development
 
