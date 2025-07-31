@@ -4,6 +4,9 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
+# Import the AWS Ontology
+<http://www.semanticweb.org/aws-ontology> owl:imports <file:aws.owl> .
+
 # Example AWS Account Structure
 :ProductionAccount rdf:type :AWSAccount ;
     rdfs:label "Production AWS Account" ;
@@ -178,6 +181,14 @@
     rdfs:label "Production VPC" ;
     :contains :ProdPublicSubnet, :ProdPrivateSubnet .
 
+:ProdPublicSubnet rdf:type :Subnet ;
+    rdfs:label "Production Public Subnet" ;
+    :belongsToVPC :ProductionVPC .
+
+:ProdPrivateSubnet rdf:type :Subnet ;
+    rdfs:label "Production Private Subnet" ;
+    :belongsToVPC :ProductionVPC .
+
 :WebServerInstance rdf:type :EC2Instance ;
     rdfs:label "Web Server" ;
     :belongsToVPC :ProductionVPC ;
@@ -191,6 +202,7 @@
 
 # Example Policy Statement Components
 :AllowEC2Describe rdf:type :PolicyStatement ;
+    rdfs:label "Allow EC2 Describe" ;
     :hasEffect :Allow ;
     :hasAction :EC2DescribeAction ;
     :hasResource :AllResourcesWildcard .
@@ -202,4 +214,382 @@
     rdfs:label "ec2:Describe*" .
 
 :AllResourcesWildcard rdf:type :Resource ;
-    rdfs:label "*" . 
+    rdfs:label "*" .
+
+# ========================================
+# Container Services Examples
+# ========================================
+
+# Example ECR Repository and Container Images
+:MyAppECRRepository rdf:type :ECRRepository ;
+    rdfs:label "MyApp ECR Repository" ;
+    :repositoryURI "123456789012.dkr.ecr.us-east-1.amazonaws.com/myapp" ;
+    :repositoryContains :MyAppLatestImage, :MyAppV1Image .
+
+:MyAppLatestImage rdf:type :ContainerImage ;
+    rdfs:label "MyApp Latest Image" ;
+    :imageTag "latest" ;
+    :imageDigest "sha256:a1b2c3d4e5f6..." ;
+    :storedInRepository :MyAppECRRepository .
+
+:MyAppV1Image rdf:type :ContainerImage ;
+    rdfs:label "MyApp Version 1.0" ;
+    :imageTag "v1.0.0" ;
+    :imageDigest "sha256:1a2b3c4d5e6f..." ;
+    :storedInRepository :MyAppECRRepository .
+
+# Example ECS Cluster and Services
+:ProductionECSCluster rdf:type :ECSCluster ;
+    rdfs:label "Production ECS Cluster" ;
+    :clusterHosts :WebApplicationService, :BackgroundWorkerService .
+
+:WebApplicationTaskDefinition rdf:type :ECSTaskDefinition ;
+    rdfs:label "Web Application Task Definition" ;
+    :taskDefinitionRevision 5 ;
+    :cpu 512 ;
+    :memory 1024 ;
+    :containerPort 80 ;
+    :usesContainerImage :MyAppLatestImage .
+
+:WebApplicationService rdf:type :ECSService ;
+    rdfs:label "Web Application Service" ;
+    :runsOnCluster :ProductionECSCluster ;
+    :hasTaskDefinition :WebApplicationTaskDefinition ;
+    :launchType "FARGATE" ;
+    :desiredCount 3 ;
+    :usesFargate true .
+
+:WebApplicationTask rdf:type :ECSTask ;
+    rdfs:label "Web Application Task Instance" ;
+    :runsOnCluster :ProductionECSCluster ;
+    :hasTaskDefinition :WebApplicationTaskDefinition .
+
+:BackgroundWorkerTaskDefinition rdf:type :ECSTaskDefinition ;
+    rdfs:label "Background Worker Task Definition" ;
+    :taskDefinitionRevision 2 ;
+    :cpu 256 ;
+    :memory 512 ;
+    :usesContainerImage :MyAppV1Image .
+
+:BackgroundWorkerService rdf:type :ECSService ;
+    rdfs:label "Background Worker Service" ;
+    :runsOnCluster :ProductionECSCluster ;
+    :hasTaskDefinition :BackgroundWorkerTaskDefinition ;
+    :launchType "EC2" ;
+    :desiredCount 2 .
+
+# Example EKS Cluster and Components
+:ProductionEKSCluster rdf:type :EKSCluster ;
+    rdfs:label "Production EKS Cluster" ;
+    :kubernetesVersion "1.28" ;
+    :hasNodeGroup :PrimaryNodeGroup .
+
+:PrimaryNodeGroup rdf:type :EKSNodeGroup ;
+    rdfs:label "Primary Node Group" ;
+    :nodeGroupOf :ProductionEKSCluster ;
+    :nodeInstanceType "t3.medium" ;
+    :minNodes 2 ;
+    :maxNodes 10 ;
+    :desiredNodes 3 ;
+    :runsPod :WebAppPod, :DatabasePod .
+
+:WebAppPod rdf:type :EKSPod ;
+    rdfs:label "Web Application Pod" ;
+    :podRunsOn :PrimaryNodeGroup ;
+    :usesContainerImage :MyAppLatestImage ;
+    :cpu 250 ;
+    :memory 512 ;
+    :containerPort 8080 .
+
+:DatabasePod rdf:type :EKSPod ;
+    rdfs:label "Database Pod" ;
+    :podRunsOn :PrimaryNodeGroup ;
+    :cpu 500 ;
+    :memory 1024 ;
+    :containerPort 5432 .
+
+# Example Fargate Service (Serverless)
+:ServerlessAPIService rdf:type :FargateService ;
+    rdfs:label "Serverless API Service" ;
+    :usesContainerImage :MyAppLatestImage ;
+    :cpu 512 ;
+    :memory 1024 ;
+    :containerPort 443 .
+
+# Container Service Relationships with VPC and Security
+:WebApplicationService :belongsToVPC :ProductionVPC .
+:ProductionEKSCluster :belongsToVPC :ProductionVPC .
+:WebApplicationService :appliesTo :WebAppSecurityGroup .
+:ProductionEKSCluster :appliesTo :EKSClusterSecurityGroup .
+
+:WebAppSecurityGroup rdf:type :EC2SecurityGroup ;
+    rdfs:label "Web App Security Group" .
+
+:EKSClusterSecurityGroup rdf:type :EC2SecurityGroup ;
+    rdfs:label "EKS Cluster Security Group" .
+
+# Container Service IAM Relationships
+:ECSTaskExecutionRole rdf:type :IAMRole ;
+    rdfs:label "ECS Task Execution Role" ;
+    :hasPolicyAttachment :ECSTaskExecutionRolePolicy .
+
+:EKSServiceRole rdf:type :IAMRole ;
+    rdfs:label "EKS Service Role" ;
+    :hasPolicyAttachment :AmazonEKSClusterPolicy .
+
+:EKSNodeInstanceRole rdf:type :IAMRole ;
+    rdfs:label "EKS Node Instance Role" ;
+    :hasPolicyAttachment :AmazonEKSWorkerNodePolicy, :AmazonEKS_CNI_Policy, :AmazonEC2ContainerRegistryReadOnly .
+
+:WebApplicationService :uses :ECSTaskExecutionRole .
+:ProductionEKSCluster :uses :EKSServiceRole .
+:PrimaryNodeGroup :uses :EKSNodeInstanceRole .
+
+# Policy definitions for container services
+:ECSTaskExecutionRolePolicy rdf:type :CustomerManagedPolicy ;
+    rdfs:label "ECS Task Execution Role Policy" ;
+    :policyDocument "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"ecr:GetAuthorizationToken\",\"ecr:BatchCheckLayerAvailability\",\"ecr:GetDownloadUrlForLayer\",\"ecr:BatchGetImage\"],\"Resource\":\"*\"}]}" .
+
+:AmazonEKSClusterPolicy rdf:type :AWSManagedPolicy ;
+    rdfs:label "AmazonEKSClusterPolicy" .
+
+:AmazonEKSWorkerNodePolicy rdf:type :AWSManagedPolicy ;
+    rdfs:label "AmazonEKSWorkerNodePolicy" .
+
+:AmazonEKS_CNI_Policy rdf:type :AWSManagedPolicy ;
+    rdfs:label "AmazonEKS_CNI_Policy" .
+
+:AmazonEC2ContainerRegistryReadOnly rdf:type :AWSManagedPolicy ;
+    rdfs:label "AmazonEC2ContainerRegistryReadOnly" .
+
+# Missing policy examples for validation
+:EC2BasicAccessPolicy rdf:type :CustomerManagedPolicy ;
+    rdfs:label "EC2 Basic Access Policy" ;
+    :policyDocument "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"ec2:DescribeInstances\",\"ec2:DescribeImages\",\"ec2:DescribeKeyPairs\"],\"Resource\":\"*\"}]}" .
+
+:SecurityAuditPolicy rdf:type :CustomerManagedPolicy ;
+    rdfs:label "Security Audit Policy" ;
+    :policyDocument "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"iam:List*\",\"iam:Get*\",\"iam:Generate*\"],\"Resource\":\"*\"}]}" .
+
+:S3ReadOnlyAccess rdf:type :AWSManagedPolicy ;
+    rdfs:label "AmazonS3ReadOnlyAccess" .
+
+:LambdaBasicExecution rdf:type :AWSManagedPolicy ;
+    rdfs:label "AWSLambdaBasicExecutionRole" .
+
+# ========================================
+# API & Integration Services Examples
+# ========================================
+
+# Example API Gateway
+:ProductionAPIGateway rdf:type :APIGateway ;
+    rdfs:label "Production API Gateway" ;
+    :apiGatewayType "REST" ;
+    :hasStage :ProductionStage, :StagingStage ;
+    :hasResource :UsersResource, :OrdersResource .
+
+:ProductionStage rdf:type :APIGatewayStage ;
+    rdfs:label "Production Stage" ;
+    :stageName "prod" ;
+    :stageOf :ProductionAPIGateway .
+
+:StagingStage rdf:type :APIGatewayStage ;
+    rdfs:label "Staging Stage" ;
+    :stageName "staging" ;
+    :stageOf :ProductionAPIGateway .
+
+:UsersResource rdf:type :APIGatewayResource ;
+    rdfs:label "Users Resource" ;
+    :resourcePath "/users" ;
+    :resourceOf :ProductionAPIGateway ;
+    :hasMethod :GetUsers, :PostUsers .
+
+:OrdersResource rdf:type :APIGatewayResource ;
+    rdfs:label "Orders Resource" ;
+    :resourcePath "/orders" ;
+    :resourceOf :ProductionAPIGateway ;
+    :hasMethod :GetOrders, :PostOrders .
+
+:GetUsers rdf:type :APIGatewayMethod ;
+    rdfs:label "GET Users" ;
+    :httpMethod "GET" ;
+    :methodOf :UsersResource ;
+    :integrationWith :UserLambdaFunction ;
+    :integrationMethod "AWS_PROXY" .
+
+:PostUsers rdf:type :APIGatewayMethod ;
+    rdfs:label "POST Users" ;
+    :httpMethod "POST" ;
+    :methodOf :UsersResource ;
+    :integrationWith :UserLambdaFunction ;
+    :integrationMethod "AWS_PROXY" .
+
+:GetOrders rdf:type :APIGatewayMethod ;
+    rdfs:label "GET Orders" ;
+    :httpMethod "GET" ;
+    :methodOf :OrdersResource ;
+    :integrationWith :OrderProcessingStepFunction ;
+    :integrationMethod "AWS" .
+
+:PostOrders rdf:type :APIGatewayMethod ;
+    rdfs:label "POST Orders" ;
+    :httpMethod "POST" ;
+    :methodOf :OrdersResource ;
+    :integrationWith :OrderProcessingStepFunction ;
+    :integrationMethod "AWS" .
+
+# Example Step Functions
+:OrderProcessingStepFunction rdf:type :StepFunction ;
+    rdfs:label "Order Processing Workflow" ;
+    :stateMachineType "STANDARD" ;
+    :stateMachineDefinition "{\"Comment\":\"Order processing workflow\",\"StartAt\":\"ValidateOrder\",\"States\":{\"ValidateOrder\":{\"Type\":\"Task\",\"Resource\":\"arn:aws:lambda:us-east-1:123456789012:function:ValidateOrder\",\"Next\":\"ProcessPayment\"},\"ProcessPayment\":{\"Type\":\"Task\",\"Resource\":\"arn:aws:lambda:us-east-1:123456789012:function:ProcessPayment\",\"Next\":\"FulfillOrder\"},\"FulfillOrder\":{\"Type\":\"Task\",\"Resource\":\"arn:aws:lambda:us-east-1:123456789012:function:FulfillOrder\",\"End\":true}}}" ;
+    :hasActivity :ValidateOrderActivity, :ProcessPaymentActivity ;
+    :uses :OrderProcessingRole .
+
+:UserWorkflowStepFunction rdf:type :StepFunction ;
+    rdfs:label "User Management Workflow" ;
+    :stateMachineType "EXPRESS" ;
+    :hasActivity :UserValidationActivity .
+
+:ValidateOrderActivity rdf:type :StepFunctionActivity ;
+    rdfs:label "Validate Order Activity" ;
+    :activityOf :OrderProcessingStepFunction .
+
+:ProcessPaymentActivity rdf:type :StepFunctionActivity ;
+    rdfs:label "Process Payment Activity" ;
+    :activityOf :OrderProcessingStepFunction .
+
+:UserValidationActivity rdf:type :StepFunctionActivity ;
+    rdfs:label "User Validation Activity" ;
+    :activityOf :UserWorkflowStepFunction .
+
+# Example EventBridge
+:ProductionEventBridge rdf:type :EventBridge ;
+    rdfs:label "Production Event Bus" ;
+    :eventBusName "production-events" ;
+    :hasRule :OrderCreatedRule, :UserRegistrationRule, :ScheduledReportsRule .
+
+:OrderCreatedRule rdf:type :EventBridgeRule ;
+    rdfs:label "Order Created Rule" ;
+    :ruleOf :ProductionEventBridge ;
+    :eventPattern "{\"source\":[\"ecommerce.orders\"],\"detail-type\":[\"Order Created\"]}" ;
+    :hasTarget :OrderNotificationTarget, :OrderAnalyticsTarget .
+
+:UserRegistrationRule rdf:type :EventBridgeRule ;
+    rdfs:label "User Registration Rule" ;
+    :ruleOf :ProductionEventBridge ;
+    :eventPattern "{\"source\":[\"ecommerce.users\"],\"detail-type\":[\"User Registered\"]}" ;
+    :hasTarget :WelcomeEmailTarget .
+
+:ScheduledReportsRule rdf:type :EventBridgeRule ;
+    rdfs:label "Scheduled Reports Rule" ;
+    :ruleOf :ProductionEventBridge ;
+    :scheduleExpression "cron(0 9 * * ? *)" ;
+    :hasTarget :DailyReportTarget .
+
+:OrderNotificationTarget rdf:type :EventBridgeTarget ;
+    rdfs:label "Order Notification Target" ;
+    :targetOf :OrderCreatedRule .
+
+:OrderAnalyticsTarget rdf:type :EventBridgeTarget ;
+    rdfs:label "Order Analytics Target" ;
+    :targetOf :OrderCreatedRule .
+
+:WelcomeEmailTarget rdf:type :EventBridgeTarget ;
+    rdfs:label "Welcome Email Target" ;
+    :targetOf :UserRegistrationRule .
+
+:DailyReportTarget rdf:type :EventBridgeTarget ;
+    rdfs:label "Daily Report Target" ;
+    :targetOf :ScheduledReportsRule .
+
+# Example SNS Topics and Subscriptions
+:OrderNotificationTopic rdf:type :SNSTopic ;
+    rdfs:label "Order Notification Topic" ;
+    :hasSubscriber :EmailNotificationSubscription, :SmsNotificationSubscription .
+
+:UserEventsTopic rdf:type :SNSTopic ;
+    rdfs:label "User Events Topic" ;
+    :hasSubscriber :UserAnalyticsSubscription .
+
+:EmailNotificationSubscription rdf:type :SNSSubscription ;
+    rdfs:label "Email Notification Subscription" ;
+    :subscribesTo :OrderNotificationTopic ;
+    :subscriptionProtocol "email" ;
+    :endpoint "orders@company.com" .
+
+:SmsNotificationSubscription rdf:type :SNSSubscription ;
+    rdfs:label "SMS Notification Subscription" ;
+    :subscribesTo :OrderNotificationTopic ;
+    :subscriptionProtocol "sms" ;
+    :endpoint "+1234567890" .
+
+:UserAnalyticsSubscription rdf:type :SNSSubscription ;
+    rdfs:label "User Analytics Subscription" ;
+    :subscribesTo :UserEventsTopic ;
+    :subscriptionProtocol "sqs" ;
+    :endpoint "arn:aws:sqs:us-east-1:123456789012:user-analytics-queue" .
+
+# Example SQS Queues
+:OrderProcessingQueue rdf:type :SQSQueue ;
+    rdfs:label "Order Processing Queue" ;
+    :queueType "Standard" ;
+    :visibilityTimeoutSeconds 300 ;
+    :messageRetentionPeriod 1209600 ;
+    :queueReceivesFrom :ProductionAPIGateway .
+
+:PaymentProcessingQueue rdf:type :SQSQueue ;
+    rdfs:label "Payment Processing Queue" ;
+    :queueType "FIFO" ;
+    :visibilityTimeoutSeconds 60 ;
+    :messageRetentionPeriod 345600 .
+
+:UserAnalyticsQueue rdf:type :SQSQueue ;
+    rdfs:label "User Analytics Queue" ;
+    :queueType "Standard" ;
+    :visibilityTimeoutSeconds 120 ;
+    :messageRetentionPeriod 604800 .
+
+# Integration Relationships
+:ProductionAPIGateway :integrationWith :UserLambdaFunction, :OrderProcessingStepFunction .
+:OrderProcessingStepFunction :triggersStepFunction :UserWorkflowStepFunction .
+:ProductionEventBridge :routesEventTo :OrderNotificationTopic, :UserEventsTopic, :OrderProcessingQueue .
+
+# Lambda Functions for API Integration
+:UserLambdaFunction rdf:type :LambdaFunction ;
+    rdfs:label "User Management Lambda" ;
+    :uses :UserLambdaExecutionRole .
+
+# IAM Roles for API & Integration Services
+:APIGatewayExecutionRole rdf:type :IAMRole ;
+    rdfs:label "API Gateway Execution Role" ;
+    :hasPolicyAttachment :APIGatewayExecutionPolicy .
+
+:StepFunctionExecutionRole rdf:type :IAMRole ;
+    rdfs:label "Step Function Execution Role" ;
+    :hasPolicyAttachment :StepFunctionExecutionPolicy .
+
+:EventBridgeExecutionRole rdf:type :IAMRole ;
+    rdfs:label "EventBridge Execution Role" ;
+    :hasPolicyAttachment :EventBridgeExecutionPolicy .
+
+:OrderProcessingRole rdf:type :IAMRole ;
+    rdfs:label "Order Processing Role" ;
+    :hasPolicyAttachment :LambdaBasicExecution, :StepFunctionExecutionPolicy .
+
+:UserLambdaExecutionRole rdf:type :IAMRole ;
+    rdfs:label "User Lambda Execution Role" ;
+    :hasPolicyAttachment :LambdaBasicExecution .
+
+# Policies for API & Integration Services
+:APIGatewayExecutionPolicy rdf:type :CustomerManagedPolicy ;
+    rdfs:label "API Gateway Execution Policy" ;
+    :policyDocument "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"lambda:InvokeFunction\",\"states:StartExecution\"],\"Resource\":\"*\"}]}" .
+
+:StepFunctionExecutionPolicy rdf:type :CustomerManagedPolicy ;
+    rdfs:label "Step Function Execution Policy" ;
+    :policyDocument "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"lambda:InvokeFunction\",\"sns:Publish\",\"sqs:SendMessage\"],\"Resource\":\"*\"}]}" .
+
+:EventBridgeExecutionPolicy rdf:type :CustomerManagedPolicy ;
+    rdfs:label "EventBridge Execution Policy" ;
+    :policyDocument "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"sns:Publish\",\"sqs:SendMessage\",\"lambda:InvokeFunction\"],\"Resource\":\"*\"}]}" . 

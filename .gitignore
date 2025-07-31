@@ -1,11 +1,66 @@
-# Editor and IDE files
-.idea/
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs
 .vscode/
+.idea/
 *.swp
 *.swo
 *~
 
-# OS generated files
+# OS
 .DS_Store
 .DS_Store?
 ._*
@@ -14,28 +69,22 @@
 ehthumbs.db
 Thumbs.db
 
-# Ontology editor backup files
-*.owl.bak
-*.rdf.bak
-catalog-v*.xml
+# Logs
+*.log
+logs/
 
-# Python tools (if used)
-__pycache__/
-*.py[cod]
-*$py.class
-.env
-.venv
-env/
-venv/
-ENV/
+# ArangoDB specific
+*.arangodb/
+arangodb-data/
 
-# Node.js tools (if used)
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Generated schemas and outputs
+schemas/*.json
+queries/generated/
+reports/
+outputs/
 
-# Build and distribution
-dist/
-build/
-*.jar 
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/ 

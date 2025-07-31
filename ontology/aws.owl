@@ -242,6 +242,400 @@
         <rdfs:domain rdf:resource="#PolicyStatement"/>
         <rdfs:range rdf:resource="#Condition"/>
     </owl:ObjectProperty>
+
+    <!-- Container-Specific Object Properties -->
+    <owl:ObjectProperty rdf:about="#runsOnCluster">
+        <rdfs:label>runs on cluster</rdfs:label>
+        <rdfs:comment>Relates container services/tasks to their cluster</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#clusterHosts">
+        <rdfs:label>cluster hosts</rdfs:label>
+        <rdfs:comment>Inverse of runs on cluster</rdfs:comment>
+        <owl:inverseOf rdf:resource="#runsOnCluster"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasTaskDefinition">
+        <rdfs:label>has task definition</rdfs:label>
+        <rdfs:comment>Relates ECS services/tasks to their task definition</rdfs:comment>
+        <rdfs:domain rdf:resource="#ECSService"/>
+        <rdfs:range rdf:resource="#ECSTaskDefinition"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#taskDefinitionOf">
+        <rdfs:label>task definition of</rdfs:label>
+        <rdfs:comment>Inverse of has task definition</rdfs:comment>
+        <owl:inverseOf rdf:resource="#hasTaskDefinition"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#usesContainerImage">
+        <rdfs:label>uses container image</rdfs:label>
+        <rdfs:comment>Relates container services to their container images</rdfs:comment>
+        <rdfs:range rdf:resource="#ContainerImage"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#containerImageUsedBy">
+        <rdfs:label>container image used by</rdfs:label>
+        <rdfs:comment>Inverse of uses container image</rdfs:comment>
+        <owl:inverseOf rdf:resource="#usesContainerImage"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#storedInRepository">
+        <rdfs:label>stored in repository</rdfs:label>
+        <rdfs:comment>Relates container images to their ECR repository</rdfs:comment>
+        <rdfs:domain rdf:resource="#ContainerImage"/>
+        <rdfs:range rdf:resource="#ECRRepository"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#repositoryContains">
+        <rdfs:label>repository contains</rdfs:label>
+        <rdfs:comment>Inverse of stored in repository</rdfs:comment>
+        <owl:inverseOf rdf:resource="#storedInRepository"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasNodeGroup">
+        <rdfs:label>has node group</rdfs:label>
+        <rdfs:comment>Relates EKS clusters to their node groups</rdfs:comment>
+        <rdfs:domain rdf:resource="#EKSCluster"/>
+        <rdfs:range rdf:resource="#EKSNodeGroup"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#nodeGroupOf">
+        <rdfs:label>node group of</rdfs:label>
+        <rdfs:comment>Inverse of has node group</rdfs:comment>
+        <owl:inverseOf rdf:resource="#hasNodeGroup"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#runsPod">
+        <rdfs:label>runs pod</rdfs:label>
+        <rdfs:comment>Relates EKS node groups or clusters to their pods</rdfs:comment>
+        <rdfs:range rdf:resource="#EKSPod"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#podRunsOn">
+        <rdfs:label>pod runs on</rdfs:label>
+        <rdfs:comment>Inverse of runs pod</rdfs:comment>
+        <owl:inverseOf rdf:resource="#runsPod"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#usesFargate">
+        <rdfs:label>uses Fargate</rdfs:label>
+        <rdfs:comment>Indicates that a service uses AWS Fargate for serverless containers</rdfs:comment>
+        <rdfs:domain rdf:resource="#ECSService"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#appliesTo">
+        <rdfs:label>applies to</rdfs:label>
+        <rdfs:comment>Indicates that a policy or security group applies to a resource</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <!-- API & Integration Object Properties -->
+    <owl:ObjectProperty rdf:about="#hasStage">
+        <rdfs:label>has stage</rdfs:label>
+        <rdfs:comment>Relates an API Gateway to its deployment stages</rdfs:comment>
+        <rdfs:domain rdf:resource="#APIGateway"/>
+        <rdfs:range rdf:resource="#APIGatewayStage"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#stageOf">
+        <rdfs:label>stage of</rdfs:label>
+        <rdfs:comment>Inverse of has stage</rdfs:comment>
+        <owl:inverseOf rdf:resource="#hasStage"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasResource">
+        <rdfs:label>has resource</rdfs:label>
+        <rdfs:comment>Relates an API Gateway to its resources</rdfs:comment>
+        <rdfs:domain rdf:resource="#APIGateway"/>
+        <rdfs:range rdf:resource="#APIGatewayResource"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#resourceOf">
+        <rdfs:label>resource of</rdfs:label>
+        <rdfs:comment>Inverse of has resource</rdfs:comment>
+        <owl:inverseOf rdf:resource="#hasResource"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasMethod">
+        <rdfs:label>has method</rdfs:label>
+        <rdfs:comment>Relates an API Gateway resource to its HTTP methods</rdfs:comment>
+        <rdfs:domain rdf:resource="#APIGatewayResource"/>
+        <rdfs:range rdf:resource="#APIGatewayMethod"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#methodOf">
+        <rdfs:label>method of</rdfs:label>
+        <rdfs:comment>Inverse of has method</rdfs:comment>
+        <owl:inverseOf rdf:resource="#hasMethod"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#integrationWith">
+        <rdfs:label>integration with</rdfs:label>
+        <rdfs:comment>Indicates integration between API Gateway methods and backend services</rdfs:comment>
+        <rdfs:domain rdf:resource="#APIGatewayMethod"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#triggersStepFunction">
+        <rdfs:label>triggers step function</rdfs:label>
+        <rdfs:comment>Indicates that a service triggers a Step Function execution</rdfs:comment>
+        <rdfs:range rdf:resource="#StepFunction"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#stepFunctionTriggeredBy">
+        <rdfs:label>step function triggered by</rdfs:label>
+        <rdfs:comment>Inverse of triggers step function</rdfs:comment>
+        <owl:inverseOf rdf:resource="#triggersStepFunction"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasActivity">
+        <rdfs:label>has activity</rdfs:label>
+        <rdfs:comment>Relates a Step Function to its activities</rdfs:comment>
+        <rdfs:domain rdf:resource="#StepFunction"/>
+        <rdfs:range rdf:resource="#StepFunctionActivity"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#activityOf">
+        <rdfs:label>activity of</rdfs:label>
+        <rdfs:comment>Inverse of has activity</rdfs:comment>
+        <owl:inverseOf rdf:resource="#hasActivity"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#publishesToTopic">
+        <rdfs:label>publishes to topic</rdfs:label>
+        <rdfs:comment>Indicates that a service publishes messages to an SNS topic</rdfs:comment>
+        <rdfs:range rdf:resource="#SNSTopic"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#topicReceivesFrom">
+        <rdfs:label>topic receives from</rdfs:label>
+        <rdfs:comment>Inverse of publishes to topic</rdfs:comment>
+        <owl:inverseOf rdf:resource="#publishesToTopic"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#subscribesTo">
+        <rdfs:label>subscribes to</rdfs:label>
+        <rdfs:comment>Indicates that a service subscribes to an SNS topic or SQS queue</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasSubscriber">
+        <rdfs:label>has subscriber</rdfs:label>
+        <rdfs:comment>Inverse of subscribes to</rdfs:comment>
+        <owl:inverseOf rdf:resource="#subscribesTo"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#sendsToQueue">
+        <rdfs:label>sends to queue</rdfs:label>
+        <rdfs:comment>Indicates that a service sends messages to an SQS queue</rdfs:comment>
+        <rdfs:range rdf:resource="#SQSQueue"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#queueReceivesFrom">
+        <rdfs:label>queue receives from</rdfs:label>
+        <rdfs:comment>Inverse of sends to queue</rdfs:comment>
+        <owl:inverseOf rdf:resource="#sendsToQueue"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasRule">
+        <rdfs:label>has rule</rdfs:label>
+        <rdfs:comment>Relates an EventBridge to its rules</rdfs:comment>
+        <rdfs:domain rdf:resource="#EventBridge"/>
+        <rdfs:range rdf:resource="#EventBridgeRule"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#ruleOf">
+        <rdfs:label>rule of</rdfs:label>
+        <rdfs:comment>Inverse of has rule</rdfs:comment>
+        <owl:inverseOf rdf:resource="#hasRule"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasTarget">
+        <rdfs:label>has target</rdfs:label>
+        <rdfs:comment>Relates an EventBridge rule to its targets</rdfs:comment>
+        <rdfs:domain rdf:resource="#EventBridgeRule"/>
+        <rdfs:range rdf:resource="#EventBridgeTarget"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#targetOf">
+        <rdfs:label>target of</rdfs:label>
+        <rdfs:comment>Inverse of has target</rdfs:comment>
+        <owl:inverseOf rdf:resource="#hasTarget"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#routesEventTo">
+        <rdfs:label>routes event to</rdfs:label>
+        <rdfs:comment>Indicates event routing from EventBridge to target services</rdfs:comment>
+        <rdfs:domain rdf:resource="#EventBridge"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#receivesEventFrom">
+        <rdfs:label>receives event from</rdfs:label>
+        <rdfs:comment>Inverse of routes event to</rdfs:comment>
+        <owl:inverseOf rdf:resource="#routesEventTo"/>
+    </owl:ObjectProperty>
+
+    <!-- Temporal Relationship Properties -->
+    <owl:ObjectProperty rdf:about="#createdBefore">
+        <rdfs:label>created before</rdfs:label>
+        <rdfs:comment>Indicates temporal ordering of resource creation</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="#AWSResource"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#createdAfter">
+        <rdfs:label>created after</rdfs:label>
+        <rdfs:comment>Inverse of created before</rdfs:comment>
+        <owl:inverseOf rdf:resource="#createdBefore"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#replacedBy">
+        <rdfs:label>replaced by</rdfs:label>
+        <rdfs:comment>Indicates that one resource was replaced by another</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="#AWSResource"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#replaces">
+        <rdfs:label>replaces</rdfs:label>
+        <rdfs:comment>Inverse of replaced by</rdfs:comment>
+        <owl:inverseOf rdf:resource="#replacedBy"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#migratedFrom">
+        <rdfs:label>migrated from</rdfs:label>
+        <rdfs:comment>Indicates migration source for a resource</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="#AWSResource"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#migratedTo">
+        <rdfs:label>migrated to</rdfs:label>
+        <rdfs:comment>Inverse of migrated from</rdfs:comment>
+        <owl:inverseOf rdf:resource="#migratedFrom"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#succeeds">
+        <rdfs:label>succeeds</rdfs:label>
+        <rdfs:comment>Indicates logical succession relationship between resources</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="#AWSResource"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#precedes">
+        <rdfs:label>precedes</rdfs:label>
+        <rdfs:comment>Inverse of succeeds</rdfs:comment>
+        <owl:inverseOf rdf:resource="#succeeds"/>
+    </owl:ObjectProperty>
+
+    <!-- Cost Relationship Properties -->
+    <owl:ObjectProperty rdf:about="#incursChargeFor">
+        <rdfs:label>incurs charge for</rdfs:label>
+        <rdfs:comment>Indicates that one resource incurs costs for another</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="#AWSResource"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#chargedBy">
+        <rdfs:label>charged by</rdfs:label>
+        <rdfs:comment>Inverse of incurs charge for</rdfs:comment>
+        <owl:inverseOf rdf:resource="#incursChargeFor"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#optimizedBy">
+        <rdfs:label>optimized by</rdfs:label>
+        <rdfs:comment>Indicates cost or performance optimization relationships</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="#AWSResource"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#optimizes">
+        <rdfs:label>optimizes</rdfs:label>
+        <rdfs:comment>Inverse of optimized by</rdfs:comment>
+        <owl:inverseOf rdf:resource="#optimizedBy"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#sharesResourcesWith">
+        <rdfs:label>shares resources with</rdfs:label>
+        <rdfs:comment>Indicates resource sharing for cost efficiency</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="#AWSResource"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#allocatesCostTo">
+        <rdfs:label>allocates cost to</rdfs:label>
+        <rdfs:comment>Indicates cost allocation relationships</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="#AWSResource"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#receivesCostFrom">
+        <rdfs:label>receives cost from</rdfs:label>
+        <rdfs:comment>Inverse of allocates cost to</rdfs:comment>
+        <owl:inverseOf rdf:resource="#allocatesCostTo"/>
+    </owl:ObjectProperty>
+
+    <!-- Compliance Relationship Properties -->
+    <owl:ObjectProperty rdf:about="#compliesWith">
+        <rdfs:label>complies with</rdfs:label>
+        <rdfs:comment>Indicates compliance with standards, regulations, or policies</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#enforces">
+        <rdfs:label>enforces</rdfs:label>
+        <rdfs:comment>Indicates that a resource enforces compliance rules</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#enforcedBy">
+        <rdfs:label>enforced by</rdfs:label>
+        <rdfs:comment>Inverse of enforces</rdfs:comment>
+        <owl:inverseOf rdf:resource="#enforces"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#auditedBy">
+        <rdfs:label>audited by</rdfs:label>
+        <rdfs:comment>Indicates audit relationships for compliance tracking</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="#AWSResource"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#audits">
+        <rdfs:label>audits</rdfs:label>
+        <rdfs:comment>Inverse of audited by</rdfs:comment>
+        <owl:inverseOf rdf:resource="#auditedBy"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#violates">
+        <rdfs:label>violates</rdfs:label>
+        <rdfs:comment>Indicates compliance violations</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#requiresApprovalFrom">
+        <rdfs:label>requires approval from</rdfs:label>
+        <rdfs:comment>Indicates governance approval requirements</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="#AWSResource"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#approvesUseOf">
+        <rdfs:label>approves use of</rdfs:label>
+        <rdfs:comment>Inverse of requires approval from</rdfs:comment>
+        <owl:inverseOf rdf:resource="#requiresApprovalFrom"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#controlledBy">
+        <rdfs:label>controlled by</rdfs:label>
+        <rdfs:comment>Indicates control relationships for governance</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="#AWSResource"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#controls">
+        <rdfs:label>controls</rdfs:label>
+        <rdfs:comment>Inverse of controlled by</rdfs:comment>
+        <owl:inverseOf rdf:resource="#controlledBy"/>
+    </owl:ObjectProperty>
     
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -367,6 +761,333 @@
         <rdfs:domain rdf:resource="#AWSResource"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
     </owl:DatatypeProperty>
+
+    <!-- Container Properties -->
+    <owl:DatatypeProperty rdf:about="#launchType">
+        <rdfs:label>launch type</rdfs:label>
+        <rdfs:comment>ECS launch type (EC2 or FARGATE)</rdfs:comment>
+        <rdfs:domain rdf:resource="#ECSService"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#desiredCount">
+        <rdfs:label>desired count</rdfs:label>
+        <rdfs:comment>Desired number of running tasks in an ECS service</rdfs:comment>
+        <rdfs:domain rdf:resource="#ECSService"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#taskDefinitionRevision">
+        <rdfs:label>task definition revision</rdfs:label>
+        <rdfs:comment>Revision number of the task definition</rdfs:comment>
+        <rdfs:domain rdf:resource="#ECSTaskDefinition"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#containerPort">
+        <rdfs:label>container port</rdfs:label>
+        <rdfs:comment>Port exposed by container</rdfs:comment>
+        <rdfs:domain rdf:resource="#ECSTaskDefinition"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#cpu">
+        <rdfs:label>CPU units</rdfs:label>
+        <rdfs:comment>CPU units allocated to container or task</rdfs:comment>
+        <rdfs:domain rdf:resource="#ECSTaskDefinition"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#memory">
+        <rdfs:label>memory</rdfs:label>
+        <rdfs:comment>Memory allocated to container or task in MB</rdfs:comment>
+        <rdfs:domain rdf:resource="#ECSTaskDefinition"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#kubernetesVersion">
+        <rdfs:label>Kubernetes version</rdfs:label>
+        <rdfs:comment>Version of Kubernetes running on EKS cluster</rdfs:comment>
+        <rdfs:domain rdf:resource="#EKSCluster"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#nodeInstanceType">
+        <rdfs:label>node instance type</rdfs:label>
+        <rdfs:comment>EC2 instance type for EKS worker nodes</rdfs:comment>
+        <rdfs:domain rdf:resource="#EKSNodeGroup"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#minNodes">
+        <rdfs:label>minimum nodes</rdfs:label>
+        <rdfs:comment>Minimum number of nodes in the node group</rdfs:comment>
+        <rdfs:domain rdf:resource="#EKSNodeGroup"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#maxNodes">
+        <rdfs:label>maximum nodes</rdfs:label>
+        <rdfs:comment>Maximum number of nodes in the node group</rdfs:comment>
+        <rdfs:domain rdf:resource="#EKSNodeGroup"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#desiredNodes">
+        <rdfs:label>desired nodes</rdfs:label>
+        <rdfs:comment>Desired number of nodes in the node group</rdfs:comment>
+        <rdfs:domain rdf:resource="#EKSNodeGroup"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#imageTag">
+        <rdfs:label>image tag</rdfs:label>
+        <rdfs:comment>Tag of the container image</rdfs:comment>
+        <rdfs:domain rdf:resource="#ContainerImage"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#imageDigest">
+        <rdfs:label>image digest</rdfs:label>
+        <rdfs:comment>SHA256 digest of the container image</rdfs:comment>
+        <rdfs:domain rdf:resource="#ContainerImage"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#repositoryURI">
+        <rdfs:label>repository URI</rdfs:label>
+        <rdfs:comment>URI of the ECR repository</rdfs:comment>
+        <rdfs:domain rdf:resource="#ECRRepository"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <!-- API & Integration Properties -->
+    <owl:DatatypeProperty rdf:about="#apiGatewayType">
+        <rdfs:label>API Gateway type</rdfs:label>
+        <rdfs:comment>Type of API Gateway (REST, HTTP, or WebSocket)</rdfs:comment>
+        <rdfs:domain rdf:resource="#APIGateway"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#stageName">
+        <rdfs:label>stage name</rdfs:label>
+        <rdfs:comment>Name of the API Gateway deployment stage</rdfs:comment>
+        <rdfs:domain rdf:resource="#APIGatewayStage"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#httpMethod">
+        <rdfs:label>HTTP method</rdfs:label>
+        <rdfs:comment>HTTP method (GET, POST, PUT, DELETE, etc.)</rdfs:comment>
+        <rdfs:domain rdf:resource="#APIGatewayMethod"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#resourcePath">
+        <rdfs:label>resource path</rdfs:label>
+        <rdfs:comment>API Gateway resource path</rdfs:comment>
+        <rdfs:domain rdf:resource="#APIGatewayResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#integrationMethod">
+        <rdfs:label>integration method</rdfs:label>
+        <rdfs:comment>Method for API Gateway backend integration</rdfs:comment>
+        <rdfs:domain rdf:resource="#APIGatewayMethod"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#stateMachineDefinition">
+        <rdfs:label>state machine definition</rdfs:label>
+        <rdfs:comment>JSON definition of the Step Function state machine</rdfs:comment>
+        <rdfs:domain rdf:resource="#StepFunction"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#stateMachineType">
+        <rdfs:label>state machine type</rdfs:label>
+        <rdfs:comment>Type of Step Function (STANDARD or EXPRESS)</rdfs:comment>
+        <rdfs:domain rdf:resource="#StepFunction"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#eventPattern">
+        <rdfs:label>event pattern</rdfs:label>
+        <rdfs:comment>EventBridge rule event pattern in JSON</rdfs:comment>
+        <rdfs:domain rdf:resource="#EventBridgeRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#scheduleExpression">
+        <rdfs:label>schedule expression</rdfs:label>
+        <rdfs:comment>Cron or rate expression for EventBridge scheduled rules</rdfs:comment>
+        <rdfs:domain rdf:resource="#EventBridgeRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#queueType">
+        <rdfs:label>queue type</rdfs:label>
+        <rdfs:comment>SQS queue type (Standard or FIFO)</rdfs:comment>
+        <rdfs:domain rdf:resource="#SQSQueue"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#visibilityTimeoutSeconds">
+        <rdfs:label>visibility timeout seconds</rdfs:label>
+        <rdfs:comment>SQS message visibility timeout in seconds</rdfs:comment>
+        <rdfs:domain rdf:resource="#SQSQueue"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#messageRetentionPeriod">
+        <rdfs:label>message retention period</rdfs:label>
+        <rdfs:comment>SQS message retention period in seconds</rdfs:comment>
+        <rdfs:domain rdf:resource="#SQSQueue"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#subscriptionProtocol">
+        <rdfs:label>subscription protocol</rdfs:label>
+        <rdfs:comment>SNS subscription protocol (email, sms, http, https, sqs, lambda)</rdfs:comment>
+        <rdfs:domain rdf:resource="#SNSSubscription"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#endpoint">
+        <rdfs:label>endpoint</rdfs:label>
+        <rdfs:comment>SNS subscription endpoint (email address, phone number, URL, etc.)</rdfs:comment>
+        <rdfs:domain rdf:resource="#SNSSubscription"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#eventBusName">
+        <rdfs:label>event bus name</rdfs:label>
+        <rdfs:comment>Name of the EventBridge event bus</rdfs:comment>
+        <rdfs:domain rdf:resource="#EventBridge"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <!-- Temporal Data Properties -->
+    <owl:DatatypeProperty rdf:about="#lastModifiedDate">
+        <rdfs:label>last modified date</rdfs:label>
+        <rdfs:comment>Date when the resource was last modified</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#deprecatedDate">
+        <rdfs:label>deprecated date</rdfs:label>
+        <rdfs:comment>Date when the resource was deprecated</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#scheduledDeletion">
+        <rdfs:label>scheduled deletion</rdfs:label>
+        <rdfs:comment>Scheduled deletion date for the resource</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#retentionPeriodDays">
+        <rdfs:label>retention period days</rdfs:label>
+        <rdfs:comment>Number of days to retain the resource or its data</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+
+    <!-- Cost Data Properties -->
+    <owl:DatatypeProperty rdf:about="#monthlyCostUSD">
+        <rdfs:label>monthly cost USD</rdfs:label>
+        <rdfs:comment>Estimated monthly cost in USD</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#costCenter">
+        <rdfs:label>cost center</rdfs:label>
+        <rdfs:comment>Cost center identifier for billing allocation</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#billingMode">
+        <rdfs:label>billing mode</rdfs:label>
+        <rdfs:comment>Billing mode (on-demand, reserved, spot, etc.)</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#reservationId">
+        <rdfs:label>reservation ID</rdfs:label>
+        <rdfs:comment>Reserved instance or capacity reservation identifier</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#budgetAllocated">
+        <rdfs:label>budget allocated</rdfs:label>
+        <rdfs:comment>Budget allocated for this resource in USD</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+    </owl:DatatypeProperty>
+
+    <!-- Compliance Data Properties -->
+    <owl:DatatypeProperty rdf:about="#complianceStandard">
+        <rdfs:label>compliance standard</rdfs:label>
+        <rdfs:comment>Compliance standard or regulation (SOC2, HIPAA, PCI-DSS, etc.)</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#complianceStatus">
+        <rdfs:label>compliance status</rdfs:label>
+        <rdfs:comment>Current compliance status (compliant, non-compliant, pending, exempt)</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#lastAuditDate">
+        <rdfs:label>last audit date</rdfs:label>
+        <rdfs:comment>Date of the last compliance audit</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#nextAuditDate">
+        <rdfs:label>next audit date</rdfs:label>
+        <rdfs:comment>Scheduled date for the next compliance audit</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#dataClassification">
+        <rdfs:label>data classification</rdfs:label>
+        <rdfs:comment>Data classification level (public, internal, confidential, restricted)</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#encryptionRequired">
+        <rdfs:label>encryption required</rdfs:label>
+        <rdfs:comment>Whether encryption is required for compliance</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#approvalRequired">
+        <rdfs:label>approval required</rdfs:label>
+        <rdfs:comment>Whether approval is required for resource creation or modification</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#environment">
+        <rdfs:label>environment</rdfs:label>
+        <rdfs:comment>Environment classification (dev, test, staging, production)</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
     
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -430,6 +1151,12 @@
         <rdfs:subClassOf rdf:resource="#AWSResource"/>
     </owl:Class>
 
+    <owl:Class rdf:about="#IntegrationResource">
+        <rdfs:label>Integration Resource</rdfs:label>
+        <rdfs:comment>Base class for application integration and messaging resources</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#AWSResource"/>
+    </owl:Class>
+
     <!-- Infrastructure Classes -->
     <owl:Class rdf:about="#AWSAccount">
         <rdfs:label>AWS Account</rdfs:label>
@@ -478,6 +1205,140 @@
         <rdfs:label>Lambda Function</rdfs:label>
         <rdfs:comment>An AWS Lambda function</rdfs:comment>
         <rdfs:subClassOf rdf:resource="#ComputeResource"/>
+    </owl:Class>
+
+    <!-- Container Classes -->
+    <owl:Class rdf:about="#ECSCluster">
+        <rdfs:label>ECS Cluster</rdfs:label>
+        <rdfs:comment>An Amazon Elastic Container Service cluster</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#ComputeResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ECSService">
+        <rdfs:label>ECS Service</rdfs:label>
+        <rdfs:comment>An ECS service that runs and maintains tasks</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#ComputeResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ECSTask">
+        <rdfs:label>ECS Task</rdfs:label>
+        <rdfs:comment>An ECS task running one or more containers</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#ComputeResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ECSTaskDefinition">
+        <rdfs:label>ECS Task Definition</rdfs:label>
+        <rdfs:comment>A blueprint for ECS tasks specifying containers and resources</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#ComputeResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#EKSCluster">
+        <rdfs:label>EKS Cluster</rdfs:label>
+        <rdfs:comment>An Amazon Elastic Kubernetes Service cluster</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#ComputeResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#EKSNodeGroup">
+        <rdfs:label>EKS Node Group</rdfs:label>
+        <rdfs:comment>A group of EC2 instances that serve as worker nodes in an EKS cluster</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#ComputeResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#EKSPod">
+        <rdfs:label>EKS Pod</rdfs:label>
+        <rdfs:comment>A Kubernetes pod running in an EKS cluster</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#ComputeResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#FargateService">
+        <rdfs:label>Fargate Service</rdfs:label>
+        <rdfs:comment>A serverless container service using AWS Fargate</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#ComputeResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ECRRepository">
+        <rdfs:label>ECR Repository</rdfs:label>
+        <rdfs:comment>An Amazon Elastic Container Registry repository for container images</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#StorageResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ContainerImage">
+        <rdfs:label>Container Image</rdfs:label>
+        <rdfs:comment>A container image stored in ECR or referenced by container services</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#StorageResource"/>
+    </owl:Class>
+
+    <!-- API & Integration Classes -->
+    <owl:Class rdf:about="#APIGateway">
+        <rdfs:label>API Gateway</rdfs:label>
+        <rdfs:comment>An Amazon API Gateway for creating, publishing, maintaining, monitoring, and securing REST and WebSocket APIs</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#APIGatewayStage">
+        <rdfs:label>API Gateway Stage</rdfs:label>
+        <rdfs:comment>A logical reference to a lifecycle state of an API Gateway deployment</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#APIGatewayResource">
+        <rdfs:label>API Gateway Resource</rdfs:label>
+        <rdfs:comment>A logical entity that an app developer accesses via API Gateway</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#APIGatewayMethod">
+        <rdfs:label>API Gateway Method</rdfs:label>
+        <rdfs:comment>An HTTP method for an API Gateway resource</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#StepFunction">
+        <rdfs:label>Step Function</rdfs:label>
+        <rdfs:comment>An AWS Step Functions state machine for coordinating distributed services</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#ComputeResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#StepFunctionActivity">
+        <rdfs:label>Step Function Activity</rdfs:label>
+        <rdfs:comment>A Step Functions activity representing a task that can be implemented by external workers</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#ComputeResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#EventBridge">
+        <rdfs:label>EventBridge</rdfs:label>
+        <rdfs:comment>An Amazon EventBridge event bus for application integration using events</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#IntegrationResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#EventBridgeRule">
+        <rdfs:label>EventBridge Rule</rdfs:label>
+        <rdfs:comment>An EventBridge rule that matches incoming events and routes them to targets</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#IntegrationResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#SQSQueue">
+        <rdfs:label>SQS Queue</rdfs:label>
+        <rdfs:comment>An Amazon Simple Queue Service message queue</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#IntegrationResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#SNSTopic">
+        <rdfs:label>SNS Topic</rdfs:label>
+        <rdfs:comment>An Amazon Simple Notification Service topic for pub/sub messaging</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#IntegrationResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#SNSSubscription">
+        <rdfs:label>SNS Subscription</rdfs:label>
+        <rdfs:comment>An SNS subscription connecting a topic to an endpoint</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#IntegrationResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#EventBridgeTarget">
+        <rdfs:label>EventBridge Target</rdfs:label>
+        <rdfs:comment>A target for EventBridge rule events</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#IntegrationResource"/>
     </owl:Class>
 
     <!-- Storage Classes -->
@@ -679,5 +1540,175 @@
         <rdfs:comment>A CloudTrail log entry</rdfs:comment>
         <rdfs:subClassOf rdf:resource="#MonitoringResource"/>
     </owl:Class>
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Semantic Axioms: Disjoint Classes and Additional Constraints
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <!-- Disjoint Base Resource Classes -->
+    <owl:AllDisjointClasses>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#ComputeResource"/>
+            <rdf:Description rdf:about="#StorageResource"/>
+            <rdf:Description rdf:about="#NetworkingResource"/>
+            <rdf:Description rdf:about="#SecurityResource"/>
+            <rdf:Description rdf:about="#IdentityResource"/>
+            <rdf:Description rdf:about="#DatabaseResource"/>
+            <rdf:Description rdf:about="#MonitoringResource"/>
+            <rdf:Description rdf:about="#IntegrationResource"/>
+        </owl:members>
+    </owl:AllDisjointClasses>
+
+    <!-- Disjoint IAM Policy Types -->
+    <owl:AllDisjointClasses>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#ManagedPolicy"/>
+            <rdf:Description rdf:about="#InlinePolicy"/>
+        </owl:members>
+    </owl:AllDisjointClasses>
+
+    <!-- Disjoint Managed Policy Types -->
+    <owl:AllDisjointClasses>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#AWSManagedPolicy"/>
+            <rdf:Description rdf:about="#CustomerManagedPolicy"/>
+        </owl:members>
+    </owl:AllDisjointClasses>
+
+    <!-- Disjoint Container Service Types -->
+    <owl:AllDisjointClasses>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#ECSCluster"/>
+            <rdf:Description rdf:about="#EKSCluster"/>
+            <rdf:Description rdf:about="#FargateService"/>
+        </owl:members>
+    </owl:AllDisjointClasses>
+
+    <!-- Enhanced Cardinality Constraints -->
+    
+    <!-- API Gateway must have at least one stage -->
+    <owl:Class rdf:about="#APIGateway">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasStage"/>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <!-- ECS Service must have exactly one task definition -->
+    <owl:Class rdf:about="#ECSService">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasTaskDefinition"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <!-- ECS Service must run on exactly one cluster -->
+    <owl:Class rdf:about="#ECSService">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#runsOnCluster"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <!-- Step Function must have at least one activity or state -->
+    <owl:Class rdf:about="#StepFunction">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasActivity"/>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <!-- EventBridge Rule must have at least one target -->
+    <owl:Class rdf:about="#EventBridgeRule">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasTarget"/>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <!-- IAM User can belong to multiple groups -->
+    <owl:Class rdf:about="#IAMUser">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#memberOf"/>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <!-- VPC must be in exactly one region -->
+    <owl:Class rdf:about="#VPC">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#belongsToRegion"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <!-- Container Image must be stored in exactly one repository -->
+    <owl:Class rdf:about="#ContainerImage">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#storedInRepository"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <!-- Functional Properties (can have at most one value) -->
+    
+    <!-- Each resource has exactly one ARN -->
+    <owl:FunctionalProperty rdf:about="#arn"/>
+    
+    <!-- Each resource has exactly one creation date -->
+    <owl:FunctionalProperty rdf:about="#creationDate"/>
+    
+    <!-- Each API Gateway has exactly one type -->
+    <owl:FunctionalProperty rdf:about="#apiGatewayType"/>
+    
+    <!-- Each Step Function has exactly one type -->
+    <owl:FunctionalProperty rdf:about="#stateMachineType"/>
+    
+    <!-- Each SQS Queue has exactly one type -->
+    <owl:FunctionalProperty rdf:about="#queueType"/>
+
+    <!-- Inverse Functional Properties (at most one subject can have this relationship to any object) -->
+    
+    <!-- Each ARN uniquely identifies one resource -->
+    <owl:InverseFunctionalProperty rdf:about="#arn"/>
+
+    <!-- Symmetric Properties -->
+    
+    <!-- Resource sharing is symmetric -->
+    <owl:SymmetricProperty rdf:about="#sharesResourcesWith"/>
+
+    <!-- Transitive Properties -->
+    
+    <!-- Control relationships are transitive -->
+    <owl:TransitiveProperty rdf:about="#controls"/>
+    
+    <!-- Dependency relationships are transitive -->
+    <owl:TransitiveProperty rdf:about="#dependsOn"/>
+    
+    <!-- Temporal ordering is transitive -->
+    <owl:TransitiveProperty rdf:about="#createdBefore"/>
+    
+    <!-- Succession is transitive -->
+    <owl:TransitiveProperty rdf:about="#succeeds"/>
 
 </rdf:RDF> 

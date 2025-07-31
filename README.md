@@ -1,457 +1,276 @@
 # AWS Ontology
 
-This project develops an OWL (Web Ontology Language) ontology for AWS (Amazon Web Services) objects and their relationships. The ontology aims to provide a formal, machine-readable representation of AWS services, resources, and their interconnections, with a particular focus on Identity and Access Management (IAM) configurations.
+A comprehensive semantic ontology for Amazon Web Services (AWS) resources and their relationships. This project provides a formal OWL ontology that models AWS infrastructure, services, and their complex interdependencies for advanced analysis, compliance monitoring, and automation.
 
-## Project Overview
+## 🎯 Overview
 
-The AWS Ontology project creates a comprehensive semantic model of AWS infrastructure and services. This ontology can be used for:
-- Knowledge representation of AWS resources and relationships
-- Automated reasoning about AWS architectures
-- Semantic querying of AWS configurations
-- Security analysis and compliance validation
-- Graph database transformation and analysis
-- Documentation and learning resources
+The AWS Ontology is a production-ready semantic web resource that:
 
-## Repository Structure
+- **Models 70+ AWS resource types** across compute, storage, networking, containers, API services, and integration
+- **Defines 150+ relationships** including temporal, cost, and compliance associations
+- **Provides comprehensive examples** with real-world AWS configurations
+- **Supports multiple formats** (OWL/XML, Turtle, with format synchronization)
+- **Includes semantic constraints** (cardinality, disjoint classes, property characteristics)
+- **Offers testing framework** for quality assurance and validation
 
-```
-.
-├── README.md                 # Project documentation
-├── LICENSE                   # MIT License
-├── requirements.txt          # Python dependencies for tools
-├── Makefile                  # Common tasks and commands
-├── .githooks/
-│   └── pre-commit           # Git pre-commit hook for sync checking
-├── docs/
-│   ├── PRD.md               # Product Requirements Document
-│   ├── MAINTENANCE_STRATEGY.md # Detailed maintenance processes
-│   └── USAGE_GUIDE.md       # Step-by-step usage instructions
-├── ontology/
-│   ├── aws.owl              # Ontology in OWL/XML format
-│   ├── aws.ttl              # Ontology in Turtle format
-│   └── examples.ttl         # Example instances in Turtle format
-├── tests/
-│   └── test_format_sync.py  # Synchronization test suite
-└── tools/
-    ├── monitor_aws_changes.py # AWS change monitoring tool
-    ├── sync_formats.py      # Format synchronization utility
-    └── setup_git_hooks.py   # Git hooks installation script
-```
+## 📊 Current Metrics
 
-## Ontology Components
+| Metric | Count | Growth |
+|--------|-------|--------|
+| **Total Triples** | 1,095 | +84% |
+| **Classes** | 71 | +103% |
+| **Object Properties** | 93 | +107% |
+| **Data Properties** | 62 | +148% |
+| **Example Instances** | 390+ | New |
 
-### Core Classes
-- Infrastructure (Account, Region, AZ)
-- Compute Resources (EC2, Lambda)
-- Storage Resources (S3, EBS)
-- Networking Resources (VPC, Subnet)
-- Identity Resources (Users, Roles, Policies)
-- Database Resources (RDS, DynamoDB)
-- Monitoring Resources (CloudWatch, CloudTrail)
+## 🏗️ Ontology Structure
 
-### IAM-Specific Components
-- Policy Types
-  - Managed Policies (AWS and Customer)
-  - Inline Policies
-  - Permission Boundaries
-  - Trust Policies
-  - Service Control Policies
-- Policy Elements
-  - Statements
-  - Effects
-  - Actions
-  - Resources
-  - Conditions
+### Core Service Categories
+- **🔧 Container Services**: ECS, EKS, Fargate, ECR
+- **🔗 API & Integration**: API Gateway, Step Functions, EventBridge, SNS, SQS
+- **💻 Compute**: EC2, Lambda, Auto Scaling
+- **💾 Storage**: S3, EBS, RDS
+- **🌐 Networking**: VPC, Security Groups, Load Balancers
+- **🔐 Identity & Access**: IAM Users, Roles, Policies
+- **📊 Monitoring**: CloudWatch, CloudTrail
 
-### Relationships
-- Structural (contains, attachedTo)
-- Access Control (hasPolicyAttachment, memberOf)
-- Trust (hasTrustRelationship)
-- Infrastructure (belongsToVPC, hasRegion)
+### Advanced Relationship Types
+- **⏰ Temporal**: `createdBefore`, `replacedBy`, `migratedFrom`
+- **💰 Cost**: `incursChargeFor`, `optimizedBy`, `allocatesCostTo`
+- **🛡️ Compliance**: `compliesWith`, `auditedBy`, `controlledBy`
 
-## File Formats
+## 🚀 Quick Start
 
-The ontology is maintained in two formats:
-1. **OWL/XML** (`aws.owl`): Standard format for OWL tools
-2. **Turtle** (`aws.ttl`): Human-readable format for easier editing
+### Prerequisites
+- Python 3.8+
+- RDF processing tools (rdflib)
+- Optional: Protégé for visual exploration
 
-Both formats are kept in sync and contain identical information. Choose the format that best suits your tools and needs.
-
-## Testing and Quality Assurance
-
-The project includes a comprehensive test suite to ensure ontology quality, consistency, and performance:
-
-### Test Categories
-
-#### 1. Format Synchronization Testing
-Ensures OWL and TTL formats remain synchronized:
+### Installation
 
 ```bash
-# Run synchronization tests
-make test-sync
+# Clone the repository
+git clone https://github.com/ArthurKeen/AWS_Ontology.git
+cd AWS_Ontology
 
-# Check synchronization status
-make sync-check
-```
+# Install dependencies
+pip install -r requirements.txt
 
-**Tests include:**
-- File existence and parseability
-- Semantic equivalence between formats
-- Version consistency
-- Triple count matching
-- Property count matching
+# Verify ontology integrity
+python tools/sync_formats.py check
 
-#### 2. Ontology Quality Testing
-Validates ontology structure, consistency, and completeness:
-
-```bash
 # Run quality tests
-make test-quality
+python -m unittest tests.test_ontology_quality -v
 ```
 
-**Tests include:**
-- **Metadata Validation**: Proper ontology metadata (labels, comments, version)
-- **Class Consistency**: All classes have labels and comments
-- **Property Consistency**: All properties have labels and comments
-- **Domain/Range Validation**: Properties have appropriate domains and ranges
-- **Class Hierarchy**: Proper subclass relationships
-- **Inverse Properties**: Correct inverse property declarations
-- **Required Classes**: All PRD-specified classes present
-- **IAM Structure**: IAM-specific constraints and cardinalities
-- **OWL DL Compliance**: Basic OWL DL compliance checks
-- **Naming Conventions**: Consistent naming patterns
-- **Data Property Ranges**: Appropriate XSD type ranges
+## 📁 Repository Structure
 
-#### 3. Example Instance Validation
-Validates example instances against the ontology:
+```
+AWS_Ontology/
+├── ontology/
+│   ├── aws.owl           # Main ontology (OWL/XML format)
+│   ├── aws.ttl           # Turtle format (human-readable)
+│   └── examples.ttl      # Real-world example instances
+├── docs/
+│   ├── PRD.md           # Product Requirements Document
+│   ├── PROTEGE_GUIDE.md # Protégé exploration guide
+│   ├── SPARQL_EXAMPLES.md # 22 ready-to-use SPARQL queries
+│   └── USAGE_GUIDE.md   # Comprehensive usage documentation
+├── tests/               # Comprehensive test suite
+├── tools/               # Format synchronization utilities
+└── automation/         # AWS change monitoring tools
+```
+
+## 🔍 Protégé Integration
+
+Open the ontology in Protégé for visual exploration:
 
 ```bash
-# Run example validation tests
-make test-examples
+# Method 1: Direct open
+open ontology/aws.owl
+
+# Method 2: Manual open in Protégé
+# File → Open → ontology/aws.owl
 ```
 
-**Tests include:**
-- **Type Validation**: All instances have proper types
-- **Property Usage**: Properties used in examples are defined in ontology
-- **IAM Structure**: IAM examples follow proper patterns
-- **Policy Documents**: Policy JSON structure validation
-- **Regional Structure**: Account/region/AZ hierarchy validation
-- **Data Property Values**: Appropriate value ranges and formats
-- **Reference Integrity**: No broken references between instances
-- **Consistent Labeling**: All instances have proper labels
+**Key Protégé Features:**
+- **Class Hierarchy**: Browse 71 AWS resource classes
+- **Object Properties**: Explore 93 relationship types
+- **Reasoning**: Validate with HermiT reasoner
+- **OntoGraf**: Visualize relationships graphically
+- **SPARQL**: Test queries from our examples
 
-#### 4. Performance Testing
-Measures ontology performance against PRD success metrics:
+See [`docs/PROTEGE_GUIDE.md`](docs/PROTEGE_GUIDE.md) for detailed exploration instructions.
 
+## 🧪 SPARQL Querying
+
+The ontology supports rich SPARQL queries for analysis:
+
+```sparql
+# Find all container services
+PREFIX : <http://www.semanticweb.org/aws-ontology#>
+SELECT ?service ?label WHERE {
+  ?service rdfs:subClassOf* :ComputeResource .
+  ?service rdfs:label ?label .
+  FILTER(CONTAINS(?label, "ECS") || CONTAINS(?label, "EKS"))
+}
+
+# Find services that can trigger Step Functions
+SELECT ?service ?stepFunction WHERE {
+  ?service :triggersStepFunction ?stepFunction
+}
+```
+
+See [`docs/SPARQL_EXAMPLES.md`](docs/SPARQL_EXAMPLES.md) for 22 ready-to-use queries.
+
+## 🔧 Tools & Utilities
+
+### Format Synchronization
 ```bash
-# Run performance tests
-make test-performance
+# Check OWL ↔ TTL synchronization
+python tools/sync_formats.py check
+
+# Convert OWL to TTL
+python tools/sync_formats.py owl-to-ttl
+
+# Convert TTL to OWL
+python tools/sync_formats.py ttl-to-owl
 ```
 
-**Tests include:**
-- **Loading Performance**: TTL/OWL loading under 5 seconds
-- **Memory Usage**: Peak memory usage under 500MB
-- **Query Performance**: Simple queries under 1 second
-- **Complex Queries**: Complex SPARQL queries under 2 seconds
-- **Graph Metrics**: Triple counts and structural metrics
-- **Reasoning Performance**: OWL RL reasoning performance (if available)
+### Quality Assurance
+```bash
+# Run all quality tests
+make test
 
-### Comprehensive Testing
+# Test specific aspects
+python -m unittest tests.test_ontology_quality -v
+python -m unittest tests.test_examples_validation -v
+python -m unittest tests.test_format_sync -v
+```
+
+### AWS Change Monitoring
+```bash
+# Monitor AWS service changes
+python tools/monitor_aws_changes.py
+
+# Schedule automated monitoring
+make schedule-setup
+```
+
+## 🎯 Use Cases
+
+### 1. Infrastructure Analysis
+- Model complex AWS architectures
+- Analyze service dependencies
+- Identify optimization opportunities
+
+### 2. Compliance Monitoring
+- Track compliance status across resources
+- Audit relationships and governance
+- Monitor policy adherence
+
+### 3. Cost Optimization
+- Analyze cost allocation relationships
+- Identify shared resources
+- Model optimization scenarios
+
+### 4. Security Analysis
+- Map IAM relationships and permissions
+- Analyze access patterns
+- Identify security risks
+
+### 5. Migration Planning
+- Model current and target states
+- Track migration relationships
+- Plan temporal sequences
+
+## 🧪 Testing Framework
+
+Comprehensive testing ensures ontology quality:
+
+- **Format Synchronization**: OWL ↔ TTL consistency
+- **Ontology Quality**: Class/property validation
+- **Example Validation**: Instance integrity
+- **Performance**: Loading and query benchmarks
 
 ```bash
 # Run all tests
-make test-all
-
-# Run essential tests only
 make test
+
+# Test categories
+make test-sync     # Format synchronization
+make test-quality  # Ontology structure
+make test-examples # Example validation
+make test-performance # Performance benchmarks
 ```
 
-### Git Pre-commit Hooks
-Automated synchronization checking via Git hooks prevents committing out-of-sync files:
+## 📈 Development Workflow
 
-```bash
-# Install Git hooks (one-time setup)
-make setup-hooks
-
-# The pre-commit hook will automatically:
-# - Check that both OWL and TTL files are staged together
-# - Verify semantic equivalence when rdflib is available
-# - Block commits if files are out of sync
-```
-
-**Hook Features:**
-- **Smart Detection**: Only runs when ontology files are being committed
-- **Both-File Enforcement**: Requires both OWL and TTL to be staged together
-- **Semantic Validation**: Checks actual content equivalence (when rdflib available)
-- **Graceful Degradation**: Falls back to basic checks if dependencies unavailable
-- **Clear Error Messages**: Provides specific guidance on how to fix issues
-
-### Test Dependencies
-
-The test suite requires Python dependencies:
-
-```bash
-# Install test dependencies
-make install-deps
-
-# Or manually in virtual environment
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-**Required packages:**
-- `rdflib>=6.0.0` - Core RDF processing
-- `owlready2>=0.45` - OWL ontology handling (optional)
-- `owlrl` - OWL RL reasoning (optional, for performance tests)
-
-### Continuous Integration
-
-The test suite is designed for CI/CD integration:
-- All tests return appropriate exit codes
-- Verbose output for debugging
-- Graceful handling of missing dependencies
-- Performance metrics reporting
-
-### Quality Metrics
-
-Tests validate against PRD success metrics:
-- **Loading Time**: < 5 seconds
-- **Memory Usage**: < 500MB peak
-- **Query Performance**: < 1-2 seconds
-- **Completeness**: All required classes and properties
-- **Consistency**: No logical contradictions
-- **Usability**: Proper documentation and examples
-
-### Synchronization Tools
-Use the included tools to maintain format synchronization:
-
-```bash
-# Convert TTL to OWL
-make sync-ttl-to-owl
-
-# Convert OWL to TTL
-make sync-owl-to-ttl
-
-# Manual synchronization check
-python tools/sync_formats.py check
-```
-
-## Example Data
-
-The `examples.ttl` file provides comprehensive examples of:
-- AWS account structures
-- IAM configurations
-- Policy definitions
-- Resource relationships
-- Infrastructure setups
-
-These examples demonstrate how to:
-- Model real AWS configurations
-- Represent complex relationships
-- Define policy documents
-- Structure security configurations
-
-## ArangoDB Integration
-
-The AWS Ontology can be integrated with ArangoDB graph databases for advanced querying and analysis. 
-
-**Note**: ArangoDB integration tools have been moved to a separate repository to maintain clear separation between the open-source ontology and proprietary implementation details.
-
-For ArangoDB transformations and graph database integration:
-- Contact the maintainer for access to integration tools
-- Supports RPT, PGT, and LPGT transformation patterns
-- Optimized for AWS resource relationship analysis
-
-The core ontology in this repository provides the semantic foundation that can be transformed into various graph database formats.
-
-## Quick Reference
-
-### Essential Commands
-
-```bash
-# Setup (one-time)
-make install-deps && make setup-hooks
-
-# Daily workflow
-make test           # Run essential tests
-make monitor-changes # Check AWS updates
-
-# Development
-make sync-check     # Verify OWL/TTL sync
-make test-all       # Full test suite
-make monitor-weekly # Comprehensive change report
-
-# Help
-make help          # Show all commands
-```
-
-### Key Files
-- `ontology/aws.ttl` - Main ontology (human-readable)
-- `ontology/aws.owl` - Main ontology (OWL/XML format)
-- `ontology/examples.ttl` - Example AWS resources
-- `docs/USAGE_GUIDE.md` - **Detailed usage instructions**
-- `docs/MAINTENANCE_STRATEGY.md` - Maintenance processes
-
-## Getting Started
-
-### Prerequisites
-- An OWL ontology editor (e.g., Protégé) for ontology viewing/editing
-- Python 3.7+ for transformation tools and testing
-- ArangoDB for graph database transformation (optional)
-- A SPARQL query engine for semantic queries
-- Basic understanding of AWS services
-
-### Using the Ontology
-1. Clone the repository
-2. Open either `aws.owl` or `aws.ttl` in your ontology editor
-3. Review `examples.ttl` for usage patterns
-4. Use SPARQL queries to analyze configurations
-
-### Setting Up Development Environment
-1. Install dependencies:
-   ```bash
-   # For macOS with Homebrew-managed Python
-   python3 -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
-   
-   # Or use the Makefile (requires virtual environment)
-   make install-deps
-   ```
-
-2. Set up Git hooks for automatic synchronization checking:
-   ```bash
-   make setup-hooks
-   ```
-
-3. Run tests to verify setup:
-   ```bash
-   make test
-   ```
-
-### Using ArangoDB Transformation
-1. Install and start ArangoDB
-2. Run transformation: `make transform`
-
-## Development
+### Adding New Services
+1. Define classes in `ontology/aws.owl`
+2. Add relationships and properties
+3. Create examples in `ontology/examples.ttl`
+4. Sync formats: `python tools/sync_formats.py sync`
+5. Run tests: `make test`
+6. Update documentation
 
 ### Contributing
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests: `make test`
-5. Submit a pull request
+2. Create feature branch
+3. Add ontology enhancements
+4. Include comprehensive tests
+5. Update documentation
+6. Submit pull request
 
-### Maintaining Formats
-When making changes:
-1. Update both `.owl` and `.ttl` formats
-2. Ensure formats remain synchronized using `make test-sync`
-3. Update examples if necessary
-4. Document significant changes
+## 🔗 Integration
 
-**Important**: The pre-commit hook will automatically check synchronization and prevent commits if files are out of sync.
+### Graph Databases
+The ontology can be transformed for graph database analysis:
+- ArangoDB integration (separate private repository)
+- Neo4j transformations
+- Custom RDF triplestores
 
-### Quality Assurance
-- **Automated**: Pre-commit hooks check synchronization automatically
-- **Manual**: Run synchronization tests before committing: `make test-sync`
-- **Recovery**: Use format conversion tools when needed: `make sync-ttl-to-owl` or `make sync-owl-to-ttl`
-- **Validation**: Validate OWL compliance with standard reasoners
+### Analysis Tools
+- Python: rdflib, owlready2
+- Java: Apache Jena, OWL API
+- JavaScript: rdflib.js
+- R: rdflib for R
 
-### Working with Git Hooks
-- **Install**: `make setup-hooks` (one-time setup per clone)
-- **Test**: Try committing only one ontology file to see the hook in action
-- **Disable temporarily**: Rename `.git/hooks/pre-commit` to `.git/hooks/pre-commit.disabled`
-- **Remove**: `rm .git/hooks/pre-commit`
+## 📚 Documentation
 
-## Future Development
+- **[PRD](docs/PRD.md)**: Product Requirements Document
+- **[Protégé Guide](docs/PROTEGE_GUIDE.md)**: Visual exploration
+- **[SPARQL Examples](docs/SPARQL_EXAMPLES.md)**: Query collection
+- **[Usage Guide](docs/USAGE_GUIDE.md)**: Comprehensive usage
+- **[Maintenance Strategy](docs/MAINTENANCE_STRATEGY.md)**: Update processes
 
-Planned enhancements include:
-- Additional AWS service coverage
-- More example configurations
-- AQL query templates for ArangoDB
-- SPARQL query templates
-- Validation rules and constraints
-- Advanced security analysis patterns
+## 🤝 Community
 
-## Contact
+### Questions & Support
+- Create GitHub issues for questions
+- Check existing documentation first
+- Provide minimal reproduction examples
 
-Project maintained by Arthur Keen
-GitHub: [@ArthurKeen](https://github.com/ArthurKeen)
+### Feature Requests
+- Submit detailed GitHub issues
+- Explain use case and benefits
+- Consider contributing implementation
 
-## License
+## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Maintenance and Updates
+## 🔄 Version History
 
-### Keeping Current with AWS Changes
+See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
-The ontology includes tools and processes to stay synchronized with AWS service evolution:
+### Latest Enhancements (v0.3.0)
+- ✅ Container Services (ECS, EKS, Fargate, ECR)
+- ✅ API & Integration Services (API Gateway, Step Functions, EventBridge)
+- ✅ Enhanced Relationships (temporal, cost, compliance)
+- ✅ Semantic Axioms (cardinality constraints, disjoint classes)
+- ✅ Protégé Integration & Documentation
 
-#### Automated Change Monitoring
-```bash
-# Monitor AWS What's New feed for recent changes
-make monitor-changes
+---
 
-# Generate comprehensive weekly report
-make monitor-weekly
-
-# Monitor all sources with detailed analysis
-make monitor-all
-```
-
-#### Change Detection Sources
-- **AWS What's New RSS Feed**: Primary source for new services and features
-- **CloudFormation Resource Types**: New resource types indicate service additions
-- **API Documentation**: Service-specific changes and new parameters
-
-#### Maintenance Schedule
-- **Daily**: Automated monitoring of AWS What's New
-- **Weekly**: Review and process low/medium priority changes
-- **Monthly**: Comprehensive service documentation review
-- **Quarterly**: Deep architectural review and testing
-- **As-needed**: Emergency updates for critical security/compliance changes
-
-#### Change Classification
-- **High Priority**: New core services, security/IAM changes, deprecations
-- **Medium Priority**: Service enhancements, new integrations, regional availability  
-- **Low Priority**: UI changes, pricing updates, minor documentation
-
-#### Update Process
-1. **Change Detection**: Automated monitoring identifies relevant changes
-2. **Impact Assessment**: Evaluate relevance, priority, and effort required
-3. **Ontology Updates**: Modify classes, properties, and examples
-4. **Testing**: Run comprehensive test suite
-5. **Documentation**: Update README, examples, and changelog
-6. **Version Management**: Semantic versioning (Major.Minor.Patch)
-
-See [Maintenance Strategy](docs/MAINTENANCE_STRATEGY.md) for detailed processes and procedures.
-
-### Change Monitoring Tools
-
-#### AWS Change Monitor (`tools/monitor_aws_changes.py`)
-```bash
-# Monitor What's New feed for last 7 days
-python tools/monitor_aws_changes.py --source whats-new --days 7
-
-# Check for new CloudFormation resources
-python tools/monitor_aws_changes.py --source cloudformation --compare
-
-# Generate detailed report
-python tools/monitor_aws_changes.py --source all --output report.json
-```
-
-**Features:**
-- RSS feed monitoring with service extraction
-- Priority assessment based on content analysis
-- CloudFormation resource type tracking
-- Comprehensive reporting and categorization
-- Integration with existing services scope
-
-#### Success Metrics for Currency
-- **Critical Updates**: Within 48 hours of AWS announcement
-- **Major Updates**: Within 2 weeks of announcement
-- **Minor Updates**: Within 1 month of announcement
-- **Service Coverage**: >95% of in-scope services current
-- **Documentation Currency**: 100% of changes documented 
+**Note**: This is the core open-source AWS Ontology. For ArangoDB graph database integration and advanced analytics, see the separate private repository.

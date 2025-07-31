@@ -208,6 +208,14 @@ class TestOntologyQuality(unittest.TestCase):
             'AWSAccount', 'AWSRegion', 'AvailabilityZone',
             # Compute
             'EC2Instance', 'EC2AMI', 'EC2SecurityGroup', 'EC2LoadBalancer', 'LambdaFunction',
+            # Container Services
+            'ECSCluster', 'ECSService', 'ECSTask', 'ECSTaskDefinition', 
+            'EKSCluster', 'EKSNodeGroup', 'EKSPod', 'FargateService',
+            'ECRRepository', 'ContainerImage',
+            # API & Integration Services
+            'APIGateway', 'APIGatewayStage', 'APIGatewayResource', 'APIGatewayMethod',
+            'StepFunction', 'StepFunctionActivity', 'EventBridge', 'EventBridgeRule',
+            'SQSQueue', 'SNSTopic', 'SNSSubscription', 'EventBridgeTarget',
             # Storage
             'S3Bucket', 'S3Object', 'EBSVolume', 'EBSSnapshot', 'RDSInstance', 'RDSDatabase',
             # Networking
@@ -225,6 +233,126 @@ class TestOntologyQuality(unittest.TestCase):
                 required_class, existing_classes,
                 f"Required class missing: {required_class}"
             )
+
+    def test_container_services_structure(self):
+        """Test container services specific ontology structure."""
+        # Test container-specific properties exist
+        container_properties = [
+            'runsOnCluster', 'hasTaskDefinition', 'usesContainerImage', 
+            'storedInRepository', 'hasNodeGroup', 'runsPod', 'usesFargate'
+        ]
+        
+        existing_properties = [str(prop).split('#')[-1] for prop in self.graph.subjects(RDF.type, OWL.ObjectProperty)]
+        
+        for required_prop in container_properties:
+            self.assertIn(
+                required_prop, existing_properties,
+                f"Required container property missing: {required_prop}"
+            )
+        
+        # Test container data properties exist
+        container_data_properties = [
+            'launchType', 'desiredCount', 'taskDefinitionRevision', 'containerPort',
+            'cpu', 'memory', 'kubernetesVersion', 'nodeInstanceType', 'imageTag'
+        ]
+        
+        existing_data_properties = [str(prop).split('#')[-1] for prop in self.graph.subjects(RDF.type, OWL.DatatypeProperty)]
+        
+        for required_prop in container_data_properties:
+            self.assertIn(
+                required_prop, existing_data_properties,
+                f"Required container data property missing: {required_prop}"
+            )
+        
+        # Test ECS specific relationships
+        ecs_service = self.aws.ECSService
+        ecs_cluster = self.aws.ECSCluster
+        compute_resource = self.aws.ComputeResource
+        
+        # ECS services should be compute resources
+        self.assertTrue(
+            (ecs_service, RDFS.subClassOf, compute_resource) in self.graph,
+            "ECSService should be a subclass of ComputeResource"
+        )
+        
+        # EKS specific relationships
+        eks_cluster = self.aws.EKSCluster
+        self.assertTrue(
+            (eks_cluster, RDFS.subClassOf, compute_resource) in self.graph,
+            "EKSCluster should be a subclass of ComputeResource"
+        )
+
+    def test_api_integration_services_structure(self):
+        """Test API & Integration services specific ontology structure."""
+        # Test API & Integration specific properties exist
+        api_integration_properties = [
+            'hasStage', 'hasResource', 'hasMethod', 'integrationWith',
+            'triggersStepFunction', 'hasActivity', 'publishesToTopic', 'subscribesTo',
+            'sendsToQueue', 'hasRule', 'hasTarget', 'routesEventTo'
+        ]
+        
+        existing_properties = [str(prop).split('#')[-1] for prop in self.graph.subjects(RDF.type, OWL.ObjectProperty)]
+        
+        for required_prop in api_integration_properties:
+            self.assertIn(
+                required_prop, existing_properties,
+                f"Required API/Integration property missing: {required_prop}"
+            )
+        
+        # Test API & Integration data properties exist
+        api_integration_data_properties = [
+            'apiGatewayType', 'stageName', 'httpMethod', 'resourcePath',
+            'stateMachineDefinition', 'stateMachineType', 'eventPattern',
+            'queueType', 'subscriptionProtocol', 'eventBusName'
+        ]
+        
+        existing_data_properties = [str(prop).split('#')[-1] for prop in self.graph.subjects(RDF.type, OWL.DatatypeProperty)]
+        
+        for required_prop in api_integration_data_properties:
+            self.assertIn(
+                required_prop, existing_data_properties,
+                f"Required API/Integration data property missing: {required_prop}"
+            )
+        
+        # Test base class relationships
+        api_gateway = self.aws.APIGateway
+        step_function = self.aws.StepFunction
+        event_bridge = self.aws.EventBridge
+        sqs_queue = self.aws.SQSQueue
+        sns_topic = self.aws.SNSTopic
+        
+        networking_resource = self.aws.NetworkingResource
+        compute_resource = self.aws.ComputeResource
+        integration_resource = self.aws.IntegrationResource
+        
+        # API Gateway should be a networking resource
+        self.assertTrue(
+            (api_gateway, RDFS.subClassOf, networking_resource) in self.graph,
+            "APIGateway should be a subclass of NetworkingResource"
+        )
+        
+        # Step Functions should be compute resources
+        self.assertTrue(
+            (step_function, RDFS.subClassOf, compute_resource) in self.graph,
+            "StepFunction should be a subclass of ComputeResource"
+        )
+        
+        # EventBridge should be integration resource
+        self.assertTrue(
+            (event_bridge, RDFS.subClassOf, integration_resource) in self.graph,
+            "EventBridge should be a subclass of IntegrationResource"
+        )
+        
+        # SQS and SNS should be integration resources
+        self.assertTrue(
+            (sqs_queue, RDFS.subClassOf, integration_resource) in self.graph,
+            "SQSQueue should be a subclass of IntegrationResource"
+        )
+        
+        self.assertTrue(
+            (sns_topic, RDFS.subClassOf, integration_resource) in self.graph,
+            "SNSTopic should be a subclass of IntegrationResource"
+        )
 
     def test_iam_specific_structure(self):
         """Test IAM-specific ontology structure."""

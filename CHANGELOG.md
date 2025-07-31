@@ -7,17 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2024-07-31
+
 ### Added
-- Comprehensive test suite for ontology quality assurance
-- Performance testing with PRD success metrics validation
-- Example instance validation tests
-- Git pre-commit hooks for format synchronization
-- AWS change monitoring tool for tracking service updates
-- Maintenance strategy documentation
-- ArangoDB transformation tools with RPT, PGT, and LPGT patterns
+- **Container Services**: Complete ECS, EKS, Fargate, and ECR modeling (10 classes, 18 properties)
+- **API & Integration Services**: API Gateway, Step Functions, EventBridge, SNS, SQS (12 classes, 38 properties)
+- **Enhanced Relationships**: Temporal (`createdBefore`, `replacedBy`), cost (`incursChargeFor`, `optimizedBy`), and compliance (`compliesWith`, `auditedBy`) modeling (23 object properties, 18 data properties)
+- **Semantic Axioms**: Cardinality constraints, disjoint class declarations, property characteristics (functional, transitive, symmetric)
+- **Protégé Integration**: Complete visual exploration guide and 22 SPARQL query examples
+- **Format Import Statements**: Examples file now properly imports the main ontology
+- **Comprehensive Documentation**: Protégé guide, SPARQL examples, usage documentation
 
 ### Changed
-- Enhanced README with detailed testing documentation
+- **Ontology Growth**: 84% increase in triples (596 → 1,095), doubled classes (35 → 71), tripled properties (45 → 155)
+- **Enhanced Examples**: 390+ example instances with container, API, and integration scenarios
+- **Improved Testing**: Extended test suite for container services, API services, and relationship validation
+- **Repository Structure**: Separated public ontology from private ArangoDB integration tools
+
+### Fixed
+- **Format Synchronization**: Robust OWL ↔ TTL conversion and validation
+- **Import Dependencies**: Proper ontology imports in examples file
+- **Test Coverage**: Comprehensive validation across all new service categories
 - Updated requirements.txt with optional testing dependencies
 
 ## [0.2.0] - 2024-12-XX
