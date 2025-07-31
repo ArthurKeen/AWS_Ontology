@@ -1,6 +1,6 @@
 # AWS Ontology Project Makefile
 
-.PHONY: help test test-sync sync-check sync-ttl-to-owl sync-owl-to-ttl install-deps clean
+.PHONY: help test test-sync sync-check sync-ttl-to-owl sync-owl-to-ttl install-deps setup-hooks clean
 
 # Default target
 help:
@@ -12,6 +12,7 @@ help:
 	@echo "  sync-ttl-to-owl - Convert TTL to OWL format"
 	@echo "  sync-owl-to-ttl - Convert OWL to TTL format"
 	@echo "  install-deps   - Install Python dependencies"
+	@echo "  setup-hooks    - Install Git pre-commit hooks"
 	@echo "  transform      - Run ArangoDB transformation (requires ArangoDB)"
 	@echo "  clean          - Clean temporary files"
 	@echo ""
@@ -20,6 +21,11 @@ help:
 install-deps:
 	@echo "Installing Python dependencies..."
 	pip install -r requirements.txt
+
+# Set up Git hooks
+setup-hooks:
+	@echo "Setting up Git hooks..."
+	python3 tools/setup_git_hooks.py
 
 # Run all tests
 test: test-sync

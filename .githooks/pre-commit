@@ -1,0 +1,102 @@
+#!/bin/bash
+#
+# Pre-commit hook to ensure OWL and TTL ontology files are synchronized
+# This hook runs before each commit and blocks the commit if files are out of sync
+#
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo -e "${YELLOW}🔍 Checking ontology file synchronization...${NC}"
+
+# Check if ontology files exist
+OWL_FILE="ontology/aws.owl"
+TTL_FILE="ontology/aws.ttl"
+
+if [[ ! -f "$OWL_FILE" ]]; then
+    echo -e "${RED}❌ OWL file not found: $OWL_FILE${NC}"
+    exit 1
+fi
+
+if [[ ! -f "$TTL_FILE" ]]; then
+    echo -e "${RED}❌ TTL file not found: $TTL_FILE${NC}"
+    exit 1
+fi
+
+# Check if ontology files are staged for commit
+OWL_STAGED=$(git diff --cached --name-only | grep -c "^$OWL_FILE$" || true)
+TTL_STAGED=$(git diff --cached --name-only | grep -c "^$TTL_FILE$" || true)
+
+# Only run sync check if at least one ontology file is being committed
+if [[ $OWL_STAGED -eq 0 && $TTL_STAGED -eq 0 ]]; then
+    echo -e "${GREEN}✅ No ontology files in commit, skipping sync check${NC}"
+    exit 0
+fi
+
+# Check if both files are staged when one is modified
+if [[ $OWL_STAGED -ne $TTL_STAGED ]]; then
+    echo -e "${RED}❌ Only one ontology file is staged for commit${NC}"
+    echo -e "${YELLOW}When modifying ontology files, both OWL and TTL must be updated together.${NC}"
+    echo ""
+    echo "Staged files:"
+    if [[ $OWL_STAGED -eq 1 ]]; then
+        echo "  ✓ $OWL_FILE"
+    else
+        echo "  ✗ $OWL_FILE (not staged)"
+    fi
+    if [[ $TTL_STAGED -eq 1 ]]; then
+        echo "  ✓ $TTL_FILE"
+    else
+        echo "  ✗ $TTL_FILE (not staged)"
+    fi
+    echo ""
+    echo "To fix this:"
+    echo "  1. Ensure both files are updated and synchronized"
+    echo "  2. Stage both files: git add $OWL_FILE $TTL_FILE"
+    echo "  3. Or run: make sync-check && git add ontology/"
+    exit 1
+fi
+
+# Check if Python and rdflib are available
+if ! command -v python3 &> /dev/null; then
+    echo -e "${YELLOW}⚠️  Python3 not found, skipping semantic sync check${NC}"
+    echo -e "${GREEN}✅ Basic checks passed (both files staged)${NC}"
+    exit 0
+fi
+
+# Try to run the sync check
+if python3 -c "import rdflib" 2>/dev/null; then
+    echo -e "${YELLOW}Running semantic synchronization check...${NC}"
+    
+    # Run the sync check
+    if python3 tools/sync_formats.py check --owl "$OWL_FILE" --ttl "$TTL_FILE" 2>/dev/null; then
+        echo -e "${GREEN}✅ Ontology files are synchronized${NC}"
+        exit 0
+    else
+        echo -e "${RED}❌ Ontology files are NOT synchronized${NC}"
+        echo ""
+        echo "The OWL and TTL files contain different semantic content."
+        echo ""
+        echo "To fix this:"
+        echo "  1. Check which file has the correct content"
+        echo "  2. Run one of the following to synchronize:"
+        echo "     make sync-ttl-to-owl  (use TTL as source)"
+        echo "     make sync-owl-to-ttl  (use OWL as source)"
+        echo "  3. Stage both files and commit again"
+        echo ""
+        echo "Or run the interactive sync tool:"
+        echo "  python3 tools/sync_formats.py sync"
+        exit 1
+    fi
+else
+    echo -e "${YELLOW}⚠️  rdflib not installed, skipping semantic sync check${NC}"
+    echo -e "${YELLOW}To enable full sync checking, install rdflib:${NC}"
+    echo -e "${YELLOW}  python3 -m venv venv && source venv/bin/activate && pip install rdflib${NC}"
+    echo -e "${GREEN}✅ Basic checks passed (both files staged)${NC}"
+    exit 0
+fi 

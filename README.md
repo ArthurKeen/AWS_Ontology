@@ -20,6 +20,8 @@ The AWS Ontology project creates a comprehensive semantic model of AWS infrastru
 ├── LICENSE                   # MIT License
 ├── requirements.txt          # Python dependencies for tools
 ├── Makefile                  # Common tasks and commands
+├── .githooks/
+│   └── pre-commit           # Git pre-commit hook for sync checking
 ├── docs/
 │   └── PRD.md               # Product Requirements Document
 ├── ontology/
@@ -31,7 +33,8 @@ The AWS Ontology project creates a comprehensive semantic model of AWS infrastru
 └── tools/
     ├── README.md            # Tools documentation
     ├── transform_ontology.py # ArangoRDF transformation script
-    └── sync_formats.py      # Format synchronization utility
+    ├── sync_formats.py      # Format synchronization utility
+    └── setup_git_hooks.py   # Git hooks installation script
 ```
 
 ## Ontology Components
@@ -88,6 +91,26 @@ make test-sync
 # Check synchronization status
 make sync-check
 ```
+
+### Git Pre-commit Hooks
+Automated synchronization checking via Git hooks prevents committing out-of-sync files:
+
+```bash
+# Install Git hooks (one-time setup)
+make setup-hooks
+
+# The pre-commit hook will automatically:
+# - Check that both OWL and TTL files are staged together
+# - Verify semantic equivalence when rdflib is available
+# - Block commits if files are out of sync
+```
+
+**Hook Features:**
+- **Smart Detection**: Only runs when ontology files are being committed
+- **Both-File Enforcement**: Requires both OWL and TTL to be staged together
+- **Semantic Validation**: Checks actual content equivalence (when rdflib available)
+- **Graceful Degradation**: Falls back to basic checks if dependencies unavailable
+- **Clear Error Messages**: Provides specific guidance on how to fix issues
 
 ### Synchronization Tools
 Use the included tools to maintain format synchronization:
@@ -155,7 +178,12 @@ See `tools/README.md` for detailed usage instructions.
    make install-deps
    ```
 
-2. Run tests to verify setup:
+2. Set up Git hooks for automatic synchronization checking:
+   ```bash
+   make setup-hooks
+   ```
+
+3. Run tests to verify setup:
    ```bash
    make test
    ```
@@ -180,10 +208,19 @@ When making changes:
 3. Update examples if necessary
 4. Document significant changes
 
+**Important**: The pre-commit hook will automatically check synchronization and prevent commits if files are out of sync.
+
 ### Quality Assurance
-- Run synchronization tests before committing: `make test-sync`
-- Use format conversion tools when needed: `make sync-ttl-to-owl` or `make sync-owl-to-ttl`
-- Validate OWL compliance with standard reasoners
+- **Automated**: Pre-commit hooks check synchronization automatically
+- **Manual**: Run synchronization tests before committing: `make test-sync`
+- **Recovery**: Use format conversion tools when needed: `make sync-ttl-to-owl` or `make sync-owl-to-ttl`
+- **Validation**: Validate OWL compliance with standard reasoners
+
+### Working with Git Hooks
+- **Install**: `make setup-hooks` (one-time setup per clone)
+- **Test**: Try committing only one ontology file to see the hook in action
+- **Disable temporarily**: Rename `.git/hooks/pre-commit` to `.git/hooks/pre-commit.disabled`
+- **Remove**: `rm .git/hooks/pre-commit`
 
 ## Future Development
 
