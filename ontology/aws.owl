@@ -11,7 +11,7 @@
     <owl:Ontology rdf:about="http://www.semanticweb.org/aws-ontology">
         <rdfs:label>AWS Resource Ontology</rdfs:label>
         <rdfs:comment>An ontology for describing AWS resources, services, and their relationships.</rdfs:comment>
-        <owl:versionInfo>0.1.0</owl:versionInfo>
+        <owl:versionInfo>0.2.0</owl:versionInfo>
     </owl:Ontology>
     
     <!-- 
@@ -22,13 +22,18 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
     
-    <!-- Structural/Compositional Properties -->
-    
+    <!-- Infrastructure Object Properties -->
     <owl:ObjectProperty rdf:about="#hasRegion">
         <rdfs:label>has region</rdfs:label>
         <rdfs:comment>Relates an AWS account to its regions</rdfs:comment>
         <rdfs:domain rdf:resource="#AWSAccount"/>
         <rdfs:range rdf:resource="#AWSRegion"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#regionOf">
+        <rdfs:label>region of</rdfs:label>
+        <rdfs:comment>Inverse of has region</rdfs:comment>
+        <owl:inverseOf rdf:resource="#hasRegion"/>
     </owl:ObjectProperty>
 
     <owl:ObjectProperty rdf:about="#hasAvailabilityZone">
@@ -38,14 +43,33 @@
         <rdfs:range rdf:resource="#AvailabilityZone"/>
     </owl:ObjectProperty>
 
+    <owl:ObjectProperty rdf:about="#availabilityZoneOf">
+        <rdfs:label>availability zone of</rdfs:label>
+        <rdfs:comment>Inverse of has availability zone</rdfs:comment>
+        <owl:inverseOf rdf:resource="#hasAvailabilityZone"/>
+    </owl:ObjectProperty>
+
+    <!-- Structural/Compositional Properties -->
     <owl:ObjectProperty rdf:about="#contains">
         <rdfs:label>contains</rdfs:label>
         <rdfs:comment>General containment relationship</rdfs:comment>
     </owl:ObjectProperty>
 
+    <owl:ObjectProperty rdf:about="#containedBy">
+        <rdfs:label>contained by</rdfs:label>
+        <rdfs:comment>Inverse of contains</rdfs:comment>
+        <owl:inverseOf rdf:resource="#contains"/>
+    </owl:ObjectProperty>
+
     <owl:ObjectProperty rdf:about="#attachedTo">
         <rdfs:label>attached to</rdfs:label>
         <rdfs:comment>Relates resources that are attached to other resources</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#attachmentOf">
+        <rdfs:label>attachment of</rdfs:label>
+        <rdfs:comment>Inverse of attached to</rdfs:comment>
+        <owl:inverseOf rdf:resource="#attachedTo"/>
     </owl:ObjectProperty>
 
     <owl:ObjectProperty rdf:about="#belongsToVPC">
@@ -54,72 +78,7 @@
         <rdfs:range rdf:resource="#VPC"/>
     </owl:ObjectProperty>
 
-    <!-- Access/Permission Properties -->
-
-    <owl:ObjectProperty rdf:about="#canAssumeRole">
-        <rdfs:label>can assume role</rdfs:label>
-        <rdfs:comment>Indicates which roles can be assumed</rdfs:comment>
-        <rdfs:range rdf:resource="#IAMRole"/>
-    </owl:ObjectProperty>
-
-    <owl:ObjectProperty rdf:about="#hasPolicy">
-        <rdfs:label>has policy</rdfs:label>
-        <rdfs:comment>Relates IAM entities to their policies</rdfs:comment>
-        <rdfs:range rdf:resource="#IAMPolicy"/>
-    </owl:ObjectProperty>
-
-    <owl:ObjectProperty rdf:about="#appliesTo">
-        <rdfs:label>applies to</rdfs:label>
-        <rdfs:comment>Relates security groups to resources</rdfs:comment>
-        <rdfs:domain rdf:resource="#EC2SecurityGroup"/>
-    </owl:ObjectProperty>
-
-    <!-- Operational/Functional Properties -->
-
-    <owl:ObjectProperty rdf:about="#uses">
-        <rdfs:label>uses</rdfs:label>
-        <rdfs:comment>Indicates usage relationship between resources</rdfs:comment>
-    </owl:ObjectProperty>
-
-    <owl:ObjectProperty rdf:about="#manages">
-        <rdfs:label>manages</rdfs:label>
-        <rdfs:comment>Indicates management relationship between resources</rdfs:comment>
-    </owl:ObjectProperty>
-
-    <owl:ObjectProperty rdf:about="#monitors">
-        <rdfs:label>monitors</rdfs:label>
-        <rdfs:comment>Relates monitoring resources to their targets</rdfs:comment>
-        <rdfs:domain rdf:resource="#CloudWatchAlarm"/>
-        <rdfs:range rdf:resource="#CloudWatchMetric"/>
-    </owl:ObjectProperty>
-
-    <owl:ObjectProperty rdf:about="#logsActivityOf">
-        <rdfs:label>logs activity of</rdfs:label>
-        <rdfs:comment>Relates logging resources to their subjects</rdfs:comment>
-        <rdfs:domain rdf:resource="#CloudTrailLog"/>
-        <rdfs:range rdf:resource="#AWSAccount"/>
-    </owl:ObjectProperty>
-
-    <owl:ObjectProperty rdf:about="#routesTrafficThrough">
-        <rdfs:label>routes traffic through</rdfs:label>
-        <rdfs:comment>Indicates traffic routing relationships</rdfs:comment>
-        <rdfs:domain rdf:resource="#RouteTable"/>
-    </owl:ObjectProperty>
-
-    <!-- Dependency Properties -->
-
-    <owl:ObjectProperty rdf:about="#dependsOn">
-        <rdfs:label>depends on</rdfs:label>
-        <rdfs:comment>General dependency relationship between resources</rdfs:comment>
-    </owl:ObjectProperty>
-
-    <owl:ObjectProperty rdf:about="#isSourceFor">
-        <rdfs:label>is source for</rdfs:label>
-        <rdfs:comment>Indicates source relationship between resources</rdfs:comment>
-    </owl:ObjectProperty>
-
     <!-- IAM-Specific Object Properties -->
-    
     <owl:ObjectProperty rdf:about="#hasPolicyAttachment">
         <rdfs:label>has policy attachment</rdfs:label>
         <rdfs:comment>Relates IAM entities to their attached policies</rdfs:comment>
@@ -163,6 +122,12 @@
         <rdfs:range rdf:resource="#IAMGroup"/>
     </owl:ObjectProperty>
 
+    <owl:ObjectProperty rdf:about="#hasMember">
+        <rdfs:label>has member</rdfs:label>
+        <rdfs:comment>Inverse of member of</rdfs:comment>
+        <owl:inverseOf rdf:resource="#memberOf"/>
+    </owl:ObjectProperty>
+
     <owl:ObjectProperty rdf:about="#controlledByServiceControlPolicy">
         <rdfs:label>controlled by service control policy</rdfs:label>
         <rdfs:comment>Relates AWS accounts to service control policies</rdfs:comment>
@@ -170,8 +135,159 @@
         <rdfs:range rdf:resource="#ServiceControlPolicy"/>
     </owl:ObjectProperty>
 
-    <!-- IAM-Specific Data Properties -->
+    <!-- Operational/Functional Properties -->
+    <owl:ObjectProperty rdf:about="#uses">
+        <rdfs:label>uses</rdfs:label>
+        <rdfs:comment>Indicates usage relationship between resources</rdfs:comment>
+    </owl:ObjectProperty>
 
+    <owl:ObjectProperty rdf:about="#usedBy">
+        <rdfs:label>used by</rdfs:label>
+        <rdfs:comment>Inverse of uses</rdfs:comment>
+        <owl:inverseOf rdf:resource="#uses"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#manages">
+        <rdfs:label>manages</rdfs:label>
+        <rdfs:comment>Indicates management relationship between resources</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#managedBy">
+        <rdfs:label>managed by</rdfs:label>
+        <rdfs:comment>Inverse of manages</rdfs:comment>
+        <owl:inverseOf rdf:resource="#manages"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#monitors">
+        <rdfs:label>monitors</rdfs:label>
+        <rdfs:comment>Relates monitoring resources to their targets</rdfs:comment>
+        <rdfs:domain rdf:resource="#CloudWatchAlarm"/>
+        <rdfs:range rdf:resource="#CloudWatchMetric"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#monitoredBy">
+        <rdfs:label>monitored by</rdfs:label>
+        <rdfs:comment>Inverse of monitors</rdfs:comment>
+        <owl:inverseOf rdf:resource="#monitors"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#logsActivityOf">
+        <rdfs:label>logs activity of</rdfs:label>
+        <rdfs:comment>Relates logging resources to their subjects</rdfs:comment>
+        <rdfs:domain rdf:resource="#CloudTrailLog"/>
+        <rdfs:range rdf:resource="#AWSAccount"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#routesTrafficThrough">
+        <rdfs:label>routes traffic through</rdfs:label>
+        <rdfs:comment>Indicates traffic routing relationships</rdfs:comment>
+        <rdfs:domain rdf:resource="#RouteTable"/>
+    </owl:ObjectProperty>
+
+    <!-- Dependency Properties -->
+    <owl:ObjectProperty rdf:about="#dependsOn">
+        <rdfs:label>depends on</rdfs:label>
+        <rdfs:comment>General dependency relationship between resources</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#dependencyOf">
+        <rdfs:label>dependency of</rdfs:label>
+        <rdfs:comment>Inverse of depends on</rdfs:comment>
+        <owl:inverseOf rdf:resource="#dependsOn"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#isSourceFor">
+        <rdfs:label>is source for</rdfs:label>
+        <rdfs:comment>Indicates source relationship between resources</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasSource">
+        <rdfs:label>has source</rdfs:label>
+        <rdfs:comment>Inverse of is source for</rdfs:comment>
+        <owl:inverseOf rdf:resource="#isSourceFor"/>
+    </owl:ObjectProperty>
+
+    <!-- Policy Statement Properties -->
+    <owl:ObjectProperty rdf:about="#hasStatement">
+        <rdfs:label>has statement</rdfs:label>
+        <rdfs:comment>Relates policies to their statements</rdfs:comment>
+        <rdfs:domain rdf:resource="#IAMPolicy"/>
+        <rdfs:range rdf:resource="#PolicyStatement"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasEffect">
+        <rdfs:label>has effect</rdfs:label>
+        <rdfs:comment>Relates policy statements to their effects</rdfs:comment>
+        <rdfs:domain rdf:resource="#PolicyStatement"/>
+        <rdfs:range rdf:resource="#Effect"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasAction">
+        <rdfs:label>has action</rdfs:label>
+        <rdfs:comment>Relates policy statements to their actions</rdfs:comment>
+        <rdfs:domain rdf:resource="#PolicyStatement"/>
+        <rdfs:range rdf:resource="#Action"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasResource">
+        <rdfs:label>has resource</rdfs:label>
+        <rdfs:comment>Relates policy statements to their target resources</rdfs:comment>
+        <rdfs:domain rdf:resource="#PolicyStatement"/>
+        <rdfs:range rdf:resource="#Resource"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasCondition">
+        <rdfs:label>has condition</rdfs:label>
+        <rdfs:comment>Relates policy statements to their conditions</rdfs:comment>
+        <rdfs:domain rdf:resource="#PolicyStatement"/>
+        <rdfs:range rdf:resource="#Condition"/>
+    </owl:ObjectProperty>
+    
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <!-- Universal AWS Resource Properties -->
+    <owl:DatatypeProperty rdf:about="#arn">
+        <rdfs:label>ARN</rdfs:label>
+        <rdfs:comment>Amazon Resource Name</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#resourceId">
+        <rdfs:label>resource ID</rdfs:label>
+        <rdfs:comment>AWS resource identifier</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#resourceName">
+        <rdfs:label>resource name</rdfs:label>
+        <rdfs:comment>Human-readable resource name</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#creationDate">
+        <rdfs:label>creation date</rdfs:label>
+        <rdfs:comment>Resource creation timestamp</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#resourceState">
+        <rdfs:label>resource state</rdfs:label>
+        <rdfs:comment>Current state of the resource</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <!-- IAM-Specific Properties -->
     <owl:DatatypeProperty rdf:about="#policyDocument">
         <rdfs:label>policy document</rdfs:label>
         <rdfs:comment>The JSON policy document content</rdfs:comment>
@@ -186,6 +302,72 @@
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
     </owl:DatatypeProperty>
 
+    <owl:DatatypeProperty rdf:about="#path">
+        <rdfs:label>path</rdfs:label>
+        <rdfs:comment>IAM entity path</rdfs:comment>
+        <rdfs:domain rdf:resource="#IdentityResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <!-- EC2-Specific Properties -->
+    <owl:DatatypeProperty rdf:about="#instanceType">
+        <rdfs:label>instance type</rdfs:label>
+        <rdfs:comment>EC2 instance type</rdfs:comment>
+        <rdfs:domain rdf:resource="#EC2Instance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#imageId">
+        <rdfs:label>image ID</rdfs:label>
+        <rdfs:comment>AMI ID used by instance</rdfs:comment>
+        <rdfs:domain rdf:resource="#EC2Instance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#keyName">
+        <rdfs:label>key name</rdfs:label>
+        <rdfs:comment>EC2 key pair name</rdfs:comment>
+        <rdfs:domain rdf:resource="#EC2Instance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <!-- Storage Properties -->
+    <owl:DatatypeProperty rdf:about="#volumeSize">
+        <rdfs:label>volume size</rdfs:label>
+        <rdfs:comment>Storage volume size in GB</rdfs:comment>
+        <rdfs:domain rdf:resource="#EBSVolume"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#volumeType">
+        <rdfs:label>volume type</rdfs:label>
+        <rdfs:comment>EBS volume type</rdfs:comment>
+        <rdfs:domain rdf:resource="#EBSVolume"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#bucketVersioning">
+        <rdfs:label>bucket versioning</rdfs:label>
+        <rdfs:comment>S3 bucket versioning status</rdfs:comment>
+        <rdfs:domain rdf:resource="#S3Bucket"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:DatatypeProperty>
+
+    <!-- Network Properties -->
+    <owl:DatatypeProperty rdf:about="#cidrBlock">
+        <rdfs:label>CIDR block</rdfs:label>
+        <rdfs:comment>Network CIDR block</rdfs:comment>
+        <rdfs:domain rdf:resource="#NetworkingResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#isDefault">
+        <rdfs:label>is default</rdfs:label>
+        <rdfs:comment>Whether this is a default resource</rdfs:comment>
+        <rdfs:domain rdf:resource="#AWSResource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:DatatypeProperty>
+    
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -194,25 +376,80 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    <!-- Infrastructure Classes -->
+    <!-- Base Resource Classes -->
+    <owl:Class rdf:about="#AWSResource">
+        <rdfs:label>AWS Resource</rdfs:label>
+        <rdfs:comment>Base class for all AWS resources</rdfs:comment>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#arn"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
 
+    <owl:Class rdf:about="#ComputeResource">
+        <rdfs:label>Compute Resource</rdfs:label>
+        <rdfs:comment>Base class for compute resources</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#AWSResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#StorageResource">
+        <rdfs:label>Storage Resource</rdfs:label>
+        <rdfs:comment>Base class for storage resources</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#AWSResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#NetworkingResource">
+        <rdfs:label>Networking Resource</rdfs:label>
+        <rdfs:comment>Base class for networking resources</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#AWSResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#SecurityResource">
+        <rdfs:label>Security Resource</rdfs:label>
+        <rdfs:comment>Base class for security resources</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#AWSResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#IdentityResource">
+        <rdfs:label>Identity Resource</rdfs:label>
+        <rdfs:comment>Base class for identity and access management resources</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#AWSResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#DatabaseResource">
+        <rdfs:label>Database Resource</rdfs:label>
+        <rdfs:comment>Base class for database resources</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#AWSResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#MonitoringResource">
+        <rdfs:label>Monitoring Resource</rdfs:label>
+        <rdfs:comment>Base class for monitoring and logging resources</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#AWSResource"/>
+    </owl:Class>
+
+    <!-- Infrastructure Classes -->
     <owl:Class rdf:about="#AWSAccount">
         <rdfs:label>AWS Account</rdfs:label>
         <rdfs:comment>An AWS account that can contain multiple services and resources</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#AWSResource"/>
     </owl:Class>
 
     <owl:Class rdf:about="#AWSRegion">
         <rdfs:label>AWS Region</rdfs:label>
         <rdfs:comment>A geographical region containing AWS resources</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#AWSResource"/>
     </owl:Class>
 
     <owl:Class rdf:about="#AvailabilityZone">
         <rdfs:label>Availability Zone</rdfs:label>
         <rdfs:comment>An isolated location within a region</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#AWSResource"/>
     </owl:Class>
 
     <!-- Compute Classes -->
-
     <owl:Class rdf:about="#EC2Instance">
         <rdfs:label>EC2 Instance</rdfs:label>
         <rdfs:comment>An Amazon EC2 virtual machine instance</rdfs:comment>
@@ -237,8 +474,13 @@
         <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
     </owl:Class>
 
-    <!-- Storage Classes -->
+    <owl:Class rdf:about="#LambdaFunction">
+        <rdfs:label>Lambda Function</rdfs:label>
+        <rdfs:comment>An AWS Lambda function</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#ComputeResource"/>
+    </owl:Class>
 
+    <!-- Storage Classes -->
     <owl:Class rdf:about="#S3Bucket">
         <rdfs:label>S3 Bucket</rdfs:label>
         <rdfs:comment>An Amazon S3 storage bucket</rdfs:comment>
@@ -264,7 +506,6 @@
     </owl:Class>
 
     <!-- Database Classes -->
-
     <owl:Class rdf:about="#RDSInstance">
         <rdfs:label>RDS Instance</rdfs:label>
         <rdfs:comment>An Amazon RDS database instance</rdfs:comment>
@@ -277,8 +518,38 @@
         <rdfs:subClassOf rdf:resource="#DatabaseResource"/>
     </owl:Class>
 
-    <!-- Identity Classes -->
+    <!-- Networking Classes -->
+    <owl:Class rdf:about="#VPC">
+        <rdfs:label>VPC</rdfs:label>
+        <rdfs:comment>A Virtual Private Cloud</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
+    </owl:Class>
 
+    <owl:Class rdf:about="#Subnet">
+        <rdfs:label>Subnet</rdfs:label>
+        <rdfs:comment>A subnet within a VPC</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#RouteTable">
+        <rdfs:label>Route Table</rdfs:label>
+        <rdfs:comment>A VPC route table</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#InternetGateway">
+        <rdfs:label>Internet Gateway</rdfs:label>
+        <rdfs:comment>A VPC internet gateway</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#NATGateway">
+        <rdfs:label>NAT Gateway</rdfs:label>
+        <rdfs:comment>A VPC NAT gateway</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
+    </owl:Class>
+
+    <!-- IAM Classes -->
     <owl:Class rdf:about="#IAMUser">
         <rdfs:label>IAM User</rdfs:label>
         <rdfs:comment>An IAM user entity</rdfs:comment>
@@ -289,12 +560,12 @@
         <rdfs:label>IAM Role</rdfs:label>
         <rdfs:comment>An IAM role entity</rdfs:comment>
         <rdfs:subClassOf rdf:resource="#IdentityResource"/>
-    </owl:Class>
-
-    <owl:Class rdf:about="#IAMPolicy">
-        <rdfs:label>IAM Policy</rdfs:label>
-        <rdfs:comment>Base class for all IAM policies</rdfs:comment>
-        <rdfs:subClassOf rdf:resource="#IdentityResource"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasTrustRelationship"/>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
 
     <owl:Class rdf:about="#IAMGroup">
@@ -303,7 +574,17 @@
         <rdfs:subClassOf rdf:resource="#IdentityResource"/>
     </owl:Class>
 
-    <!-- Extended IAM Classes -->
+    <owl:Class rdf:about="#IAMPolicy">
+        <rdfs:label>IAM Policy</rdfs:label>
+        <rdfs:comment>Base class for all IAM policies</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#IdentityResource"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasStatement"/>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
 
     <owl:Class rdf:about="#ManagedPolicy">
         <rdfs:label>Managed Policy</rdfs:label>
@@ -351,10 +632,15 @@
         <rdfs:label>Policy Statement</rdfs:label>
         <rdfs:comment>A statement within an IAM policy</rdfs:comment>
         <rdfs:subClassOf rdf:resource="#IdentityResource"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasEffect"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
 
     <!-- Policy Statement Components -->
-    
     <owl:Class rdf:about="#Effect">
         <rdfs:label>Effect</rdfs:label>
         <rdfs:comment>The effect of a policy statement (Allow/Deny)</rdfs:comment>
@@ -375,40 +661,7 @@
         <rdfs:comment>A condition for policy evaluation</rdfs:comment>
     </owl:Class>
 
-    <!-- Networking Classes -->
-
-    <owl:Class rdf:about="#VPC">
-        <rdfs:label>VPC</rdfs:label>
-        <rdfs:comment>A Virtual Private Cloud</rdfs:comment>
-        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
-    </owl:Class>
-
-    <owl:Class rdf:about="#Subnet">
-        <rdfs:label>Subnet</rdfs:label>
-        <rdfs:comment>A subnet within a VPC</rdfs:comment>
-        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
-    </owl:Class>
-
-    <owl:Class rdf:about="#RouteTable">
-        <rdfs:label>Route Table</rdfs:label>
-        <rdfs:comment>A VPC route table</rdfs:comment>
-        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
-    </owl:Class>
-
-    <owl:Class rdf:about="#InternetGateway">
-        <rdfs:label>Internet Gateway</rdfs:label>
-        <rdfs:comment>A VPC internet gateway</rdfs:comment>
-        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
-    </owl:Class>
-
-    <owl:Class rdf:about="#NATGateway">
-        <rdfs:label>NAT Gateway</rdfs:label>
-        <rdfs:comment>A VPC NAT gateway</rdfs:comment>
-        <rdfs:subClassOf rdf:resource="#NetworkingResource"/>
-    </owl:Class>
-
     <!-- Monitoring Classes -->
-
     <owl:Class rdf:about="#CloudWatchMetric">
         <rdfs:label>CloudWatch Metric</rdfs:label>
         <rdfs:comment>A CloudWatch metric</rdfs:comment>
@@ -425,61 +678,6 @@
         <rdfs:label>CloudTrail Log</rdfs:label>
         <rdfs:comment>A CloudTrail log entry</rdfs:comment>
         <rdfs:subClassOf rdf:resource="#MonitoringResource"/>
-    </owl:Class>
-
-    <owl:Class rdf:about="#LambdaFunction">
-        <rdfs:label>Lambda Function</rdfs:label>
-        <rdfs:comment>An AWS Lambda function</rdfs:comment>
-        <rdfs:subClassOf rdf:resource="#ComputeResource"/>
-    </owl:Class>
-
-    <!-- Base Resource Classes -->
-
-    <owl:Class rdf:about="#AWSResource">
-        <rdfs:label>AWS Resource</rdfs:label>
-        <rdfs:comment>Base class for all AWS resources</rdfs:comment>
-    </owl:Class>
-
-    <owl:Class rdf:about="#ComputeResource">
-        <rdfs:label>Compute Resource</rdfs:label>
-        <rdfs:comment>Base class for compute resources</rdfs:comment>
-        <rdfs:subClassOf rdf:resource="#AWSResource"/>
-    </owl:Class>
-
-    <owl:Class rdf:about="#StorageResource">
-        <rdfs:label>Storage Resource</rdfs:label>
-        <rdfs:comment>Base class for storage resources</rdfs:comment>
-        <rdfs:subClassOf rdf:resource="#AWSResource"/>
-    </owl:Class>
-
-    <owl:Class rdf:about="#NetworkingResource">
-        <rdfs:label>Networking Resource</rdfs:label>
-        <rdfs:comment>Base class for networking resources</rdfs:comment>
-        <rdfs:subClassOf rdf:resource="#AWSResource"/>
-    </owl:Class>
-
-    <owl:Class rdf:about="#SecurityResource">
-        <rdfs:label>Security Resource</rdfs:label>
-        <rdfs:comment>Base class for security resources</rdfs:comment>
-        <rdfs:subClassOf rdf:resource="#AWSResource"/>
-    </owl:Class>
-
-    <owl:Class rdf:about="#IdentityResource">
-        <rdfs:label>Identity Resource</rdfs:label>
-        <rdfs:comment>Base class for identity and access management resources</rdfs:comment>
-        <rdfs:subClassOf rdf:resource="#AWSResource"/>
-    </owl:Class>
-
-    <owl:Class rdf:about="#DatabaseResource">
-        <rdfs:label>Database Resource</rdfs:label>
-        <rdfs:comment>Base class for database resources</rdfs:comment>
-        <rdfs:subClassOf rdf:resource="#AWSResource"/>
-    </owl:Class>
-
-    <owl:Class rdf:about="#MonitoringResource">
-        <rdfs:label>Monitoring Resource</rdfs:label>
-        <rdfs:comment>Base class for monitoring and logging resources</rdfs:comment>
-        <rdfs:subClassOf rdf:resource="#AWSResource"/>
     </owl:Class>
 
 </rdf:RDF> 

@@ -11,18 +11,23 @@
 <http://www.semanticweb.org/aws-ontology> rdf:type owl:Ontology ;
     rdfs:label "AWS Resource Ontology" ;
     rdfs:comment "An ontology for describing AWS resources, services, and their relationships." ;
-    owl:versionInfo "0.1.0" .
+    owl:versionInfo "0.2.0" .
 
 #################################################################
 #    Object Properties
 #################################################################
 
-# Base Object Properties
+# Infrastructure Object Properties
 :hasRegion rdf:type owl:ObjectProperty ;
     rdfs:label "has region" ;
     rdfs:comment "Relates an AWS account to its regions" ;
     rdfs:domain :AWSAccount ;
     rdfs:range :AWSRegion .
+
+:regionOf rdf:type owl:ObjectProperty ;
+    rdfs:label "region of" ;
+    rdfs:comment "Inverse of has region" ;
+    owl:inverseOf :hasRegion .
 
 :hasAvailabilityZone rdf:type owl:ObjectProperty ;
     rdfs:label "has availability zone" ;
@@ -30,13 +35,29 @@
     rdfs:domain :AWSRegion ;
     rdfs:range :AvailabilityZone .
 
+:availabilityZoneOf rdf:type owl:ObjectProperty ;
+    rdfs:label "availability zone of" ;
+    rdfs:comment "Inverse of has availability zone" ;
+    owl:inverseOf :hasAvailabilityZone .
+
+# Structural/Compositional Properties
 :contains rdf:type owl:ObjectProperty ;
     rdfs:label "contains" ;
     rdfs:comment "General containment relationship" .
 
+:containedBy rdf:type owl:ObjectProperty ;
+    rdfs:label "contained by" ;
+    rdfs:comment "Inverse of contains" ;
+    owl:inverseOf :contains .
+
 :attachedTo rdf:type owl:ObjectProperty ;
     rdfs:label "attached to" ;
     rdfs:comment "Relates resources that are attached to other resources" .
+
+:attachmentOf rdf:type owl:ObjectProperty ;
+    rdfs:label "attachment of" ;
+    rdfs:comment "Inverse of attached to" ;
+    owl:inverseOf :attachedTo .
 
 :belongsToVPC rdf:type owl:ObjectProperty ;
     rdfs:label "belongs to VPC" ;
@@ -72,16 +93,144 @@
     rdfs:domain :IAMUser ;
     rdfs:range :IAMGroup .
 
+:hasMember rdf:type owl:ObjectProperty ;
+    rdfs:label "has member" ;
+    rdfs:comment "Inverse of member of" ;
+    owl:inverseOf :memberOf .
+
 :controlledByServiceControlPolicy rdf:type owl:ObjectProperty ;
     rdfs:label "controlled by service control policy" ;
     rdfs:comment "Relates AWS accounts to service control policies" ;
     rdfs:domain :AWSAccount ;
     rdfs:range :ServiceControlPolicy .
 
+# Operational/Functional Properties
+:uses rdf:type owl:ObjectProperty ;
+    rdfs:label "uses" ;
+    rdfs:comment "Indicates usage relationship between resources" .
+
+:usedBy rdf:type owl:ObjectProperty ;
+    rdfs:label "used by" ;
+    rdfs:comment "Inverse of uses" ;
+    owl:inverseOf :uses .
+
+:manages rdf:type owl:ObjectProperty ;
+    rdfs:label "manages" ;
+    rdfs:comment "Indicates management relationship between resources" .
+
+:managedBy rdf:type owl:ObjectProperty ;
+    rdfs:label "managed by" ;
+    rdfs:comment "Inverse of manages" ;
+    owl:inverseOf :manages .
+
+:monitors rdf:type owl:ObjectProperty ;
+    rdfs:label "monitors" ;
+    rdfs:comment "Relates monitoring resources to their targets" ;
+    rdfs:domain :CloudWatchAlarm ;
+    rdfs:range :CloudWatchMetric .
+
+:monitoredBy rdf:type owl:ObjectProperty ;
+    rdfs:label "monitored by" ;
+    rdfs:comment "Inverse of monitors" ;
+    owl:inverseOf :monitors .
+
+:logsActivityOf rdf:type owl:ObjectProperty ;
+    rdfs:label "logs activity of" ;
+    rdfs:comment "Relates logging resources to their subjects" ;
+    rdfs:domain :CloudTrailLog ;
+    rdfs:range :AWSAccount .
+
+:routesTrafficThrough rdf:type owl:ObjectProperty ;
+    rdfs:label "routes traffic through" ;
+    rdfs:comment "Indicates traffic routing relationships" ;
+    rdfs:domain :RouteTable .
+
+# Dependency Properties
+:dependsOn rdf:type owl:ObjectProperty ;
+    rdfs:label "depends on" ;
+    rdfs:comment "General dependency relationship between resources" .
+
+:dependencyOf rdf:type owl:ObjectProperty ;
+    rdfs:label "dependency of" ;
+    rdfs:comment "Inverse of depends on" ;
+    owl:inverseOf :dependsOn .
+
+:isSourceFor rdf:type owl:ObjectProperty ;
+    rdfs:label "is source for" ;
+    rdfs:comment "Indicates source relationship between resources" .
+
+:hasSource rdf:type owl:ObjectProperty ;
+    rdfs:label "has source" ;
+    rdfs:comment "Inverse of is source for" ;
+    owl:inverseOf :isSourceFor .
+
+# Policy Statement Properties
+:hasStatement rdf:type owl:ObjectProperty ;
+    rdfs:label "has statement" ;
+    rdfs:comment "Relates policies to their statements" ;
+    rdfs:domain :IAMPolicy ;
+    rdfs:range :PolicyStatement .
+
+:hasEffect rdf:type owl:ObjectProperty ;
+    rdfs:label "has effect" ;
+    rdfs:comment "Relates policy statements to their effects" ;
+    rdfs:domain :PolicyStatement ;
+    rdfs:range :Effect .
+
+:hasAction rdf:type owl:ObjectProperty ;
+    rdfs:label "has action" ;
+    rdfs:comment "Relates policy statements to their actions" ;
+    rdfs:domain :PolicyStatement ;
+    rdfs:range :Action .
+
+:hasResource rdf:type owl:ObjectProperty ;
+    rdfs:label "has resource" ;
+    rdfs:comment "Relates policy statements to their target resources" ;
+    rdfs:domain :PolicyStatement ;
+    rdfs:range :Resource .
+
+:hasCondition rdf:type owl:ObjectProperty ;
+    rdfs:label "has condition" ;
+    rdfs:comment "Relates policy statements to their conditions" ;
+    rdfs:domain :PolicyStatement ;
+    rdfs:range :Condition .
+
 #################################################################
 #    Data Properties
 #################################################################
 
+# Universal AWS Resource Properties
+:arn rdf:type owl:DatatypeProperty ;
+    rdfs:label "ARN" ;
+    rdfs:comment "Amazon Resource Name" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range xsd:string .
+
+:resourceId rdf:type owl:DatatypeProperty ;
+    rdfs:label "resource ID" ;
+    rdfs:comment "AWS resource identifier" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range xsd:string .
+
+:resourceName rdf:type owl:DatatypeProperty ;
+    rdfs:label "resource name" ;
+    rdfs:comment "Human-readable resource name" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range xsd:string .
+
+:creationDate rdf:type owl:DatatypeProperty ;
+    rdfs:label "creation date" ;
+    rdfs:comment "Resource creation timestamp" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range xsd:dateTime .
+
+:resourceState rdf:type owl:DatatypeProperty ;
+    rdfs:label "resource state" ;
+    rdfs:comment "Current state of the resource" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range xsd:string .
+
+# IAM-Specific Properties
 :policyDocument rdf:type owl:DatatypeProperty ;
     rdfs:label "policy document" ;
     rdfs:comment "The JSON policy document content" ;
@@ -93,6 +242,63 @@
     rdfs:comment "Maximum session duration in seconds" ;
     rdfs:domain :IAMRole ;
     rdfs:range xsd:integer .
+
+:path rdf:type owl:DatatypeProperty ;
+    rdfs:label "path" ;
+    rdfs:comment "IAM entity path" ;
+    rdfs:domain :IdentityResource ;
+    rdfs:range xsd:string .
+
+# EC2-Specific Properties
+:instanceType rdf:type owl:DatatypeProperty ;
+    rdfs:label "instance type" ;
+    rdfs:comment "EC2 instance type" ;
+    rdfs:domain :EC2Instance ;
+    rdfs:range xsd:string .
+
+:imageId rdf:type owl:DatatypeProperty ;
+    rdfs:label "image ID" ;
+    rdfs:comment "AMI ID used by instance" ;
+    rdfs:domain :EC2Instance ;
+    rdfs:range xsd:string .
+
+:keyName rdf:type owl:DatatypeProperty ;
+    rdfs:label "key name" ;
+    rdfs:comment "EC2 key pair name" ;
+    rdfs:domain :EC2Instance ;
+    rdfs:range xsd:string .
+
+# Storage Properties
+:volumeSize rdf:type owl:DatatypeProperty ;
+    rdfs:label "volume size" ;
+    rdfs:comment "Storage volume size in GB" ;
+    rdfs:domain :EBSVolume ;
+    rdfs:range xsd:integer .
+
+:volumeType rdf:type owl:DatatypeProperty ;
+    rdfs:label "volume type" ;
+    rdfs:comment "EBS volume type" ;
+    rdfs:domain :EBSVolume ;
+    rdfs:range xsd:string .
+
+:bucketVersioning rdf:type owl:DatatypeProperty ;
+    rdfs:label "bucket versioning" ;
+    rdfs:comment "S3 bucket versioning status" ;
+    rdfs:domain :S3Bucket ;
+    rdfs:range xsd:boolean .
+
+# Network Properties
+:cidrBlock rdf:type owl:DatatypeProperty ;
+    rdfs:label "CIDR block" ;
+    rdfs:comment "Network CIDR block" ;
+    rdfs:domain :NetworkingResource ;
+    rdfs:range xsd:string .
+
+:isDefault rdf:type owl:DatatypeProperty ;
+    rdfs:label "is default" ;
+    rdfs:comment "Whether this is a default resource" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range xsd:boolean .
 
 #################################################################
 #    Classes
@@ -141,17 +347,119 @@
 # Infrastructure Classes
 :AWSAccount rdf:type owl:Class ;
     rdfs:label "AWS Account" ;
-    rdfs:comment "An AWS account that can contain multiple services and resources" .
+    rdfs:comment "An AWS account that can contain multiple services and resources" ;
+    rdfs:subClassOf :AWSResource .
 
 :AWSRegion rdf:type owl:Class ;
     rdfs:label "AWS Region" ;
-    rdfs:comment "A geographical region containing AWS resources" .
+    rdfs:comment "A geographical region containing AWS resources" ;
+    rdfs:subClassOf :AWSResource .
 
 :AvailabilityZone rdf:type owl:Class ;
     rdfs:label "Availability Zone" ;
-    rdfs:comment "An isolated location within a region" .
+    rdfs:comment "An isolated location within a region" ;
+    rdfs:subClassOf :AWSResource .
+
+# Compute Classes
+:EC2Instance rdf:type owl:Class ;
+    rdfs:label "EC2 Instance" ;
+    rdfs:comment "An Amazon EC2 virtual machine instance" ;
+    rdfs:subClassOf :ComputeResource .
+
+:EC2AMI rdf:type owl:Class ;
+    rdfs:label "EC2 AMI" ;
+    rdfs:comment "An Amazon Machine Image for EC2 instances" ;
+    rdfs:subClassOf :ComputeResource .
+
+:EC2SecurityGroup rdf:type owl:Class ;
+    rdfs:label "EC2 Security Group" ;
+    rdfs:comment "A security group controlling EC2 instance access" ;
+    rdfs:subClassOf :SecurityResource .
+
+:EC2LoadBalancer rdf:type owl:Class ;
+    rdfs:label "EC2 Load Balancer" ;
+    rdfs:comment "A load balancer distributing traffic to EC2 instances" ;
+    rdfs:subClassOf :NetworkingResource .
+
+:LambdaFunction rdf:type owl:Class ;
+    rdfs:label "Lambda Function" ;
+    rdfs:comment "An AWS Lambda function" ;
+    rdfs:subClassOf :ComputeResource .
+
+# Storage Classes
+:S3Bucket rdf:type owl:Class ;
+    rdfs:label "S3 Bucket" ;
+    rdfs:comment "An Amazon S3 storage bucket" ;
+    rdfs:subClassOf :StorageResource .
+
+:S3Object rdf:type owl:Class ;
+    rdfs:label "S3 Object" ;
+    rdfs:comment "An object stored in an S3 bucket" ;
+    rdfs:subClassOf :StorageResource .
+
+:EBSVolume rdf:type owl:Class ;
+    rdfs:label "EBS Volume" ;
+    rdfs:comment "An Elastic Block Store volume" ;
+    rdfs:subClassOf :StorageResource .
+
+:EBSSnapshot rdf:type owl:Class ;
+    rdfs:label "EBS Snapshot" ;
+    rdfs:comment "A snapshot of an EBS volume" ;
+    rdfs:subClassOf :StorageResource .
+
+# Database Classes
+:RDSInstance rdf:type owl:Class ;
+    rdfs:label "RDS Instance" ;
+    rdfs:comment "An Amazon RDS database instance" ;
+    rdfs:subClassOf :DatabaseResource .
+
+:RDSDatabase rdf:type owl:Class ;
+    rdfs:label "RDS Database" ;
+    rdfs:comment "A database within an RDS instance" ;
+    rdfs:subClassOf :DatabaseResource .
+
+# Networking Classes
+:VPC rdf:type owl:Class ;
+    rdfs:label "VPC" ;
+    rdfs:comment "A Virtual Private Cloud" ;
+    rdfs:subClassOf :NetworkingResource .
+
+:Subnet rdf:type owl:Class ;
+    rdfs:label "Subnet" ;
+    rdfs:comment "A subnet within a VPC" ;
+    rdfs:subClassOf :NetworkingResource .
+
+:RouteTable rdf:type owl:Class ;
+    rdfs:label "Route Table" ;
+    rdfs:comment "A VPC route table" ;
+    rdfs:subClassOf :NetworkingResource .
+
+:InternetGateway rdf:type owl:Class ;
+    rdfs:label "Internet Gateway" ;
+    rdfs:comment "A VPC internet gateway" ;
+    rdfs:subClassOf :NetworkingResource .
+
+:NATGateway rdf:type owl:Class ;
+    rdfs:label "NAT Gateway" ;
+    rdfs:comment "A VPC NAT gateway" ;
+    rdfs:subClassOf :NetworkingResource .
 
 # IAM Classes
+:IAMUser rdf:type owl:Class ;
+    rdfs:label "IAM User" ;
+    rdfs:comment "An IAM user entity" ;
+    rdfs:subClassOf :IdentityResource .
+
+:IAMRole rdf:type owl:Class ;
+    rdfs:label "IAM Role" ;
+    rdfs:comment "An IAM role entity" ;
+    rdfs:subClassOf :IdentityResource .
+
+:IAMGroup rdf:type owl:Class ;
+    rdfs:label "IAM Group" ;
+    rdfs:comment "An IAM user group" ;
+    rdfs:subClassOf :IdentityResource .
+
 :IAMPolicy rdf:type owl:Class ;
     rdfs:label "IAM Policy" ;
     rdfs:comment "Base class for all IAM policies" ;
@@ -214,23 +522,50 @@
     rdfs:label "Condition" ;
     rdfs:comment "A condition for policy evaluation" .
 
-# Other AWS Service Classes
-:EC2Instance rdf:type owl:Class ;
-    rdfs:label "EC2 Instance" ;
-    rdfs:comment "An Amazon EC2 virtual machine instance" ;
-    rdfs:subClassOf :ComputeResource .
-
-:S3Bucket rdf:type owl:Class ;
-    rdfs:label "S3 Bucket" ;
-    rdfs:comment "An Amazon S3 storage bucket" ;
-    rdfs:subClassOf :StorageResource .
-
-:VPC rdf:type owl:Class ;
-    rdfs:label "VPC" ;
-    rdfs:comment "A Virtual Private Cloud" ;
-    rdfs:subClassOf :NetworkingResource .
-
+# Monitoring Classes
 :CloudWatchMetric rdf:type owl:Class ;
     rdfs:label "CloudWatch Metric" ;
     rdfs:comment "A CloudWatch metric" ;
-    rdfs:subClassOf :MonitoringResource . 
+    rdfs:subClassOf :MonitoringResource .
+
+:CloudWatchAlarm rdf:type owl:Class ;
+    rdfs:label "CloudWatch Alarm" ;
+    rdfs:comment "A CloudWatch alarm" ;
+    rdfs:subClassOf :MonitoringResource .
+
+:CloudTrailLog rdf:type owl:Class ;
+    rdfs:label "CloudTrail Log" ;
+    rdfs:comment "A CloudTrail log entry" ;
+    rdfs:subClassOf :MonitoringResource .
+
+#################################################################
+#    Class Restrictions and Axioms
+#################################################################
+
+# IAM Role must have a trust policy
+:IAMRole rdfs:subClassOf [
+    rdf:type owl:Restriction ;
+    owl:onProperty :hasTrustRelationship ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger
+] .
+
+# Policy must have at least one statement
+:IAMPolicy rdfs:subClassOf [
+    rdf:type owl:Restriction ;
+    owl:onProperty :hasStatement ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger
+] .
+
+# Policy statement must have an effect
+:PolicyStatement rdfs:subClassOf [
+    rdf:type owl:Restriction ;
+    owl:onProperty :hasEffect ;
+    owl:cardinality "1"^^xsd:nonNegativeInteger
+] .
+
+# Every AWS resource must have an ARN
+:AWSResource rdfs:subClassOf [
+    rdf:type owl:Restriction ;
+    owl:onProperty :arn ;
+    owl:cardinality "1"^^xsd:nonNegativeInteger
+] . 
