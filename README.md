@@ -224,17 +224,19 @@ make test-performance # Performance benchmarks
 
 ## 🔗 Integration
 
-### Graph Databases
-The ontology can be transformed for graph database analysis:
-- ArangoDB integration (separate private repository)
-- Neo4j transformations
-- Custom RDF triplestores
+### Graph Database Transformations
+The ontology supports multiple graph database representations:
+- **RDF Triplestores**: Direct loading as RDF/OWL (Stardog, GraphDB, Virtuoso, Blazegraph)
+- **Labeled Property Graphs (LPG)**: Transform to property graph format with labeled nodes and edges
+- **Property Graphs (PG)**: Convert to simple property graph structures for graph analytics
+- **Custom Transformations**: Flexible transformation patterns for specific use cases
 
 ### Analysis Tools
-- Python: rdflib, owlready2
-- Java: Apache Jena, OWL API
-- JavaScript: rdflib.js
-- R: rdflib for R
+- **Python**: rdflib, owlready2, networkx
+- **Java**: Apache Jena, OWL API, JGraphT
+- **JavaScript**: rdflib.js, cytoscape.js
+- **R**: rdflib for R, igraph
+- **SPARQL**: Standard RDF query language support
 
 ## 📚 Documentation
 
@@ -273,4 +275,4 @@ See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
 ---
 
-**Note**: This is the core open-source AWS Ontology. For ArangoDB graph database integration and advanced analytics, see the separate private repository.
+**Note**: This is the core open-source AWS Ontology designed for flexible integration with various graph databases and analytics platforms through standard RDF/OWL interfaces and custom transformation patterns.

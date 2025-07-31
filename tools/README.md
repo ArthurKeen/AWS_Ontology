@@ -1,66 +1,116 @@
-# ArangoDB Transformation Tools
+# AWS Ontology Tools
 
-This directory contains tools for transforming the AWS Ontology into ArangoDB graph databases.
+This directory contains utilities for working with the AWS Ontology in various formats and performing quality assurance tasks.
 
-## Main Tool: `transform_ontology.py`
+## Format Synchronization: `sync_formats.py`
 
-Converts the AWS Ontology into ArangoDB using three different transformation patterns.
+Maintains synchronization between OWL/XML and Turtle (TTL) formats of the ontology.
 
-### Basic Usage
+### Usage
 
 ```bash
-# Transform using PGT pattern (recommended)
-python tools/transform_ontology.py --pattern pgt --include-examples
+# Check if formats are synchronized
+python tools/sync_formats.py check
 
-# Transform using RPT pattern (simple)
-python tools/transform_ontology.py --pattern rpt
+# Convert OWL to TTL
+python tools/sync_formats.py owl-to-ttl
 
-# Transform using LPGT pattern (full semantics)
-python tools/transform_ontology.py --pattern lpgt --include-examples
+# Convert TTL to OWL
+python tools/sync_formats.py ttl-to-owl
+
+# Auto-sync (chooses direction based on modification times)
+python tools/sync_formats.py sync
 ```
 
-### Parameters
+### Features
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--pattern` | Transformation pattern (rpt/pgt/lpgt) | *Required* |
-| `--ontology-path` | Path to ontology file | `../AWS_Ontology/ontology/aws.ttl` |
-| `--include-examples` | Include example instances | `False` |
-| `--host` | ArangoDB host | `localhost` |
-| `--port` | ArangoDB port | `8529` |
-| `--username` | ArangoDB username | `root` |
-| `--password` | ArangoDB password | *(empty)* |
-| `--database` | Target database name | `aws_ontology` |
-| `--export-schema` | Export schema to JSON file | *(none)* |
-| `--verbose` | Enable verbose logging | `False` |
+- **Bidirectional conversion** between OWL/XML and Turtle formats
+- **Semantic equivalence checking** to ensure no data loss
+- **Automatic format detection** and validation
+- **Integration with Git hooks** for pre-commit validation
 
-### Transformation Patterns
+## AWS Change Monitoring: `monitor_aws_changes.py`
 
-- **RPT**: Simple graph structure, fastest queries
-- **PGT**: Balanced features and performance (recommended)
-- **LPGT**: Full RDF semantics, complex reasoning
+Monitors AWS service documentation for changes that might affect the ontology.
 
-### Examples
+### Usage
 
 ```bash
-# Custom database connection
-python tools/transform_ontology.py \
-    --pattern pgt \
-    --host my-server \
-    --database my_aws_db \
-    --include-examples \
-    --export-schema schemas/schema.json
+# Run one-time monitoring check
+python tools/monitor_aws_changes.py
 
-# Verbose transformation
-python tools/transform_ontology.py \
-    --pattern lpgt \
-    --verbose
+# Check specific services
+python tools/monitor_aws_changes.py --services ec2,s3,iam
+
+# Save results to file
+python tools/monitor_aws_changes.py --output changes.json
+```
+
+### Features
+
+- **RSS feed monitoring** for AWS service updates
+- **Change detection** and classification
+- **Automated reporting** with recommendations
+- **Scheduling support** for continuous monitoring
+
+## Graph Database Transformation
+
+The ontology can be transformed into various graph database formats:
+
+### RDF Triplestores
+```bash
+# Load directly into SPARQL-enabled databases
+# Compatible with: Stardog, GraphDB, Virtuoso, Blazegraph
+```
+
+### Property Graph Formats
+```bash
+# Transform to Labeled Property Graph (LPG)
+# Transform to Property Graph (PG)
+# Custom transformation patterns available
 ```
 
 ## Requirements
 
-- ArangoDB 3.8+ running
-- Python dependencies: `pip install -r requirements.txt`
-- AWS Ontology repository available at `../AWS_Ontology/`
+```bash
+pip install rdflib>=6.0.0
+```
 
-For detailed documentation and troubleshooting, see the main README.md. 
+## Integration Examples
+
+### Python RDF Processing
+```python
+import rdflib
+
+# Load the ontology
+g = rdflib.Graph()
+g.parse('ontology/aws.owl', format='xml')
+
+# Query with SPARQL
+results = g.query("""
+    SELECT ?class ?label WHERE {
+        ?class a owl:Class ;
+               rdfs:label ?label .
+    }
+""")
+```
+
+### Format Validation
+```python
+from tools.sync_formats import check_synchronization
+
+# Validate format consistency
+is_synced, details = check_synchronization()
+if is_synced:
+    print("✅ Formats are synchronized")
+else:
+    print(f"❌ Sync issues: {details}")
+```
+
+## Development Tools
+
+- **Format synchronization** with semantic validation
+- **Quality assurance** testing framework
+- **Change monitoring** for AWS updates
+- **Documentation generation** helpers
+- **Git integration** hooks and validators
