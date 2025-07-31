@@ -78,18 +78,91 @@ Both formats are kept in sync and contain identical information. Choose the form
 
 ## Testing and Quality Assurance
 
-### Format Synchronization Testing
-The project includes comprehensive tests to ensure OWL and TTL formats remain synchronized:
+The project includes a comprehensive test suite to ensure ontology quality, consistency, and performance:
+
+### Test Categories
+
+#### 1. Format Synchronization Testing
+Ensures OWL and TTL formats remain synchronized:
 
 ```bash
-# Run all tests
-make test
-
-# Test format synchronization specifically
+# Run synchronization tests
 make test-sync
 
 # Check synchronization status
 make sync-check
+```
+
+**Tests include:**
+- File existence and parseability
+- Semantic equivalence between formats
+- Version consistency
+- Triple count matching
+- Property count matching
+
+#### 2. Ontology Quality Testing
+Validates ontology structure, consistency, and completeness:
+
+```bash
+# Run quality tests
+make test-quality
+```
+
+**Tests include:**
+- **Metadata Validation**: Proper ontology metadata (labels, comments, version)
+- **Class Consistency**: All classes have labels and comments
+- **Property Consistency**: All properties have labels and comments
+- **Domain/Range Validation**: Properties have appropriate domains and ranges
+- **Class Hierarchy**: Proper subclass relationships
+- **Inverse Properties**: Correct inverse property declarations
+- **Required Classes**: All PRD-specified classes present
+- **IAM Structure**: IAM-specific constraints and cardinalities
+- **OWL DL Compliance**: Basic OWL DL compliance checks
+- **Naming Conventions**: Consistent naming patterns
+- **Data Property Ranges**: Appropriate XSD type ranges
+
+#### 3. Example Instance Validation
+Validates example instances against the ontology:
+
+```bash
+# Run example validation tests
+make test-examples
+```
+
+**Tests include:**
+- **Type Validation**: All instances have proper types
+- **Property Usage**: Properties used in examples are defined in ontology
+- **IAM Structure**: IAM examples follow proper patterns
+- **Policy Documents**: Policy JSON structure validation
+- **Regional Structure**: Account/region/AZ hierarchy validation
+- **Data Property Values**: Appropriate value ranges and formats
+- **Reference Integrity**: No broken references between instances
+- **Consistent Labeling**: All instances have proper labels
+
+#### 4. Performance Testing
+Measures ontology performance against PRD success metrics:
+
+```bash
+# Run performance tests
+make test-performance
+```
+
+**Tests include:**
+- **Loading Performance**: TTL/OWL loading under 5 seconds
+- **Memory Usage**: Peak memory usage under 500MB
+- **Query Performance**: Simple queries under 1 second
+- **Complex Queries**: Complex SPARQL queries under 2 seconds
+- **Graph Metrics**: Triple counts and structural metrics
+- **Reasoning Performance**: OWL RL reasoning performance (if available)
+
+### Comprehensive Testing
+
+```bash
+# Run all tests
+make test-all
+
+# Run essential tests only
+make test
 ```
 
 ### Git Pre-commit Hooks
@@ -111,6 +184,43 @@ make setup-hooks
 - **Semantic Validation**: Checks actual content equivalence (when rdflib available)
 - **Graceful Degradation**: Falls back to basic checks if dependencies unavailable
 - **Clear Error Messages**: Provides specific guidance on how to fix issues
+
+### Test Dependencies
+
+The test suite requires Python dependencies:
+
+```bash
+# Install test dependencies
+make install-deps
+
+# Or manually in virtual environment
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+**Required packages:**
+- `rdflib>=6.0.0` - Core RDF processing
+- `owlready2>=0.45` - OWL ontology handling (optional)
+- `owlrl` - OWL RL reasoning (optional, for performance tests)
+
+### Continuous Integration
+
+The test suite is designed for CI/CD integration:
+- All tests return appropriate exit codes
+- Verbose output for debugging
+- Graceful handling of missing dependencies
+- Performance metrics reporting
+
+### Quality Metrics
+
+Tests validate against PRD success metrics:
+- **Loading Time**: < 5 seconds
+- **Memory Usage**: < 500MB peak
+- **Query Performance**: < 1-2 seconds
+- **Completeness**: All required classes and properties
+- **Consistency**: No logical contradictions
+- **Usability**: Proper documentation and examples
 
 ### Synchronization Tools
 Use the included tools to maintain format synchronization:
