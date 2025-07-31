@@ -233,7 +233,7 @@ The ontology supports multiple graph database representations:
 
 ### Analysis Tools
 - **Python**: rdflib, owlready2, networkx
-- **Java**: Apache Jena, OWL API, JGraphT
+- **Java**: Apache Jena, RDF4J, OWL API, JGraphT
 - **JavaScript**: rdflib.js, cytoscape.js
 - **R**: rdflib for R, igraph
 - **SPARQL**: Standard RDF query language support
