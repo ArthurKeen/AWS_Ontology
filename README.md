@@ -350,3 +350,76 @@ GitHub: [@ArthurKeen](https://github.com/ArthurKeen)
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
+
+## Maintenance and Updates
+
+### Keeping Current with AWS Changes
+
+The ontology includes tools and processes to stay synchronized with AWS service evolution:
+
+#### Automated Change Monitoring
+```bash
+# Monitor AWS What's New feed for recent changes
+make monitor-changes
+
+# Generate comprehensive weekly report
+make monitor-weekly
+
+# Monitor all sources with detailed analysis
+make monitor-all
+```
+
+#### Change Detection Sources
+- **AWS What's New RSS Feed**: Primary source for new services and features
+- **CloudFormation Resource Types**: New resource types indicate service additions
+- **API Documentation**: Service-specific changes and new parameters
+
+#### Maintenance Schedule
+- **Daily**: Automated monitoring of AWS What's New
+- **Weekly**: Review and process low/medium priority changes
+- **Monthly**: Comprehensive service documentation review
+- **Quarterly**: Deep architectural review and testing
+- **As-needed**: Emergency updates for critical security/compliance changes
+
+#### Change Classification
+- **High Priority**: New core services, security/IAM changes, deprecations
+- **Medium Priority**: Service enhancements, new integrations, regional availability  
+- **Low Priority**: UI changes, pricing updates, minor documentation
+
+#### Update Process
+1. **Change Detection**: Automated monitoring identifies relevant changes
+2. **Impact Assessment**: Evaluate relevance, priority, and effort required
+3. **Ontology Updates**: Modify classes, properties, and examples
+4. **Testing**: Run comprehensive test suite
+5. **Documentation**: Update README, examples, and changelog
+6. **Version Management**: Semantic versioning (Major.Minor.Patch)
+
+See [Maintenance Strategy](docs/MAINTENANCE_STRATEGY.md) for detailed processes and procedures.
+
+### Change Monitoring Tools
+
+#### AWS Change Monitor (`tools/monitor_aws_changes.py`)
+```bash
+# Monitor What's New feed for last 7 days
+python tools/monitor_aws_changes.py --source whats-new --days 7
+
+# Check for new CloudFormation resources
+python tools/monitor_aws_changes.py --source cloudformation --compare
+
+# Generate detailed report
+python tools/monitor_aws_changes.py --source all --output report.json
+```
+
+**Features:**
+- RSS feed monitoring with service extraction
+- Priority assessment based on content analysis
+- CloudFormation resource type tracking
+- Comprehensive reporting and categorization
+- Integration with existing services scope
+
+#### Success Metrics for Currency
+- **Critical Updates**: Within 48 hours of AWS announcement
+- **Major Updates**: Within 2 weeks of announcement
+- **Minor Updates**: Within 1 month of announcement
+- **Service Coverage**: >95% of in-scope services current
+- **Documentation Currency**: 100% of changes documented 

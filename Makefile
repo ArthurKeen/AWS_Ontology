@@ -1,23 +1,35 @@
 # AWS Ontology Project Makefile
 
-.PHONY: help test test-all test-sync test-quality test-examples test-performance sync-check sync-ttl-to-owl sync-owl-to-ttl install-deps setup-hooks clean
+.PHONY: help test test-all test-sync test-quality test-examples test-performance sync-check sync-ttl-to-owl sync-owl-to-ttl install-deps setup-hooks monitor-changes clean
 
 # Default target
 help:
 	@echo "AWS Ontology Project - Available Commands:"
 	@echo ""
-	@echo "  test           - Run all tests"
+	@echo "Testing:"
+	@echo "  test           - Run essential tests"
 	@echo "  test-all       - Run comprehensive test suite"
 	@echo "  test-sync      - Test OWL/TTL format synchronization"
 	@echo "  test-quality   - Test ontology quality and structure"
 	@echo "  test-examples  - Test example instances validation"
 	@echo "  test-performance - Test ontology performance metrics"
+	@echo ""
+	@echo "Synchronization:"
 	@echo "  sync-check     - Check if OWL and TTL files are synchronized"
 	@echo "  sync-ttl-to-owl - Convert TTL to OWL format"
 	@echo "  sync-owl-to-ttl - Convert OWL to TTL format"
+	@echo ""
+	@echo "Development:"
 	@echo "  install-deps   - Install Python dependencies"
 	@echo "  setup-hooks    - Install Git pre-commit hooks"
 	@echo "  transform      - Run ArangoDB transformation (requires ArangoDB)"
+	@echo ""
+	@echo "Monitoring:"
+	@echo "  monitor-changes - Monitor AWS changes (last 7 days)"
+	@echo "  monitor-weekly  - Generate weekly AWS change report"
+	@echo "  monitor-all     - Monitor all sources and generate report"
+	@echo ""
+	@echo "Maintenance:"
 	@echo "  clean          - Clean temporary files"
 	@echo ""
 
@@ -74,6 +86,21 @@ sync-owl-to-ttl:
 	@echo "Converting OWL to TTL..."
 	python tools/sync_formats.py owl-to-ttl
 
+# Monitor AWS changes (last 7 days)
+monitor-changes:
+	@echo "Monitoring AWS changes (last 7 days)..."
+	python tools/monitor_aws_changes.py --source whats-new --days 7
+
+# Generate weekly change report
+monitor-weekly:
+	@echo "Generating weekly AWS change report..."
+	python tools/monitor_aws_changes.py --source all --days 7 --output monitoring/weekly_report.json
+
+# Monitor all sources with detailed report
+monitor-all:
+	@echo "Monitoring all AWS sources..."
+	python tools/monitor_aws_changes.py --source all --compare --output monitoring/comprehensive_report.json
+
 # Run ArangoDB transformation
 transform:
 	@echo "Running ArangoDB transformation..."
@@ -84,4 +111,6 @@ clean:
 	@echo "Cleaning temporary files..."
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name "__pycache__" -delete
-	find . -type f -name "*.tmp" -delete 
+	find . -type f -name "*.tmp" -delete
+	@echo "Creating monitoring directory..."
+	mkdir -p monitoring 

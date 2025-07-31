@@ -3,6 +3,10 @@ rdflib>=6.0.0
 python-arango>=7.5.0
 owlready2>=0.45
 
+# Dependencies for AWS change monitoring
+feedparser>=6.0.0
+requests>=2.25.0
+
 # Optional dependencies for testing
 # Install with: pip install -r requirements.txt
 # For reasoning tests (optional):
