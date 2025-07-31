@@ -1,6 +1,5 @@
 @prefix : <http://www.semanticweb.org/aws-ontology#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -8,6 +7,12 @@
     rdfs:label "AWS Resource Ontology" ;
     rdfs:comment "An ontology for describing AWS resources, services, and their relationships." ;
     owl:versionInfo "0.2.0" .
+
+:AWSManagedPolicy a owl:Class ;
+    rdfs:label "AWS Managed Policy" ;
+    rdfs:comment "An AWS-provided managed policy" ;
+    rdfs:subClassOf :ManagedPolicy ;
+    owl:disjointWith :CustomerManagedPolicy .
 
 :EBSSnapshot a owl:Class ;
     rdfs:label "EBS Snapshot" ;
@@ -28,6 +33,13 @@
     rdfs:label "EC2 Security Group" ;
     rdfs:comment "A security group controlling EC2 instance access" ;
     rdfs:subClassOf :SecurityResource .
+
+:ECSCluster a owl:Class ;
+    rdfs:label "ECS Cluster" ;
+    rdfs:comment "An Amazon Elastic Container Service cluster" ;
+    rdfs:subClassOf :ComputeResource ;
+    owl:disjointWith :EKSCluster,
+        :FargateService .
 
 :ECSTask a owl:Class ;
     rdfs:label "ECS Task" ;
@@ -303,15 +315,16 @@
 :hasPermissionBoundary a owl:ObjectProperty ;
     rdfs:label "has permission boundary" ;
     rdfs:comment "Relates IAM entities to their permission boundary policies" ;
-    rdfs:domain [ a owl:Class ;
-            owl:unionOf ( :IAMUser :IAMRole ) ] ;
+    rdfs:domain :IAMRole,
+        :IAMUser ;
     rdfs:range :IAMPermissionBoundary .
 
 :hasPolicyAttachment a owl:ObjectProperty ;
     rdfs:label "has policy attachment" ;
     rdfs:comment "Relates IAM entities to their attached policies" ;
-    rdfs:domain [ a owl:Class ;
-            owl:unionOf ( :IAMUser :IAMRole :IAMGroup ) ] ;
+    rdfs:domain :IAMGroup,
+        :IAMRole,
+        :IAMUser ;
     rdfs:range :IAMPolicy .
 
 :hasSource a owl:ObjectProperty ;
@@ -709,11 +722,6 @@
     rdfs:domain :EBSVolume ;
     rdfs:range xsd:string .
 
-:AWSManagedPolicy a owl:Class ;
-    rdfs:label "AWS Managed Policy" ;
-    rdfs:comment "An AWS-provided managed policy" ;
-    rdfs:subClassOf :ManagedPolicy .
-
 :Action a owl:Class ;
     rdfs:label "Action" ;
     rdfs:comment "An AWS API action" .
@@ -747,11 +755,6 @@
     rdfs:comment "A customer-created managed policy" ;
     rdfs:subClassOf :ManagedPolicy .
 
-:ECSCluster a owl:Class ;
-    rdfs:label "ECS Cluster" ;
-    rdfs:comment "An Amazon Elastic Container Service cluster" ;
-    rdfs:subClassOf :ComputeResource .
-
 :EKSPod a owl:Class ;
     rdfs:label "EKS Pod" ;
     rdfs:comment "A Kubernetes pod running in an EKS cluster" ;
@@ -765,11 +768,6 @@
     rdfs:label "EventBridge Target" ;
     rdfs:comment "A target for EventBridge rule events" ;
     rdfs:subClassOf :IntegrationResource .
-
-:FargateService a owl:Class ;
-    rdfs:label "Fargate Service" ;
-    rdfs:comment "A serverless container service using AWS Fargate" ;
-    rdfs:subClassOf :ComputeResource .
 
 :IAMPermissionBoundary a owl:Class ;
     rdfs:label "Permission Boundary" ;
@@ -1040,20 +1038,26 @@
     rdfs:comment "An Amazon Elastic Container Registry repository for container images" ;
     rdfs:subClassOf :StorageResource .
 
+:FargateService a owl:Class ;
+    rdfs:label "Fargate Service" ;
+    rdfs:comment "A serverless container service using AWS Fargate" ;
+    rdfs:subClassOf :ComputeResource .
+
 :IAMGroup a owl:Class ;
     rdfs:label "IAM Group" ;
     rdfs:comment "An IAM user group" ;
     rdfs:subClassOf :IdentityResource .
 
+:ManagedPolicy a owl:Class ;
+    rdfs:label "Managed Policy" ;
+    rdfs:comment "An IAM managed policy (AWS or Customer managed)" ;
+    rdfs:subClassOf :IAMPolicy ;
+    owl:disjointWith :InlinePolicy .
+
 :SNSSubscription a owl:Class ;
     rdfs:label "SNS Subscription" ;
     rdfs:comment "An SNS subscription connecting a topic to an endpoint" ;
     rdfs:subClassOf :IntegrationResource .
-
-:SecurityResource a owl:Class ;
-    rdfs:label "Security Resource" ;
-    rdfs:comment "Base class for security resources" ;
-    rdfs:subClassOf :AWSResource .
 
 :hasActivity a owl:ObjectProperty ;
     rdfs:label "has activity" ;
@@ -1113,11 +1117,6 @@
     rdfs:comment "An AWS account that can contain multiple services and resources" ;
     rdfs:subClassOf :AWSResource .
 
-:DatabaseResource a owl:Class ;
-    rdfs:label "Database Resource" ;
-    rdfs:comment "Base class for database resources" ;
-    rdfs:subClassOf :AWSResource .
-
 :EC2Instance a owl:Class ;
     rdfs:label "EC2 Instance" ;
     rdfs:comment "An Amazon EC2 virtual machine instance" ;
@@ -1126,7 +1125,8 @@
 :EKSCluster a owl:Class ;
     rdfs:label "EKS Cluster" ;
     rdfs:comment "An Amazon Elastic Kubernetes Service cluster" ;
-    rdfs:subClassOf :ComputeResource .
+    rdfs:subClassOf :ComputeResource ;
+    owl:disjointWith :FargateService .
 
 :EventBridge a owl:Class ;
     rdfs:label "EventBridge" ;
@@ -1140,11 +1140,6 @@
             owl:minCardinality "0"^^xsd:nonNegativeInteger ;
             owl:onProperty :memberOf ],
         :IdentityResource .
-
-:ManagedPolicy a owl:Class ;
-    rdfs:label "Managed Policy" ;
-    rdfs:comment "An IAM managed policy (AWS or Customer managed)" ;
-    rdfs:subClassOf :IAMPolicy .
 
 :APIGatewayMethod a owl:Class ;
     rdfs:label "API Gateway Method" ;
@@ -1186,15 +1181,19 @@
             owl:onProperty :hasTrustRelationship ],
         :IdentityResource .
 
-:MonitoringResource a owl:Class ;
-    rdfs:label "Monitoring Resource" ;
-    rdfs:comment "Base class for monitoring and logging resources" ;
-    rdfs:subClassOf :AWSResource .
-
 :SQSQueue a owl:Class ;
     rdfs:label "SQS Queue" ;
     rdfs:comment "An Amazon Simple Queue Service message queue" ;
     rdfs:subClassOf :IntegrationResource .
+
+:SecurityResource a owl:Class ;
+    rdfs:label "Security Resource" ;
+    rdfs:comment "Base class for security resources" ;
+    rdfs:subClassOf :AWSResource ;
+    owl:disjointWith :DatabaseResource,
+        :IdentityResource,
+        :IntegrationResource,
+        :MonitoringResource .
 
 :StepFunction a owl:Class ;
     rdfs:label "Step Function" ;
@@ -1222,20 +1221,23 @@
             owl:onProperty :hasEffect ],
         :IdentityResource .
 
-:IdentityResource a owl:Class ;
-    rdfs:label "Identity Resource" ;
-    rdfs:comment "Base class for identity and access management resources" ;
-    rdfs:subClassOf :AWSResource .
-
-:IntegrationResource a owl:Class ;
-    rdfs:label "Integration Resource" ;
-    rdfs:comment "Base class for application integration and messaging resources" ;
-    rdfs:subClassOf :AWSResource .
+:DatabaseResource a owl:Class ;
+    rdfs:label "Database Resource" ;
+    rdfs:comment "Base class for database resources" ;
+    rdfs:subClassOf :AWSResource ;
+    owl:disjointWith :IntegrationResource,
+        :MonitoringResource .
 
 :StorageResource a owl:Class ;
     rdfs:label "Storage Resource" ;
     rdfs:comment "Base class for storage resources" ;
-    rdfs:subClassOf :AWSResource .
+    rdfs:subClassOf :AWSResource ;
+    owl:disjointWith :DatabaseResource,
+        :IdentityResource,
+        :IntegrationResource,
+        :MonitoringResource,
+        :NetworkingResource,
+        :SecurityResource .
 
 :IAMPolicy a owl:Class ;
     rdfs:label "IAM Policy" ;
@@ -1245,15 +1247,46 @@
             owl:onProperty :hasStatement ],
         :IdentityResource .
 
-:NetworkingResource a owl:Class ;
-    rdfs:label "Networking Resource" ;
-    rdfs:comment "Base class for networking resources" ;
-    rdfs:subClassOf :AWSResource .
+:MonitoringResource a owl:Class ;
+    rdfs:label "Monitoring Resource" ;
+    rdfs:comment "Base class for monitoring and logging resources" ;
+    rdfs:subClassOf :AWSResource ;
+    owl:disjointWith :IntegrationResource .
+
+:IdentityResource a owl:Class ;
+    rdfs:label "Identity Resource" ;
+    rdfs:comment "Base class for identity and access management resources" ;
+    rdfs:subClassOf :AWSResource ;
+    owl:disjointWith :DatabaseResource,
+        :IntegrationResource,
+        :MonitoringResource .
 
 :ComputeResource a owl:Class ;
     rdfs:label "Compute Resource" ;
     rdfs:comment "Base class for compute resources" ;
+    rdfs:subClassOf :AWSResource ;
+    owl:disjointWith :DatabaseResource,
+        :IdentityResource,
+        :IntegrationResource,
+        :MonitoringResource,
+        :NetworkingResource,
+        :SecurityResource,
+        :StorageResource .
+
+:IntegrationResource a owl:Class ;
+    rdfs:label "Integration Resource" ;
+    rdfs:comment "Base class for application integration and messaging resources" ;
     rdfs:subClassOf :AWSResource .
+
+:NetworkingResource a owl:Class ;
+    rdfs:label "Networking Resource" ;
+    rdfs:comment "Base class for networking resources" ;
+    rdfs:subClassOf :AWSResource ;
+    owl:disjointWith :DatabaseResource,
+        :IdentityResource,
+        :IntegrationResource,
+        :MonitoringResource,
+        :SecurityResource .
 
 :AWSResource a owl:Class ;
     rdfs:label "AWS Resource" ;
@@ -1261,16 +1294,4 @@
     rdfs:subClassOf [ a owl:Restriction ;
             owl:cardinality "1"^^xsd:nonNegativeInteger ;
             owl:onProperty :arn ] .
-
-[] a owl:AllDisjointClasses ;
-    owl:members ( :ECSCluster :EKSCluster :FargateService ) .
-
-[] a owl:AllDisjointClasses ;
-    owl:members ( :AWSManagedPolicy :CustomerManagedPolicy ) .
-
-[] a owl:AllDisjointClasses ;
-    owl:members ( :ManagedPolicy :InlinePolicy ) .
-
-[] a owl:AllDisjointClasses ;
-    owl:members ( :ComputeResource :StorageResource :NetworkingResource :SecurityResource :IdentityResource :DatabaseResource :MonitoringResource :IntegrationResource ) .
 

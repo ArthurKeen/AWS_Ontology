@@ -82,29 +82,17 @@
     <owl:ObjectProperty rdf:about="#hasPolicyAttachment">
         <rdfs:label>has policy attachment</rdfs:label>
         <rdfs:comment>Relates IAM entities to their attached policies</rdfs:comment>
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="#IAMUser"/>
-                    <rdf:Description rdf:about="#IAMRole"/>
-                    <rdf:Description rdf:about="#IAMGroup"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
+        <rdfs:domain rdf:resource="#IAMUser"/>
+        <rdfs:domain rdf:resource="#IAMRole"/>
+        <rdfs:domain rdf:resource="#IAMGroup"/>
         <rdfs:range rdf:resource="#IAMPolicy"/>
     </owl:ObjectProperty>
 
     <owl:ObjectProperty rdf:about="#hasPermissionBoundary">
         <rdfs:label>has permission boundary</rdfs:label>
         <rdfs:comment>Relates IAM entities to their permission boundary policies</rdfs:comment>
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="#IAMUser"/>
-                    <rdf:Description rdf:about="#IAMRole"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
+        <rdfs:domain rdf:resource="#IAMUser"/>
+        <rdfs:domain rdf:resource="#IAMRole"/>
         <rdfs:range rdf:resource="#IAMPermissionBoundary"/>
     </owl:ObjectProperty>
 
@@ -1549,44 +1537,83 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    <!-- Disjoint Base Resource Classes -->
-    <owl:AllDisjointClasses>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="#ComputeResource"/>
-            <rdf:Description rdf:about="#StorageResource"/>
-            <rdf:Description rdf:about="#NetworkingResource"/>
-            <rdf:Description rdf:about="#SecurityResource"/>
-            <rdf:Description rdf:about="#IdentityResource"/>
-            <rdf:Description rdf:about="#DatabaseResource"/>
-            <rdf:Description rdf:about="#MonitoringResource"/>
-            <rdf:Description rdf:about="#IntegrationResource"/>
-        </owl:members>
-    </owl:AllDisjointClasses>
+    <!-- Disjoint Base Resource Classes - Using individual disjointWith statements for Protégé compatibility -->
+    
+    <!-- ComputeResource disjoint declarations -->
+    <owl:Class rdf:about="#ComputeResource">
+        <owl:disjointWith rdf:resource="#StorageResource"/>
+        <owl:disjointWith rdf:resource="#NetworkingResource"/>
+        <owl:disjointWith rdf:resource="#SecurityResource"/>
+        <owl:disjointWith rdf:resource="#IdentityResource"/>
+        <owl:disjointWith rdf:resource="#DatabaseResource"/>
+        <owl:disjointWith rdf:resource="#MonitoringResource"/>
+        <owl:disjointWith rdf:resource="#IntegrationResource"/>
+    </owl:Class>
+    
+    <!-- StorageResource disjoint declarations -->
+    <owl:Class rdf:about="#StorageResource">
+        <owl:disjointWith rdf:resource="#NetworkingResource"/>
+        <owl:disjointWith rdf:resource="#SecurityResource"/>
+        <owl:disjointWith rdf:resource="#IdentityResource"/>
+        <owl:disjointWith rdf:resource="#DatabaseResource"/>
+        <owl:disjointWith rdf:resource="#MonitoringResource"/>
+        <owl:disjointWith rdf:resource="#IntegrationResource"/>
+    </owl:Class>
+    
+    <!-- NetworkingResource disjoint declarations -->
+    <owl:Class rdf:about="#NetworkingResource">
+        <owl:disjointWith rdf:resource="#SecurityResource"/>
+        <owl:disjointWith rdf:resource="#IdentityResource"/>
+        <owl:disjointWith rdf:resource="#DatabaseResource"/>
+        <owl:disjointWith rdf:resource="#MonitoringResource"/>
+        <owl:disjointWith rdf:resource="#IntegrationResource"/>
+    </owl:Class>
+    
+    <!-- SecurityResource disjoint declarations -->
+    <owl:Class rdf:about="#SecurityResource">
+        <owl:disjointWith rdf:resource="#IdentityResource"/>
+        <owl:disjointWith rdf:resource="#DatabaseResource"/>
+        <owl:disjointWith rdf:resource="#MonitoringResource"/>
+        <owl:disjointWith rdf:resource="#IntegrationResource"/>
+    </owl:Class>
+    
+    <!-- IdentityResource disjoint declarations -->
+    <owl:Class rdf:about="#IdentityResource">
+        <owl:disjointWith rdf:resource="#DatabaseResource"/>
+        <owl:disjointWith rdf:resource="#MonitoringResource"/>
+        <owl:disjointWith rdf:resource="#IntegrationResource"/>
+    </owl:Class>
+    
+    <!-- DatabaseResource disjoint declarations -->
+    <owl:Class rdf:about="#DatabaseResource">
+        <owl:disjointWith rdf:resource="#MonitoringResource"/>
+        <owl:disjointWith rdf:resource="#IntegrationResource"/>
+    </owl:Class>
+    
+    <!-- MonitoringResource disjoint declarations -->
+    <owl:Class rdf:about="#MonitoringResource">
+        <owl:disjointWith rdf:resource="#IntegrationResource"/>
+    </owl:Class>
 
-    <!-- Disjoint IAM Policy Types -->
-    <owl:AllDisjointClasses>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="#ManagedPolicy"/>
-            <rdf:Description rdf:about="#InlinePolicy"/>
-        </owl:members>
-    </owl:AllDisjointClasses>
+    <!-- IAM Policy Types - Individual disjoint declarations -->
+    <owl:Class rdf:about="#ManagedPolicy">
+        <owl:disjointWith rdf:resource="#InlinePolicy"/>
+    </owl:Class>
 
-    <!-- Disjoint Managed Policy Types -->
-    <owl:AllDisjointClasses>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="#AWSManagedPolicy"/>
-            <rdf:Description rdf:about="#CustomerManagedPolicy"/>
-        </owl:members>
-    </owl:AllDisjointClasses>
+    <!-- Managed Policy Types - Individual disjoint declarations -->
+    <owl:Class rdf:about="#AWSManagedPolicy">
+        <owl:disjointWith rdf:resource="#CustomerManagedPolicy"/>
+    </owl:Class>
 
-    <!-- Disjoint Container Service Types -->
-    <owl:AllDisjointClasses>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="#ECSCluster"/>
-            <rdf:Description rdf:about="#EKSCluster"/>
-            <rdf:Description rdf:about="#FargateService"/>
-        </owl:members>
-    </owl:AllDisjointClasses>
+    <!-- Container Service Types - Individual disjoint declarations -->
+    <owl:Class rdf:about="#ECSCluster">
+        <owl:disjointWith rdf:resource="#EKSCluster"/>
+        <owl:disjointWith rdf:resource="#FargateService"/>
+    </owl:Class>
+    
+    <owl:Class rdf:about="#EKSCluster">
+        <owl:disjointWith rdf:resource="#FargateService"/>
+    </owl:Class>
 
     <!-- Enhanced Cardinality Constraints -->
     
