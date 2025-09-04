@@ -8,6 +8,12 @@ import os
 import sys
 from pathlib import Path
 
+# Add project root to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from tests.base_test import BaseOntologyTest
+from utils.common import get_ontology_files
+
 try:
     from rdflib import Graph, compare
     from rdflib.util import guess_format
@@ -16,14 +22,13 @@ except ImportError:
     sys.exit(1)
 
 
-class TestFormatSynchronization(unittest.TestCase):
+class TestFormatSynchronization(BaseOntologyTest):
     """Test that OWL and TTL files contain identical semantic content."""
     
     def setUp(self):
         """Set up test paths."""
-        self.project_root = Path(__file__).parent.parent
-        self.owl_file = self.project_root / "ontology" / "aws.owl"
-        self.ttl_file = self.project_root / "ontology" / "aws.ttl"
+        super().setUp()
+        # Files are already available from base class
         
     def test_files_exist(self):
         """Test that both ontology files exist."""

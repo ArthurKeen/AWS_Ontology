@@ -593,4 +593,172 @@
 
 :EventBridgeExecutionPolicy rdf:type :CustomerManagedPolicy ;
     rdfs:label "EventBridge Execution Policy" ;
-    :policyDocument "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"sns:Publish\",\"sqs:SendMessage\",\"lambda:InvokeFunction\"],\"Resource\":\"*\"}]}" . 
+    :policyDocument "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"sns:Publish\",\"sqs:SendMessage\",\"lambda:InvokeFunction\"],\"Resource\":\"*\"}]}" .
+
+# Examples for Missing Compute Services
+:WebTierAutoScalingGroup rdf:type :AutoScalingGroup ;
+    rdfs:label "Web Tier Auto Scaling Group" ;
+    :arn "arn:aws:autoscaling:us-east-1:123456789012:autoScalingGroup:uuid:autoScalingGroupName/web-tier-asg" ;
+    :desiredCount "3"^^xsd:integer ;
+    :minInstances "2"^^xsd:integer ;
+    :maxInstances "10"^^xsd:integer ;
+    :instanceType "t3.medium" ;
+    :belongsToVPC :ProductionVPC ;
+    :environment "production" .
+
+:ContainerInstance1 rdf:type :ECSContainerInstance ;
+    rdfs:label "ECS Container Instance 1" ;
+    :arn "arn:aws:ecs:us-east-1:123456789012:container-instance/production-cluster/uuid" ;
+    :instanceType "m5.large" ;
+    :runsOnCluster :ProductionECSCluster ;
+    :environment "production" .
+
+# Examples for Missing Storage Services
+:AppDataFileSystem rdf:type :EFSFileSystem ;
+    rdfs:label "Application Data File System" ;
+    :arn "arn:aws:elasticfilesystem:us-east-1:123456789012:file-system/fs-12345678" ;
+    :throughputMode "provisioned"^^xsd:string ;
+    :performanceMode "generalPurpose"^^xsd:string ;
+    :encrypted "true"^^xsd:boolean ;
+    :belongsToVPC :ProductionVPC ;
+    :environment "production" .
+
+:ProductionDBCluster rdf:type :RDSCluster ;
+    rdfs:label "Production Database Cluster" ;
+    :arn "arn:aws:rds:us-east-1:123456789012:cluster:production-cluster" ;
+    :engine "aurora-mysql"^^xsd:string ;
+    :engineVersion "8.0.mysql_aurora.3.02.0"^^xsd:string ;
+    :multiAZ "true"^^xsd:boolean ;
+    :encrypted "true"^^xsd:boolean ;
+    :belongsToVPC :ProductionVPC ;
+    :environment "production" .
+
+:DBClusterSnapshot rdf:type :RDSSnapshot ;
+    rdfs:label "Database Cluster Snapshot" ;
+    :arn "arn:aws:rds:us-east-1:123456789012:cluster-snapshot:production-cluster-snapshot-2024" ;
+    :snapshotType "manual"^^xsd:string ;
+    :createdFrom :ProductionDBCluster ;
+    :encrypted "true"^^xsd:boolean ;
+    :environment "production" .
+
+# Examples for Missing Database Services
+:UserDataTable rdf:type :DynamoDBTable ;
+    rdfs:label "User Data Table" ;
+    :arn "arn:aws:dynamodb:us-east-1:123456789012:table/UserData" ;
+    :tableName "UserData"^^xsd:string ;
+    :billingMode "PAY_PER_REQUEST"^^xsd:string ;
+    :encrypted "true"^^xsd:boolean ;
+    :environment "production" .
+
+:LogsDocumentCluster rdf:type :DocumentDBCluster ;
+    rdfs:label "Application Logs Document Cluster" ;
+    :arn "arn:aws:docdb:us-east-1:123456789012:cluster:logs-cluster" ;
+    :engine "docdb"^^xsd:string ;
+    :engineVersion "4.0.0"^^xsd:string ;
+    :encrypted "true"^^xsd:boolean ;
+    :belongsToVPC :ProductionVPC ;
+    :environment "production" .
+
+:AnalyticsWarehouse rdf:type :RedshiftCluster ;
+    rdfs:label "Analytics Data Warehouse" ;
+    :arn "arn:aws:redshift:us-east-1:123456789012:cluster:analytics-warehouse" ;
+    :nodeType "dc2.large"^^xsd:string ;
+    :numberOfNodes "3"^^xsd:integer ;
+    :encrypted "true"^^xsd:boolean ;
+    :belongsToVPC :ProductionVPC ;
+    :environment "production" .
+
+# Examples for Missing Networking Services
+:LoadBalancerEIP rdf:type :ElasticIP ;
+    rdfs:label "Load Balancer Elastic IP" ;
+    :arn "arn:aws:ec2:us-east-1:123456789012:elastic-ip/eipalloc-12345678" ;
+    :publicIP "203.0.113.12"^^xsd:string ;
+    :domain "vpc"^^xsd:string ;
+    :belongsToVPC :ProductionVPC ;
+    :environment "production" .
+
+:WebTierTargetGroup rdf:type :ELBv2TargetGroup ;
+    rdfs:label "Web Tier Target Group" ;
+    :arn "arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/web-tier/1234567890123456" ;
+    :targetType "instance"^^xsd:string ;
+    :protocol "HTTP"^^xsd:string ;
+    :port "80"^^xsd:integer ;
+    :healthCheckPath "/health"^^xsd:string ;
+    :belongsToVPC :ProductionVPC ;
+    :environment "production" .
+
+:DatabaseNetworkInterface rdf:type :NetworkInterface ;
+    rdfs:label "Database Network Interface" ;
+    :arn "arn:aws:ec2:us-east-1:123456789012:network-interface/eni-12345678" ;
+    :interfaceType "interface"^^xsd:string ;
+    :privateIpAddress "10.0.1.100"^^xsd:string ;
+    :belongsToVPC :ProductionVPC ;
+    :attachedToSubnet :ProdPrivateSubnet ;
+    :environment "production" .
+
+:PrivateNetworkACL rdf:type :NetworkACL ;
+    rdfs:label "Private Network ACL" ;
+    :arn "arn:aws:ec2:us-east-1:123456789012:network-acl/acl-12345678" ;
+    :isDefault "false"^^xsd:boolean ;
+    :belongsToVPC :ProductionVPC ;
+    :environment "production" .
+
+:S3VPCEndpoint rdf:type :VPCEndpoint ;
+    rdfs:label "S3 VPC Endpoint" ;
+    :arn "arn:aws:ec2:us-east-1:123456789012:vpc-endpoint/vpce-12345678" ;
+    :vpcEndpointType "Gateway"^^xsd:string ;
+    :serviceName "com.amazonaws.us-east-1.s3"^^xsd:string ;
+    :belongsToVPC :ProductionVPC ;
+    :environment "production" .
+
+# Examples for Missing Security Services
+:AppDataEncryptionKey rdf:type :KMSKey ;
+    rdfs:label "Application Data Encryption Key" ;
+    :arn "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012" ;
+    :keyUsage "ENCRYPT_DECRYPT"^^xsd:string ;
+    :keySpec "SYMMETRIC_DEFAULT"^^xsd:string ;
+    :multiRegion "false"^^xsd:boolean ;
+    :environment "production" .
+
+:AppDataKeyAlias rdf:type :KMSAlias ;
+    rdfs:label "Application Data Key Alias" ;
+    :arn "arn:aws:kms:us-east-1:123456789012:alias/app-data-key" ;
+    :aliasName "alias/app-data-key"^^xsd:string ;
+    :targetKeyId :AppDataEncryptionKey ;
+    :environment "production" .
+
+:DatabasePassword rdf:type :SecretsManagerSecret ;
+    rdfs:label "Database Password Secret" ;
+    :arn "arn:aws:secretsmanager:us-east-1:123456789012:secret:prod/db/password-AbCdEf" ;
+    :secretName "prod/db/password"^^xsd:string ;
+    :encryptedWith :AppDataEncryptionKey ;
+    :environment "production" .
+
+:HTTPSInboundRule rdf:type :SecurityGroupRule ;
+    rdfs:label "HTTPS Inbound Rule" ;
+    :ruleType "ingress"^^xsd:string ;
+    :protocol "tcp"^^xsd:string ;
+    :fromPort "443"^^xsd:integer ;
+    :toPort "443"^^xsd:integer ;
+    :cidrBlock "0.0.0.0/0"^^xsd:string ;
+    :memberOf :WebAppSecurityGroup ;
+    :environment "production" .
+
+# Examples for Missing Identity Services
+:EC2InstanceProfile rdf:type :IAMInstanceProfile ;
+    rdfs:label "EC2 Instance Profile" ;
+    :arn "arn:aws:iam::123456789012:instance-profile/EC2-S3-Access-Profile" ;
+    :instanceProfileName "EC2-S3-Access-Profile"^^xsd:string ;
+    :hasRole :EC2ServiceRole ;
+    :environment "production" .
+
+# Examples for Missing Content Delivery Services
+:CDNDistribution rdf:type :CloudFrontDistribution ;
+    rdfs:label "CDN Distribution" ;
+    :arn "arn:aws:cloudfront::123456789012:distribution/E123456789012" ;
+    :distributionId "E123456789012"^^xsd:string ;
+    :domainName "d123456789012.cloudfront.net"^^xsd:string ;
+    :enabled "true"^^xsd:boolean ;
+    :priceClass "PriceClass_100"^^xsd:string ;
+    :defaultRootObject "index.html"^^xsd:string ;
+    :environment "production" . 

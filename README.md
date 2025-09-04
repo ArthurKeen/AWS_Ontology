@@ -48,6 +48,7 @@ The AWS Ontology is a production-ready semantic web resource that:
 - Python 3.8+
 - RDF processing tools (rdflib)
 - Optional: Protégé for visual exploration
+- Optional: ArangoDB for graph database integration
 
 ### Installation
 
@@ -55,6 +56,10 @@ The AWS Ontology is a production-ready semantic web resource that:
 # Clone the repository
 git clone https://github.com/ArthurKeen/AWS_Ontology.git
 cd AWS_Ontology
+
+# Set up virtual environment (recommended)
+python3 -m venv venv
+source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
@@ -227,12 +232,24 @@ make test-performance # Performance benchmarks
 
 ## 🔗 Integration
 
-### Graph Database Transformations
+### Graph Database Integration
 The ontology supports multiple graph database representations:
 - **RDF Triplestores**: Direct loading as RDF/OWL with full semantic reasoning support
+- **ArangoDB**: Multi-model database integration using ArangoRDF for graph analytics and AQL queries
 - **Labeled Property Graphs (LPG)**: Transform to property graph format with labeled nodes and edges for modern graph databases
 - **Property Graphs (PG)**: Convert to property graph structures optimized for performance and graph analytics
 - **Custom Transformations**: Flexible transformation patterns for domain-specific use cases and requirements
+
+#### ArangoDB Integration
+```bash
+# Import AWS ontology into ArangoDB
+python tools/import_to_arangodb.py
+
+# Query with AQL
+from arango import ArangoClient
+client = ArangoClient(hosts='http://localhost:8529')
+db = client.db('aws_ontology', username='root', password='openSesame')
+```
 
 ### Analysis Tools
 - **Python**: rdflib, owlready2, networkx
@@ -247,6 +264,7 @@ The ontology supports multiple graph database representations:
 - **[Protégé Guide](docs/PROTEGE_GUIDE.md)**: Visual exploration
 - **[SPARQL Examples](docs/SPARQL_EXAMPLES.md)**: Query collection
 - **[Usage Guide](docs/USAGE_GUIDE.md)**: Comprehensive usage
+- **[ArangoDB Integration](docs/ARANGODB_INTEGRATION.md)**: Graph database integration
 - **[Maintenance Strategy](docs/MAINTENANCE_STRATEGY.md)**: Update processes
 
 ## 🤝 Community

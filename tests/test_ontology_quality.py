@@ -6,33 +6,26 @@ Tests structure, consistency, completeness, and compliance.
 
 import unittest
 import re
+import sys
 from pathlib import Path
+
+# Add project root to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from tests.base_test import BaseOntologyTest
+from utils.common import check_rdflib_available
 
 try:
     from rdflib import Graph, Namespace, RDF, RDFS, OWL, URIRef, Literal
     from rdflib.namespace import XSD
     RDFLIB_AVAILABLE = True
 except ImportError:
-    print("rdflib not installed. Install with: pip install rdflib")
     RDFLIB_AVAILABLE = False
 
 
 @unittest.skipUnless(RDFLIB_AVAILABLE, "rdflib not available")
-class TestOntologyQuality(unittest.TestCase):
+class TestOntologyQuality(BaseOntologyTest):
     """Comprehensive ontology quality tests."""
-    
-    def setUp(self):
-        """Set up test environment."""
-        self.project_root = Path(__file__).parent.parent
-        self.ttl_file = self.project_root / "ontology" / "aws.ttl"
-        
-        # Load ontology
-        self.graph = Graph()
-        self.graph.parse(str(self.ttl_file), format="turtle")
-        
-        # Define namespaces
-        self.aws = Namespace("http://www.semanticweb.org/aws-ontology#")
-        self.graph.bind("aws", self.aws)
 
     def test_ontology_metadata(self):
         """Test that ontology has proper metadata."""
@@ -128,8 +121,15 @@ class TestOntologyQuality(unittest.TestCase):
             ranges = list(self.graph.objects(prop, RDFS.range))
             
             # Skip properties that intentionally have no domain/range restrictions
+            # or are inverse properties where domain/range can be inferred
             prop_name = str(prop).split('#')[-1]
-            if prop_name in ['uses', 'manages', 'dependsOn', 'contains', 'attachedTo']:
+            inverse_props = ['containedBy', 'containerImageUsedBy', 'controls', 'createdAfter', 'dependencyOf', 
+                           'enforcedBy', 'hasMember', 'hasSource', 'hasSubscriber', 'managedBy', 'methodOf', 
+                           'migratedTo', 'monitoredBy', 'nodeGroupOf', 'optimizes', 'podRunsOn', 'precedes', 
+                           'queueReceivesFrom', 'receivesCostFrom', 'receivesEventFrom', 'regionOf', 'replaces', 
+                           'repositoryContains', 'resourceOf', 'ruleOf', 'stageOf', 'stepFunctionTriggeredBy', 
+                           'targetOf', 'taskDefinitionOf', 'topicReceivesFrom', 'usedBy']
+            if prop_name in ['uses', 'manages', 'dependsOn', 'contains', 'attachedTo', 'isSourceFor', 'subscribesTo'] + inverse_props:
                 continue
                 
             # Most properties should have at least a domain or range

@@ -6,7 +6,7 @@
 <http://www.semanticweb.org/aws-ontology> a owl:Ontology ;
     rdfs:label "AWS Resource Ontology" ;
     rdfs:comment "An ontology for describing AWS resources, services, and their relationships." ;
-    owl:versionInfo "0.2.0" .
+    owl:versionInfo "0.4.0" .
 
 :AWSManagedPolicy a owl:Class ;
     rdfs:label "AWS Managed Policy" ;
@@ -110,21 +110,29 @@
 :approvesUseOf a owl:ObjectProperty ;
     rdfs:label "approves use of" ;
     rdfs:comment "Inverse of requires approval from" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range :AWSResource ;
     owl:inverseOf :requiresApprovalFrom .
 
 :attachmentOf a owl:ObjectProperty ;
     rdfs:label "attachment of" ;
     rdfs:comment "Inverse of attached to" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range :AWSResource ;
     owl:inverseOf :attachedTo .
 
 :audits a owl:ObjectProperty ;
     rdfs:label "audits" ;
     rdfs:comment "Inverse of audited by" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range :AWSResource ;
     owl:inverseOf :auditedBy .
 
 :availabilityZoneOf a owl:ObjectProperty ;
     rdfs:label "availability zone of" ;
     rdfs:comment "Inverse of has availability zone" ;
+    rdfs:domain :AvailabilityZone ;
+    rdfs:range :AWSRegion ;
     owl:inverseOf :hasAvailabilityZone .
 
 :belongsToVPC a owl:ObjectProperty ;
@@ -153,6 +161,8 @@
 :chargedBy a owl:ObjectProperty ;
     rdfs:label "charged by" ;
     rdfs:comment "Inverse of incurs charge for" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range :AWSResource ;
     owl:inverseOf :incursChargeFor .
 
 :cidrBlock a owl:DatatypeProperty ;
@@ -164,6 +174,8 @@
 :clusterHosts a owl:ObjectProperty ;
     rdfs:label "cluster hosts" ;
     rdfs:comment "Inverse of runs on cluster" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range :AWSResource ;
     owl:inverseOf :runsOnCluster .
 
 :complianceStandard a owl:DatatypeProperty ;
@@ -836,7 +848,9 @@
 
 :attachedTo a owl:ObjectProperty ;
     rdfs:label "attached to" ;
-    rdfs:comment "Relates resources that are attached to other resources" .
+    rdfs:comment "Relates resources that are attached to other resources" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range :AWSResource .
 
 :auditedBy a owl:ObjectProperty ;
     rdfs:label "audited by" ;
@@ -1095,7 +1109,9 @@
 
 :runsOnCluster a owl:ObjectProperty ;
     rdfs:label "runs on cluster" ;
-    rdfs:comment "Relates container services/tasks to their cluster" .
+    rdfs:comment "Relates container services/tasks to their cluster" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range :AWSResource .
 
 :storedInRepository a owl:ObjectProperty ;
     rdfs:label "stored in repository" ;
@@ -1208,6 +1224,108 @@
             owl:onProperty :hasEffect ],
         :IdentityResource .
 
+# Missing Compute Services
+:AutoScalingGroup a owl:Class ;
+    rdfs:label "Auto Scaling Group" ;
+    rdfs:comment "An Amazon EC2 Auto Scaling group" ;
+    rdfs:subClassOf :ComputeResource .
+
+:ECSContainerInstance a owl:Class ;
+    rdfs:label "ECS Container Instance" ;
+    rdfs:comment "An EC2 instance registered to an ECS cluster" ;
+    rdfs:subClassOf :ComputeResource .
+
+# Missing Storage Services
+:EFSFileSystem a owl:Class ;
+    rdfs:label "EFS File System" ;
+    rdfs:comment "An Amazon Elastic File System" ;
+    rdfs:subClassOf :StorageResource .
+
+:RDSCluster a owl:Class ;
+    rdfs:label "RDS Cluster" ;
+    rdfs:comment "An Amazon RDS database cluster" ;
+    rdfs:subClassOf :DatabaseResource .
+
+:RDSSnapshot a owl:Class ;
+    rdfs:label "RDS Snapshot" ;
+    rdfs:comment "A snapshot of an RDS database instance or cluster" ;
+    rdfs:subClassOf :StorageResource .
+
+# Missing Database Services  
+:DynamoDBTable a owl:Class ;
+    rdfs:label "DynamoDB Table" ;
+    rdfs:comment "An Amazon DynamoDB table" ;
+    rdfs:subClassOf :DatabaseResource .
+
+:DocumentDBCluster a owl:Class ;
+    rdfs:label "DocumentDB Cluster" ;
+    rdfs:comment "An Amazon DocumentDB cluster" ;
+    rdfs:subClassOf :DatabaseResource .
+
+:RedshiftCluster a owl:Class ;
+    rdfs:label "Redshift Cluster" ;
+    rdfs:comment "An Amazon Redshift data warehouse cluster" ;
+    rdfs:subClassOf :DatabaseResource .
+
+# Missing Networking Services
+:ElasticIP a owl:Class ;
+    rdfs:label "Elastic IP" ;
+    rdfs:comment "An Elastic IP address" ;
+    rdfs:subClassOf :NetworkingResource .
+
+:ELBv2TargetGroup a owl:Class ;
+    rdfs:label "ELBv2 Target Group" ;
+    rdfs:comment "An Application Load Balancer or Network Load Balancer target group" ;
+    rdfs:subClassOf :NetworkingResource .
+
+:NetworkInterface a owl:Class ;
+    rdfs:label "Network Interface" ;
+    rdfs:comment "An Elastic Network Interface (ENI)" ;
+    rdfs:subClassOf :NetworkingResource .
+
+:NetworkACL a owl:Class ;
+    rdfs:label "Network ACL" ;
+    rdfs:comment "A network access control list" ;
+    rdfs:subClassOf :SecurityResource .
+
+:VPCEndpoint a owl:Class ;
+    rdfs:label "VPC Endpoint" ;
+    rdfs:comment "A VPC endpoint for connecting to AWS services" ;
+    rdfs:subClassOf :NetworkingResource .
+
+# Missing Security Services
+:KMSKey a owl:Class ;
+    rdfs:label "KMS Key" ;
+    rdfs:comment "An AWS Key Management Service encryption key" ;
+    rdfs:subClassOf :SecurityResource .
+
+:KMSAlias a owl:Class ;
+    rdfs:label "KMS Alias" ;
+    rdfs:comment "An alias for a KMS key" ;
+    rdfs:subClassOf :SecurityResource .
+
+:SecretsManagerSecret a owl:Class ;
+    rdfs:label "Secrets Manager Secret" ;
+    rdfs:comment "A secret stored in AWS Secrets Manager" ;
+    rdfs:subClassOf :SecurityResource .
+
+:SecurityGroupRule a owl:Class ;
+    rdfs:label "Security Group Rule" ;
+    rdfs:comment "A rule within a security group" ;
+    rdfs:subClassOf :SecurityResource .
+
+# Missing Identity Services
+:IAMInstanceProfile a owl:Class ;
+    rdfs:label "IAM Instance Profile" ;
+    rdfs:comment "An instance profile that provides temporary credentials to EC2 instances" ;
+    rdfs:subClassOf :IdentityResource .
+
+# Missing Content Delivery Services
+:CloudFrontDistribution a owl:Class ;
+    rdfs:label "CloudFront Distribution" ;
+    rdfs:comment "An Amazon CloudFront content delivery network distribution" ;
+    rdfs:subClassOf :AWSResource .
+
 :SecurityResource a owl:Class ;
     rdfs:label "Security Resource" ;
     rdfs:comment "Base class for security resources" ;
@@ -1291,6 +1409,253 @@
         :IntegrationResource,
         :MonitoringResource,
         :SecurityResource .
+
+:targetKeyId a owl:ObjectProperty ;
+    rdfs:label "target key ID" ;
+    rdfs:comment "References the target KMS key for an alias" ;
+    rdfs:domain :KMSAlias ;
+    rdfs:range :KMSKey .
+
+:protocol a owl:DatatypeProperty ;
+    rdfs:label "protocol" ;
+    rdfs:comment "Network protocol (HTTP, HTTPS, TCP, UDP, etc.)" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range xsd:string .
+
+# Additional data properties for newly added services
+:aliasName a owl:DatatypeProperty ;
+    rdfs:label "alias name" ;
+    rdfs:comment "The name of a KMS key alias" ;
+    rdfs:domain :KMSAlias ;
+    rdfs:range xsd:string .
+
+:attachedToSubnet a owl:ObjectProperty ;
+    rdfs:label "attached to subnet" ;
+    rdfs:comment "Network interface attachment to subnet" ;
+    rdfs:domain :NetworkInterface ;
+    rdfs:range :Subnet .
+
+:createdFrom a owl:ObjectProperty ;
+    rdfs:label "created from" ;
+    rdfs:comment "Resource created from another resource" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range :AWSResource .
+
+:defaultRootObject a owl:DatatypeProperty ;
+    rdfs:label "default root object" ;
+    rdfs:comment "Default root object for CloudFront distribution" ;
+    rdfs:domain :CloudFrontDistribution ;
+    rdfs:range xsd:string .
+
+:distributionId a owl:DatatypeProperty ;
+    rdfs:label "distribution ID" ;
+    rdfs:comment "CloudFront distribution identifier" ;
+    rdfs:domain :CloudFrontDistribution ;
+    rdfs:range xsd:string .
+
+:domain a owl:DatatypeProperty ;
+    rdfs:label "domain" ;
+    rdfs:comment "Domain type (vpc, standard, etc.)" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range xsd:string .
+
+:domainName a owl:DatatypeProperty ;
+    rdfs:label "domain name" ;
+    rdfs:comment "Domain name for CloudFront distribution" ;
+    rdfs:domain :CloudFrontDistribution ;
+    rdfs:range xsd:string .
+
+:enabled a owl:DatatypeProperty ;
+    rdfs:label "enabled" ;
+    rdfs:comment "Whether resource is enabled" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range xsd:boolean .
+
+:encrypted a owl:DatatypeProperty ;
+    rdfs:label "encrypted" ;
+    rdfs:comment "Whether resource is encrypted" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range xsd:boolean .
+
+:encryptedWith a owl:ObjectProperty ;
+    rdfs:label "encrypted with" ;
+    rdfs:comment "KMS key used for encryption" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range :KMSKey .
+
+:engine a owl:DatatypeProperty ;
+    rdfs:label "engine" ;
+    rdfs:comment "Database engine type" ;
+    rdfs:domain :DatabaseResource ;
+    rdfs:range xsd:string .
+
+:engineVersion a owl:DatatypeProperty ;
+    rdfs:label "engine version" ;
+    rdfs:comment "Database engine version" ;
+    rdfs:domain :DatabaseResource ;
+    rdfs:range xsd:string .
+
+:fromPort a owl:DatatypeProperty ;
+    rdfs:label "from port" ;
+    rdfs:comment "Starting port number for security group rule" ;
+    rdfs:domain :SecurityGroupRule ;
+    rdfs:range xsd:integer .
+
+:hasRole a owl:ObjectProperty ;
+    rdfs:label "has role" ;
+    rdfs:comment "IAM role associated with instance profile" ;
+    rdfs:domain :IAMInstanceProfile ;
+    rdfs:range :IAMRole .
+
+:healthCheckPath a owl:DatatypeProperty ;
+    rdfs:label "health check path" ;
+    rdfs:comment "Health check path for target group" ;
+    rdfs:domain :ELBv2TargetGroup ;
+    rdfs:range xsd:string .
+
+:instanceProfileName a owl:DatatypeProperty ;
+    rdfs:label "instance profile name" ;
+    rdfs:comment "Name of IAM instance profile" ;
+    rdfs:domain :IAMInstanceProfile ;
+    rdfs:range xsd:string .
+
+:interfaceType a owl:DatatypeProperty ;
+    rdfs:label "interface type" ;
+    rdfs:comment "Type of network interface" ;
+    rdfs:domain :NetworkInterface ;
+    rdfs:range xsd:string .
+
+:keySpec a owl:DatatypeProperty ;
+    rdfs:label "key spec" ;
+    rdfs:comment "KMS key specification" ;
+    rdfs:domain :KMSKey ;
+    rdfs:range xsd:string .
+
+:keyUsage a owl:DatatypeProperty ;
+    rdfs:label "key usage" ;
+    rdfs:comment "KMS key usage" ;
+    rdfs:domain :KMSKey ;
+    rdfs:range xsd:string .
+
+:maxInstances a owl:DatatypeProperty ;
+    rdfs:label "max instances" ;
+    rdfs:comment "Maximum number of instances" ;
+    rdfs:domain :AutoScalingGroup ;
+    rdfs:range xsd:integer .
+
+:minInstances a owl:DatatypeProperty ;
+    rdfs:label "min instances" ;
+    rdfs:comment "Minimum number of instances" ;
+    rdfs:domain :AutoScalingGroup ;
+    rdfs:range xsd:integer .
+
+:multiAZ a owl:DatatypeProperty ;
+    rdfs:label "multi AZ" ;
+    rdfs:comment "Whether resource spans multiple availability zones" ;
+    rdfs:domain :DatabaseResource ;
+    rdfs:range xsd:boolean .
+
+:multiRegion a owl:DatatypeProperty ;
+    rdfs:label "multi region" ;
+    rdfs:comment "Whether KMS key is multi-region" ;
+    rdfs:domain :KMSKey ;
+    rdfs:range xsd:boolean .
+
+:nodeType a owl:DatatypeProperty ;
+    rdfs:label "node type" ;
+    rdfs:comment "Type of compute node" ;
+    rdfs:domain :DatabaseResource ;
+    rdfs:range xsd:string .
+
+:numberOfNodes a owl:DatatypeProperty ;
+    rdfs:label "number of nodes" ;
+    rdfs:comment "Number of nodes in cluster" ;
+    rdfs:domain :DatabaseResource ;
+    rdfs:range xsd:integer .
+
+:performanceMode a owl:DatatypeProperty ;
+    rdfs:label "performance mode" ;
+    rdfs:comment "EFS performance mode" ;
+    rdfs:domain :EFSFileSystem ;
+    rdfs:range xsd:string .
+
+:port a owl:DatatypeProperty ;
+    rdfs:label "port" ;
+    rdfs:comment "Network port number" ;
+    rdfs:domain :AWSResource ;
+    rdfs:range xsd:integer .
+
+:priceClass a owl:DatatypeProperty ;
+    rdfs:label "price class" ;
+    rdfs:comment "CloudFront price class" ;
+    rdfs:domain :CloudFrontDistribution ;
+    rdfs:range xsd:string .
+
+:privateIpAddress a owl:DatatypeProperty ;
+    rdfs:label "private IP address" ;
+    rdfs:comment "Private IP address" ;
+    rdfs:domain :NetworkInterface ;
+    rdfs:range xsd:string .
+
+:publicIP a owl:DatatypeProperty ;
+    rdfs:label "public IP" ;
+    rdfs:comment "Public IP address" ;
+    rdfs:domain :ElasticIP ;
+    rdfs:range xsd:string .
+
+:ruleType a owl:DatatypeProperty ;
+    rdfs:label "rule type" ;
+    rdfs:comment "Security group rule type (ingress/egress)" ;
+    rdfs:domain :SecurityGroupRule ;
+    rdfs:range xsd:string .
+
+:secretName a owl:DatatypeProperty ;
+    rdfs:label "secret name" ;
+    rdfs:comment "Name of the secret in Secrets Manager" ;
+    rdfs:domain :SecretsManagerSecret ;
+    rdfs:range xsd:string .
+
+:serviceName a owl:DatatypeProperty ;
+    rdfs:label "service name" ;
+    rdfs:comment "Name of AWS service for VPC endpoint" ;
+    rdfs:domain :VPCEndpoint ;
+    rdfs:range xsd:string .
+
+:snapshotType a owl:DatatypeProperty ;
+    rdfs:label "snapshot type" ;
+    rdfs:comment "Type of database snapshot" ;
+    rdfs:domain :RDSSnapshot ;
+    rdfs:range xsd:string .
+
+:tableName a owl:DatatypeProperty ;
+    rdfs:label "table name" ;
+    rdfs:comment "DynamoDB table name" ;
+    rdfs:domain :DynamoDBTable ;
+    rdfs:range xsd:string .
+
+:targetType a owl:DatatypeProperty ;
+    rdfs:label "target type" ;
+    rdfs:comment "Type of load balancer target" ;
+    rdfs:domain :ELBv2TargetGroup ;
+    rdfs:range xsd:string .
+
+:throughputMode a owl:DatatypeProperty ;
+    rdfs:label "throughput mode" ;
+    rdfs:comment "EFS throughput mode" ;
+    rdfs:domain :EFSFileSystem ;
+    rdfs:range xsd:string .
+
+:toPort a owl:DatatypeProperty ;
+    rdfs:label "to port" ;
+    rdfs:comment "Ending port number for security group rule" ;
+    rdfs:domain :SecurityGroupRule ;
+    rdfs:range xsd:integer .
+
+:vpcEndpointType a owl:DatatypeProperty ;
+    rdfs:label "VPC endpoint type" ;
+    rdfs:comment "Type of VPC endpoint (Gateway/Interface)" ;
+    rdfs:domain :VPCEndpoint ;
+    rdfs:range xsd:string .
 
 :AWSResource a owl:Class ;
     rdfs:label "AWS Resource" ;

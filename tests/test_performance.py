@@ -7,33 +7,32 @@ Tests loading time, query performance, and memory usage.
 import unittest
 import time
 import tracemalloc
+import sys
 from pathlib import Path
+
+# Add project root to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from tests.base_test import BaseOntologyTest
 
 try:
     from rdflib import Graph, Namespace, RDF, RDFS, OWL
     RDFLIB_AVAILABLE = True
 except ImportError:
-    print("rdflib not installed. Install with: pip install rdflib")
     RDFLIB_AVAILABLE = False
 
 
 @unittest.skipUnless(RDFLIB_AVAILABLE, "rdflib not available")
-class TestOntologyPerformance(unittest.TestCase):
+class TestOntologyPerformance(BaseOntologyTest):
     """Performance tests for the ontology."""
-    
-    def setUp(self):
-        """Set up test environment."""
-        self.project_root = Path(__file__).parent.parent
-        self.ttl_file = self.project_root / "ontology" / "aws.ttl"
-        self.owl_file = self.project_root / "ontology" / "aws.owl"
-        self.examples_file = self.project_root / "ontology" / "examples.ttl"
 
     def test_ttl_loading_performance(self):
         """Test TTL file loading performance."""
         start_time = time.time()
         
-        graph = Graph()
-        graph.parse(str(self.ttl_file), format="turtle")
+        # Use base class method for consistency
+        from utils.common import load_ontology_graph, TTL_FORMAT
+        graph = load_ontology_graph(self.ttl_file, TTL_FORMAT)
         
         load_time = time.time() - start_time
         

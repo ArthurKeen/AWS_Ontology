@@ -175,27 +175,96 @@ Affected Services:
 # Install and start ArangoDB
 # See: https://www.arangodb.com/download/
 
+# macOS (using Homebrew)
+brew install arangodb
+
+# Ubuntu/Debian
+curl -OL https://download.arangodb.com/arangodb310/DEBIAN/Release.key
+sudo apt-key add - < Release.key
+echo 'deb https://download.arangodb.com/arangodb310/DEBIAN/ /' | sudo tee /etc/apt/sources.list.d/arangodb.list
+sudo apt-get update
+sudo apt-get install arangodb3
+
+# Docker
+docker run -p 8529:8529 -e ARANGO_ROOT_PASSWORD=openSesame arangodb/arangodb:latest
+
+# Start ArangoDB service
+sudo systemctl start arangodb3  # Linux
+# Or start manually: arangod
+
 # Verify ArangoDB is running (default: localhost:8529)
 curl http://localhost:8529/_api/version
 ```
 
-### Running Transformations
+### Installing ArangoRDF Dependencies
 
 ```bash
-# Transform ontology to ArangoDB schemas
-make transform
+# Activate virtual environment
+source venv/bin/activate
 
-# Or run directly with options
-python tools/transform_ontology.py --host localhost --port 8529 --database my_aws_ontology
+# Install ArangoDB Python driver
+pip install python-arango
+
+# ArangoRDF should already be installed from local clone
+# If not available, install from source:
+# git clone https://github.com/arangoml/arango-rdf.git ~/code/ArangoRDF
+# pip install -e ~/code/ArangoRDF
 ```
 
-### Transformation Patterns
+### Importing AWS Ontology into ArangoDB
 
-The tool supports three transformation patterns:
+```bash
+# Basic import (ontology + examples)
+python tools/import_to_arangodb.py
 
-1. **RPT (Resource Pattern Transformation)**: Simple graph structure
-2. **PGT (Property Graph Transformation)**: Balanced approach
-3. **LPGT (Labeled Property Graph Transformation)**: Full RDF semantics
+# Import with custom settings
+python tools/import_to_arangodb.py --host http://localhost:8529 --username root --password openSesame --database aws_ontology
+
+# Import only ontology (no examples)
+python tools/import_to_arangodb.py --no-examples
+
+# Import without overwriting existing data
+python tools/import_to_arangodb.py --no-overwrite
+
+# Import and run test queries
+python tools/import_to_arangodb.py --test-queries
+```
+
+### Querying the Imported Data
+
+Once imported, you can query the ontology using AQL (ArangoDB Query Language):
+
+```python
+from arango import ArangoClient
+
+# Connect to database
+client = ArangoClient(hosts='http://localhost:8529')
+db = client.db('aws_ontology', username='root', password='openSesame')
+
+# Query all AWS service classes
+aql = """
+FOR doc IN statements
+    FILTER doc.predicate == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+    FILTER doc.object == "http://www.w3.org/2002/07/owl#Class"
+    FILTER CONTAINS(doc.subject, "aws-ontology")
+    RETURN doc.subject
+"""
+
+cursor = db.aql.execute(aql)
+aws_classes = [doc for doc in cursor]
+print(f"Found {len(aws_classes)} AWS classes")
+```
+
+### Advanced ArangoDB Usage
+
+For comprehensive ArangoDB integration documentation, including:
+- Graph traversal queries
+- Performance optimization
+- Custom collection mapping
+- SPARQL-to-AQL conversion
+- Troubleshooting
+
+See: **[docs/ARANGODB_INTEGRATION.md](ARANGODB_INTEGRATION.md)**
 
 ## Development Workflow
 
@@ -300,6 +369,25 @@ pip install feedparser requests
 
 # If no changes detected
 python tools/monitor_aws_changes.py --source whats-new --days 30  # Longer timeframe
+```
+
+**ArangoDB Integration Issues:**
+```bash
+# If ArangoDB connection fails
+# Check if ArangoDB is running
+curl http://localhost:8529/_api/version
+
+# If ArangoRDF import fails
+# Ensure ArangoRDF is installed from local clone
+pip install -e ~/code/ArangoRDF
+
+# If authentication fails
+# Check username/password (default: root/openSesame)
+python tools/import_to_arangodb.py --username root --password YOUR_PASSWORD
+
+# If import is slow
+# Try importing without examples first
+python tools/import_to_arangodb.py --no-examples
 ```
 
 ### Getting Help

@@ -74,7 +74,7 @@ if python3 -c "import rdflib" 2>/dev/null; then
     echo -e "${YELLOW}Running semantic synchronization check...${NC}"
     
     # Run the sync check
-    if python3 tools/sync_formats.py check --owl "$OWL_FILE" --ttl "$TTL_FILE" 2>/dev/null; then
+    if python3 tools/sync_formats.py check 2>/dev/null; then
         echo -e "${GREEN}✅ Ontology files are synchronized${NC}"
         exit 0
     else

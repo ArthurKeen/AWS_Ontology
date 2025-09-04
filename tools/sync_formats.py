@@ -1,12 +1,24 @@
 #!/usr/bin/env python3
 """
-Utility script to synchronize OWL and TTL ontology formats.
-Converts between formats and ensures they remain synchronized.
+Utility to synchronize OWL and TTL ontology formats.
+Ensures both formats contain identical semantic content.
 """
 
-import argparse
 import sys
+import argparse
 from pathlib import Path
+
+# Add project root to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from utils.common import (
+    get_project_root,
+    get_ontology_files,
+    load_ontology_graph,
+    TTL_FORMAT,
+    XML_FORMAT,
+    validate_file_exists
+)
 
 try:
     from rdflib import Graph
@@ -18,9 +30,9 @@ except ImportError:
 def convert_ttl_to_owl(ttl_file: Path, owl_file: Path) -> bool:
     """Convert TTL file to OWL/XML format."""
     try:
-        # Load TTL file
-        graph = Graph()
-        graph.parse(str(ttl_file), format="turtle")
+        graph = load_ontology_graph(ttl_file, TTL_FORMAT)
+        if graph is None:
+            return False
         
         # Serialize to OWL/XML
         owl_content = graph.serialize(format="xml")
@@ -43,9 +55,9 @@ def convert_ttl_to_owl(ttl_file: Path, owl_file: Path) -> bool:
 def convert_owl_to_ttl(owl_file: Path, ttl_file: Path) -> bool:
     """Convert OWL/XML file to TTL format."""
     try:
-        # Load OWL file
-        graph = Graph()
-        graph.parse(str(owl_file), format="xml")
+        graph = load_ontology_graph(owl_file, XML_FORMAT)
+        if graph is None:
+            return False
         
         # Serialize to TTL
         ttl_content = graph.serialize(format="turtle")
@@ -97,6 +109,19 @@ def check_sync_status(owl_file: Path, ttl_file: Path) -> bool:
         return False
 
 
+def sync_formats(direction: str = "ttl_to_owl") -> bool:
+    """Synchronize ontology formats."""
+    ttl_file, owl_file, _ = get_ontology_files()
+    
+    if direction == "ttl_to_owl":
+        return convert_ttl_to_owl(ttl_file, owl_file)
+    elif direction == "owl_to_ttl":
+        return convert_owl_to_ttl(owl_file, ttl_file)
+    else:
+        print("❌ Invalid direction")
+        return False
+
+
 def main():
     """Main function."""
     parser = argparse.ArgumentParser(
@@ -115,17 +140,10 @@ def main():
         help="Path to OWL file (default: ontology/aws.owl)"
     )
     
-    parser.add_argument(
-        "--ttl",
-        default="ontology/aws.ttl",
-        help="Path to TTL file (default: ontology/aws.ttl)"
-    )
-    
     args = parser.parse_args()
     
     # Resolve paths
     owl_file = Path(args.owl)
-    ttl_file = Path(args.ttl)
     
     # Validate files exist for relevant operations
     if args.action in ["check", "owl-to-ttl", "sync"]:
@@ -133,25 +151,24 @@ def main():
             print(f"❌ OWL file not found: {owl_file}")
             sys.exit(1)
     
-    if args.action in ["check", "ttl-to-owl", "sync"]:
-        if not ttl_file.exists():
-            print(f"❌ TTL file not found: {ttl_file}")
-            sys.exit(1)
-    
     # Execute action
     success = True
     
     if args.action == "check":
+        ttl_file, owl_file, _ = get_ontology_files()
         success = check_sync_status(owl_file, ttl_file)
         
     elif args.action == "ttl-to-owl":
+        ttl_file, owl_file, _ = get_ontology_files()
         success = convert_ttl_to_owl(ttl_file, owl_file)
         
     elif args.action == "owl-to-ttl":
+        ttl_file, owl_file, _ = get_ontology_files()
         success = convert_owl_to_ttl(owl_file, ttl_file)
         
     elif args.action == "sync":
         # Check if they're already synchronized
+        ttl_file, owl_file, _ = get_ontology_files()
         if check_sync_status(owl_file, ttl_file):
             print("Files are already synchronized!")
         else:

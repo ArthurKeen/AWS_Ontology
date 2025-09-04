@@ -4,40 +4,33 @@ Tests for validating example instances against the AWS ontology.
 """
 
 import unittest
+import sys
 from pathlib import Path
+
+# Add project root to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from tests.base_test import BaseOntologyTest
 
 try:
     from rdflib import Graph, Namespace, RDF, RDFS, OWL, URIRef
     RDFLIB_AVAILABLE = True
 except ImportError:
-    print("rdflib not installed. Install with: pip install rdflib")
     RDFLIB_AVAILABLE = False
 
 
 @unittest.skipUnless(RDFLIB_AVAILABLE, "rdflib not available")
-class TestExamplesValidation(unittest.TestCase):
+class TestExamplesValidation(BaseOntologyTest):
     """Test validation of example instances."""
     
     def setUp(self):
         """Set up test environment."""
-        self.project_root = Path(__file__).parent.parent
-        self.ontology_file = self.project_root / "ontology" / "aws.ttl"
-        self.examples_file = self.project_root / "ontology" / "examples.ttl"
-        
-        # Load ontology and examples
-        self.ontology = Graph()
-        self.ontology.parse(str(self.ontology_file), format="turtle")
-        
-        self.examples = Graph()
-        self.examples.parse(str(self.examples_file), format="turtle")
-        
-        # Combine for validation
-        self.combined = Graph()
-        self.combined += self.ontology
-        self.combined += self.examples
-        
-        # Define namespace
-        self.aws = Namespace("http://www.semanticweb.org/aws-ontology#")
+        super().setUp()
+        # Load examples and combined graphs using base class methods
+        self.examples = self.load_examples_graph()
+        self.combined = self.load_combined_graph()
+        # Alias for backward compatibility
+        self.ontology = self.graph
 
     def test_examples_file_exists(self):
         """Test that examples file exists and is readable."""

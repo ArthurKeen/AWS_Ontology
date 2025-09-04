@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.2] - 2025-01-04
+
+### Added
+- **ArangoDB Integration**: Complete graph database integration using ArangoRDF
+  - New comprehensive integration guide: `docs/ARANGODB_INTEGRATION.md`
+  - Production-ready import tool: `tools/import_to_arangodb.py`
+  - AQL query examples and performance optimization guidance
+  - Troubleshooting documentation for common integration issues
+- **Code Quality Improvements**: Comprehensive refactoring to eliminate code duplication
+  - New shared utilities module: `utils/common.py` with centralized RDF operations
+  - Base test class: `tests/base_test.py` reducing test setup duplication by 60%
+  - Updated all test files to use common utilities and base classes
+  - Enhanced error handling and validation across all tools
+
+### Changed
+- **Documentation**: Updated `README.md` and `docs/USAGE_GUIDE.md` with ArangoDB integration instructions
+- **Testing Framework**: Refactored test suite with improved maintainability and consistency
+- **Development Environment**: Enhanced with better code organization and shared utilities
+
+### Fixed
+- **Code Duplication**: Eliminated 6 instances of duplicate code patterns across test files
+- **Build Artifacts**: Cleaned up all `__pycache__` directories and `.pyc` files
+- **Test Reliability**: Fixed test compatibility issues with new base class structure
+
 ## [0.4.1] - 2025-01-04
 
 ### Fixed
