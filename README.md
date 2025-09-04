@@ -6,8 +6,8 @@ A comprehensive semantic ontology for Amazon Web Services (AWS) resources and th
 
 The AWS Ontology is a production-ready semantic web resource that:
 
-- **Models 70+ AWS resource types** across compute, storage, networking, containers, API services, and integration
-- **Defines 150+ relationships** including temporal, cost, and compliance associations
+- **Models 88 AWS resource types** across compute, storage, networking, containers, API services, and integration
+- **Defines 196 relationships** including temporal, cost, and compliance associations
 - **Provides comprehensive examples** with real-world AWS configurations
 - **Supports multiple formats** (OWL/XML, Turtle, with format synchronization)
 - **Includes semantic constraints** (cardinality, disjoint classes, property characteristics)
@@ -15,23 +15,26 @@ The AWS Ontology is a production-ready semantic web resource that:
 
 ## 📊 Current Metrics
 
-| Metric | Count | Growth |
-|--------|-------|--------|
-| **Total Triples** | 1,095 | +84% |
-| **Classes** | 71 | +103% |
-| **Object Properties** | 93 | +107% |
-| **Data Properties** | 62 | +148% |
-| **Example Instances** | 390+ | New |
+| Metric | Count | Recent Growth |
+|--------|-------|---------------|
+| **Total Triples** | 1,380 | +285 triples |
+| **Classes** | 88 | +17 new AWS services |
+| **Object Properties** | 98 | +5 new properties |
+| **Data Properties** | 98 | +36 new properties |
+| **Example Instances** | 535+ | +143 new examples |
 
 ## 🏗️ Ontology Structure
 
 ### Core Service Categories
 - **🔧 Container Services**: ECS, EKS, Fargate, ECR
 - **🔗 API & Integration**: API Gateway, Step Functions, EventBridge, SNS, SQS
-- **💻 Compute**: EC2, Lambda, Auto Scaling
-- **💾 Storage**: S3, EBS, RDS
-- **🌐 Networking**: VPC, Security Groups, Load Balancers
-- **🔐 Identity & Access**: IAM Users, Roles, Policies
+- **💻 Compute**: EC2, Lambda, Auto Scaling Groups
+- **💾 Storage**: S3, EBS, EFS, RDS Clusters & Snapshots
+- **🗄️ Database**: DynamoDB, DocumentDB, Redshift, RDS
+- **🌐 Networking**: VPC, Security Groups, Load Balancers, Elastic IPs, NAT/Internet Gateways, VPC Endpoints
+- **🔐 Identity & Access**: IAM Users, Roles, Policies, Instance Profiles
+- **🔒 Security**: KMS Keys & Aliases, Secrets Manager, Network ACLs, Security Group Rules
+- **🌍 Content Delivery**: CloudFront Distributions
 - **📊 Monitoring**: CloudWatch, CloudTrail
 
 ### Advanced Relationship Types
@@ -266,12 +269,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
-### Latest Enhancements (v0.3.0)
-- ✅ Container Services (ECS, EKS, Fargate, ECR)
-- ✅ API & Integration Services (API Gateway, Step Functions, EventBridge)
-- ✅ Enhanced Relationships (temporal, cost, compliance)
-- ✅ Semantic Axioms (cardinality constraints, disjoint classes)
-- ✅ Protégé Integration & Documentation
+### Latest Enhancements (v0.4.0)
+- ✅ Missing AWS Services (17 new classes: AutoScaling, EFS, DynamoDB, DocumentDB, Redshift, etc.)
+- ✅ Enhanced Storage & Database Coverage (EFS, RDS Clusters, DynamoDB, DocumentDB, Redshift)
+- ✅ Complete Networking Support (Elastic IPs, Target Groups, Network Interfaces, ACLs, VPC Endpoints)
+- ✅ Security Services (KMS Keys & Aliases, Secrets Manager, Security Group Rules)
+- ✅ Content Delivery (CloudFront Distributions)
+- ✅ 143+ New Example Instances with realistic AWS configurations
 
 ---
 

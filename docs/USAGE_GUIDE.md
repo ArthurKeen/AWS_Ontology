@@ -11,13 +11,18 @@ This guide provides step-by-step instructions for using all the tools and featur
 git clone https://github.com/ArthurKeen/AWS_Ontology.git
 cd AWS_Ontology
 
-# Set up Python virtual environment (recommended)
+# Set up Python virtual environment (required)
 python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install dependencies
-make install-deps
-# OR manually: pip install -r requirements.txt
+# Install core dependencies
+pip install rdflib owlready2 feedparser
+
+# Install ArangoRDF from local clone (if available)
+pip install -e ~/code/ArangoRDF
+
+# OR install remaining dependencies manually
+pip install python-arango
 
 # Set up Git hooks
 make setup-hooks

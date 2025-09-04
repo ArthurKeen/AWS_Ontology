@@ -2,8 +2,12 @@
 rdflib>=6.0.0
 owlready2>=0.45
 
+# AWS monitoring dependencies
+feedparser>=6.0.0
+
 # ArangoDB integration dependencies
-arangordf>=0.1.0
+# Note: Install ArangoRDF from local clone: pip install -e ~/code/ArangoRDF
+# arangordf>=0.1.0
 python-arango>=7.5.0
 
 # AWS Ontology dependency (public repository)

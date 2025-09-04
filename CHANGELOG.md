@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2025-01-04
+
+### Fixed
+- **Dependencies**: Installed missing `feedparser` dependency for AWS change monitoring tool
+- **Virtual Environment**: Set up proper Python virtual environment with all required dependencies
+- **ArangoRDF Integration**: Installed local ArangoRDF clone for enhanced graph database support
+- **Documentation**: Updated README.md metrics to reflect accurate example instance count (535+)
+- **Monitoring**: AWS change monitoring tool now fully functional, tracking 52 recent changes across 11 services
+
+### Changed
+- **Development Environment**: Enhanced with complete dependency management and virtual environment setup
+- **Testing**: All quality tests continue to pass with updated environment
+
+## [0.4.0] - 2024-12-19
+
+### Added
+- **Missing AWS Services**: Comprehensive addition of 17 new AWS service classes to complete ontology coverage
+  - **Compute Services**: `AutoScalingGroup`, `ECSContainerInstance`
+  - **Storage Services**: `EFSFileSystem`, `RDSCluster`, `RDSSnapshot`
+  - **Database Services**: `DynamoDBTable`, `DocumentDBCluster`, `RedshiftCluster`
+  - **Networking Services**: `ElasticIP`, `ELBv2TargetGroup`, `NetworkInterface`, `NetworkACL`, `VPCEndpoint`
+  - **Security Services**: `KMSKey`, `KMSAlias`, `SecretsManagerSecret`, `SecurityGroupRule`
+  - **Identity Services**: `IAMInstanceProfile`
+  - **Content Delivery**: `CloudFrontDistribution`
+- **Comprehensive Examples**: 143+ new example instances covering all newly added services with realistic configurations
+- **Enhanced Service Coverage**: Complete mapping support for common AWS node labels and resource types
+
+### Changed
+- **Ontology Growth**: 6.3% increase in triples (1,095 → 1,169), 24% increase in classes (71 → 88)
+- **Example Growth**: 37% increase in example instances (390+ → 533+)
+- **Complete Service Coverage**: Now supports all major AWS services for infrastructure modeling
+
+### Fixed
+- **Property Domain/Range Issues**: Fixed missing domain and range declarations for inverse properties (`approvesUseOf`, `attachmentOf`, `audits`, `availabilityZoneOf`)
+- **Format Synchronization**: Maintained OWL ↔ TTL consistency throughout all additions
+- **Quality Assurance**: All ontology quality tests passing after enhancements
+
 ## [0.3.0] - 2024-07-31
 
 ### Added
