@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **README.md**: Enhanced project introduction and value proposition
+  - Added compelling teaser in opening paragraph highlighting ArangoDB integration benefits
+  - Toned down promotional language to be more professional and factual
+  - Added "Why Use the AWS Ontology?" section explaining project development benefits
+  - Included Protégé visualization showing ontology class hierarchy and relationships
+  - Added hyperlink to ArangoDB integration documentation
 - **ArangoDB Documentation**: Enhanced integration guide with comprehensive benefits explanation
   - Added detailed explanation of flexible physical schema options (LPG, PG, RDF)
   - Highlighted accelerated project development advantages for AWS graph use cases

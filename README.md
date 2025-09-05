@@ -1,6 +1,6 @@
 # AWS Ontology
 
-A comprehensive semantic ontology for Amazon Web Services (AWS) resources and their relationships. This project provides a formal OWL ontology that models AWS infrastructure, services, and their complex interdependencies for advanced analysis, compliance monitoring, and automation.
+A comprehensive semantic ontology for Amazon Web Services (AWS) resources and their relationships. This project provides a formal OWL ontology that models AWS infrastructure, services, and their complex interdependencies for advanced analysis, compliance monitoring, and automation. The AWS ontology can be used to bootstrap AWS graph projects for infrastructure mapping, security analysis, and cost optimization. For example, it can be used with the [ArangoDB semantic layer integration](docs/ARANGODB_INTEGRATION.md) to generate flexible physical graph models (LPG, Property Graphs, RDF).
 
 ## 🎯 Overview
 
@@ -25,6 +25,10 @@ The AWS Ontology is a production-ready semantic web resource that:
 
 ## 🏗️ Ontology Structure
 
+### Visual Overview
+![AWS Ontology Class Hierarchy](docs/images/ontology-protege-view.png)
+*AWS Ontology class hierarchy and relationships as viewed in Protégé*
+
 ### Core Service Categories
 - **🔧 Container Services**: ECS, EKS, Fargate, ECR
 - **🔗 API & Integration**: API Gateway, Step Functions, EventBridge, SNS, SQS
@@ -41,6 +45,29 @@ The AWS Ontology is a production-ready semantic web resource that:
 - **⏰ Temporal**: `createdBefore`, `replacedBy`, `migratedFrom`
 - **💰 Cost**: `incursChargeFor`, `optimizedBy`, `allocatesCostTo`
 - **🛡️ Compliance**: `compliesWith`, `auditedBy`, `controlledBy`
+
+## 💡 Why Use the AWS Ontology?
+
+The AWS Ontology provides a structured, semantic foundation for understanding and analyzing AWS infrastructure relationships. Here's why it's valuable:
+
+### 🎯 **Project Development Benefits**
+The structured semantic relationships in the ontology support various AWS infrastructure analysis projects:
+
+- **🏗️ Infrastructure Dependency Mapping**: Visualize and analyze complex resource relationships across your AWS environment
+- **🔍 Impact Analysis**: Understand cascading effects of changes before implementation
+- **🛡️ Security Policy Validation**: Ensure compliance and identify security gaps through relationship analysis
+- **💰 Cost Optimization**: Discover resource relationships that drive costs and optimization opportunities
+- **🏢 Multi-Account Governance**: Track and manage resources across organizational boundaries
+- **📋 Automated Documentation**: Generate up-to-date architecture diagrams and dependency maps
+- **🔧 Resource Discovery**: Find orphaned resources and understand their connections
+
+### 🔄 **Graph Database Integration**
+The ontology can be imported into graph databases for enhanced querying and analysis capabilities. For example, the ArangoDB integration using ArangoRDF supports multiple physical graph models:
+- **Labeled Property Graphs (LPG)**: Industry-standard format for maximum compatibility
+- **ArangoDB-native Property Graphs**: Optimized for performance and native capabilities
+- **RDF Graph Schemas**: Maintain semantic web standards while leveraging multi-model features
+
+This approach allows you to choose the most appropriate representation for your specific analysis requirements.
 
 ## 🚀 Quick Start
 
