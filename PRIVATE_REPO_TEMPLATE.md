@@ -25,7 +25,7 @@ cp ../AWS_Ontology/tools/README.md docs/arango_integration.md
 
 ### 4. Create requirements.txt
 ```txt
-git+https://github.com/ArthurKeen/AWS_Ontology.git@main
+git+https://github.com/YOUR_USERNAME/AWS_Ontology.git@main
 arangordf>=0.1.0
 python-arango>=7.5.0
 rdflib>=6.0.0
@@ -40,7 +40,7 @@ Private repository for ArangoDB transformations and graph database implementatio
 
 ## Overview
 
-This repository contains proprietary tools and implementations for transforming the [AWS Ontology](https://github.com/ArthurKeen/AWS_Ontology) into ArangoDB graph databases.
+This repository contains proprietary tools and implementations for transforming the [AWS Ontology](https://github.com/YOUR_USERNAME/AWS_Ontology) into ArangoDB graph databases.
 
 ## Features
 
@@ -106,7 +106,7 @@ aws-ontology-arango/
 
 ## Dependencies
 
-- [AWS Ontology](https://github.com/ArthurKeen/AWS_Ontology) - Core semantic model
+- [AWS Ontology](https://github.com/YOUR_USERNAME/AWS_Ontology) - Core semantic model
 - ArangoRDF - Graph transformation library
 - ArangoDB - Target graph database
 - Python 3.8+ - Runtime environment
@@ -175,7 +175,7 @@ git commit -m "Initial private repository setup
 - Documentation and examples framework"
 
 # Create remote repository on GitHub (private)
-git remote add origin https://github.com/ArthurKeen/aws-ontology-arango.git
+git remote add origin https://github.com/YOUR_USERNAME/aws-ontology-arango.git
 git push -u origin main
 ```
 
@@ -206,7 +206,7 @@ The private repository will depend on the public ontology:
 
 ```bash
 # Install public ontology as dependency
-pip install git+https://github.com/ArthurKeen/AWS_Ontology.git@main
+pip install git+https://github.com/YOUR_USERNAME/AWS_Ontology.git@main
 
 # Use in transformations
 from aws_ontology import load_ontology

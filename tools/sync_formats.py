@@ -9,7 +9,8 @@ import argparse
 from pathlib import Path
 
 # Add project root to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
 
 from utils.common import (
     get_project_root,
@@ -19,6 +20,8 @@ from utils.common import (
     XML_FORMAT,
     validate_file_exists
 )
+from utils.cli_common import create_base_parser, handle_keyboard_interrupt
+from utils.logging_config import setup_tool_logging
 
 try:
     from rdflib import Graph
@@ -122,10 +125,13 @@ def sync_formats(direction: str = "ttl_to_owl") -> bool:
         return False
 
 
+@handle_keyboard_interrupt
 def main():
     """Main function."""
-    parser = argparse.ArgumentParser(
-        description="Synchronize OWL and TTL ontology formats"
+    parser = create_base_parser(
+        "sync_formats",
+        "Synchronize OWL and TTL ontology formats",
+        version="0.4.0"
     )
     
     parser.add_argument(
@@ -141,6 +147,9 @@ def main():
     )
     
     args = parser.parse_args()
+    
+    # Set up logging
+    logger = setup_tool_logging("sync_formats", args.verbose)
     
     # Resolve paths
     owl_file = Path(args.owl)

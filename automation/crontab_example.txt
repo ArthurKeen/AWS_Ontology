@@ -6,8 +6,8 @@
 # IMPORTANT: Set these environment variables at the top of your crontab:
 # PATH=/usr/local/bin:/usr/bin:/bin
 # SHELL=/bin/bash
-# HOME=/Users/yourusername
-# PROJECT_DIR=/Users/yourusername/code/AWS_Ontology
+# HOME=/home/yourusername
+# PROJECT_DIR=/path/to/AWS_Ontology
 
 # =====================================================
 # OPTION 1: Individual Cron Jobs (Simple)
@@ -85,13 +85,13 @@
 # SHELL=/bin/bash
 # 
 # # Set home directory
-# HOME=/Users/yourusername
+# HOME=/home/yourusername
 # 
 # # Project directory (adjust path as needed)
-# PROJECT_DIR=/Users/yourusername/code/AWS_Ontology
+# PROJECT_DIR=/path/to/AWS_Ontology
 # 
 # # Python virtual environment
-# VIRTUAL_ENV=/Users/yourusername/code/AWS_Ontology/venv
+# VIRTUAL_ENV=/path/to/AWS_Ontology/venv
 # 
 # # Email for cron job output (optional)
 # MAILTO=your-email@example.com

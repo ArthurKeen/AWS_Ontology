@@ -23,6 +23,15 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Set
 import re
+import sys
+import logging
+
+# Add project root to path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+from utils.cli_common import create_base_parser, handle_keyboard_interrupt
+from utils.logging_config import setup_tool_logging
 
 
 class AWSChangeMonitor:
@@ -51,13 +60,13 @@ class AWSChangeMonitor:
 
     def monitor_whats_new(self, days: int = 7) -> List[Dict]:
         """Monitor AWS What's New RSS feed for recent changes."""
-        print(f"🔍 Monitoring AWS What's New for the last {days} days...")
+        logging.info(f"Monitoring AWS What's New for the last {days} days...")
         
         feed_url = "https://aws.amazon.com/new/feed/"
         try:
             feed = feedparser.parse(feed_url)
         except Exception as e:
-            print(f"❌ Error fetching RSS feed: {e}")
+            logging.error(f"Error fetching RSS feed: {e}")
             return []
         
         cutoff_date = datetime.now() - timedelta(days=days)
@@ -83,12 +92,12 @@ class AWSChangeMonitor:
             
             recent_changes.append(change)
         
-        print(f"📊 Found {len(recent_changes)} recent changes")
+        logging.info(f"Found {len(recent_changes)} recent changes")
         return recent_changes
 
     def monitor_cloudformation_resources(self, compare_with_cache: bool = True) -> Dict:
         """Monitor CloudFormation resource types for new services."""
-        print("🔍 Monitoring CloudFormation resource types...")
+        logging.info("Monitoring CloudFormation resource types...")
         
         cache_file = self.output_dir / "cf_resources_cache.json"
         
@@ -114,9 +123,9 @@ class AWSChangeMonitor:
                 result['new_resources'] = list(new_resources)
                 result['new_count'] = len(new_resources)
                 
-                print(f"📊 Found {len(new_resources)} new CloudFormation resource types")
+                logging.info(f"Found {len(new_resources)} new CloudFormation resource types")
             except Exception as e:
-                print(f"⚠️  Error comparing with cache: {e}")
+                logging.warning(f"Error comparing with cache: {e}")
         
         # Update cache
         cache_data = {
@@ -131,7 +140,7 @@ class AWSChangeMonitor:
 
     def monitor_api_docs(self, services: List[str] = None) -> List[Dict]:
         """Monitor AWS API documentation for changes (placeholder)."""
-        print("🔍 Monitoring AWS API documentation...")
+        logging.info("Monitoring AWS API documentation...")
         
         if services is None:
             services = list(self.core_services)
@@ -150,7 +159,7 @@ class AWSChangeMonitor:
             }
             changes.append(change)
         
-        print("⚠️  API documentation monitoring requires additional implementation")
+        logging.warning("API documentation monitoring requires additional implementation")
         return changes
 
     def generate_report(self, changes: List[Dict], output_file: str = None) -> str:
@@ -204,7 +213,7 @@ class AWSChangeMonitor:
         with open(output_file, 'w') as f:
             json.dump(report, f, indent=2)
         
-        print(f"📄 Report saved to: {output_file}")
+        logging.info(f"Report saved to: {output_file}")
         return output_file
 
     def print_summary(self, changes: List[Dict]):
@@ -333,9 +342,14 @@ class AWSChangeMonitor:
         return sample_resources
 
 
+@handle_keyboard_interrupt
 def main():
     """Main function."""
-    parser = argparse.ArgumentParser(description='Monitor AWS changes for ontology updates')
+    parser = create_base_parser(
+        "monitor_aws_changes",
+        "Monitor AWS changes for ontology updates",
+        version="0.4.0"
+    )
     
     parser.add_argument('--source', choices=['whats-new', 'cloudformation', 'api-docs', 'all'],
                        default='whats-new', help='Source to monitor')
@@ -350,6 +364,9 @@ def main():
                        help='Suppress console output')
     
     args = parser.parse_args()
+    
+    # Set up logging
+    logger = setup_tool_logging("monitor_aws_changes", args.verbose)
     
     monitor = AWSChangeMonitor()
     all_changes = []

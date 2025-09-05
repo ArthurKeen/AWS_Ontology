@@ -1,6 +1,6 @@
 [Unit]
 Description=AWS Ontology Monitoring Service
-Documentation=https://github.com/ArthurKeen/AWS_Ontology
+Documentation=https://github.com/YOUR_USERNAME/AWS_Ontology
 After=network-online.target
 Wants=network-online.target
 

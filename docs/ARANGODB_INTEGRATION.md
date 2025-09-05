@@ -45,7 +45,7 @@ For comprehensive installation instructions and additional deployment options, i
 docker run -d \
   --name arangodb \
   -p 8529:8529 \
-  -e ARANGO_ROOT_PASSWORD=openSesame \
+  -e ARANGO_ROOT_PASSWORD=${ARANGO_PASSWORD:-openSesame} \
   arangodb/arangodb:latest
 
 # Verify ArangoDB is running
@@ -61,7 +61,7 @@ For enterprise features, you can use the Enterprise Edition:
 docker run -d \
   --name arangodb-ee \
   -p 8529:8529 \
-  -e ARANGO_ROOT_PASSWORD=openSesame \
+  -e ARANGO_ROOT_PASSWORD=${ARANGO_PASSWORD:-openSesame} \
   -e ARANGO_LICENSE_KEY=your-license-key \
   arangodb/enterprise:latest
 ```
@@ -104,7 +104,7 @@ docker rm arangodb
 
 **Web Interface**: Access ArangoDB at `http://localhost:8529`
 - **Username**: `root`
-- **Password**: `openSesame` (or your custom password)
+- **Password**: Set via `ARANGO_PASSWORD` environment variable (default: `openSesame`)
 
 #### Persistent Data Storage
 
@@ -118,7 +118,7 @@ docker volume create arangodb_data
 docker run -d \
   --name arangodb \
   -p 8529:8529 \
-  -e ARANGO_ROOT_PASSWORD=openSesame \
+  -e ARANGO_ROOT_PASSWORD=${ARANGO_PASSWORD:-openSesame} \
   -v arangodb_data:/var/lib/arangodb3 \
   arangodb/arangodb:latest
 ```
@@ -134,15 +134,17 @@ source venv/bin/activate
 # Install core dependencies (should already be installed)
 pip install rdflib owlready2
 
-# Install ArangoRDF from local clone (as per project setup)
-# Note: ArangoRDF is installed from ~/code/ArangoRDF due to PyPI unavailability
+# Install ArangoRDF from PyPI
+pip install arango-rdf
 ```
 
 ## Basic Import Process
 
 ### 1. Create Import Script
 
-Create a script to import the AWS ontology:
+The following script imports the AWS ontology using the **RDF Graph Schema** (default). This creates a triple-based structure in ArangoDB where each RDF statement becomes a document in the `statements` collection.
+
+For other graph types (LPG or PG), see the configuration examples at the end of this section.
 
 ```python
 #!/usr/bin/env python3
@@ -151,13 +153,15 @@ Import AWS Ontology into ArangoDB using ArangoRDF.
 """
 
 import sys
+import os
 from pathlib import Path
 from arango import ArangoClient
 from arango_rdf import ArangoRDF
 from rdflib import Graph
 
 # Add project root to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
 from utils.common import get_ontology_files, load_ontology_graph, TTL_FORMAT
 
 def import_aws_ontology():
@@ -192,24 +196,25 @@ def import_aws_ontology():
     db_name = 'aws_ontology'
     try:
         # Try to create database (will fail if exists)
-        sys_db = client.db('_system', username='root', password='openSesame')
+        sys_db = client.db('_system', username='root', password=os.getenv('ARANGO_PASSWORD', 'openSesame'))
         db = sys_db.create_database(db_name)
         print(f"✅ Created database: {db_name}")
     except:
         # Database exists, connect to it
-        db = client.db(db_name, username='root', password='openSesame')
+        db = client.db(db_name, username='root', password=os.getenv('ARANGO_PASSWORD', 'openSesame'))
         print(f"✅ Connected to existing database: {db_name}")
     
     # 3. Initialize ArangoRDF
     print("🔧 Initializing ArangoRDF...")
     arango_rdf = ArangoRDF(db)
     
-    # 4. Import RDF data
-    print("📥 Importing RDF data into ArangoDB...")
+    # 4. Import RDF data (creates RDF Graph Schema by default)
+    print("📥 Importing RDF data into ArangoDB as RDF Graph Schema...")
     try:
-        # Import the combined graph
+        # Import the combined graph - creates triple-based structure
         arango_rdf.insert_rdf(combined_graph, overwrite=True)
-        print("✅ Successfully imported AWS ontology into ArangoDB")
+        print("✅ Successfully imported AWS ontology as RDF Graph Schema")
+        print("   📋 Structure: Triple-based with statements collection")
         
         # Print statistics
         collections = db.collections()
@@ -224,8 +229,85 @@ def import_aws_ontology():
         print(f"❌ Failed to import RDF data: {e}")
         return False
 
+def import_as_lpg():
+    """Import AWS ontology as Labeled Property Graph (LPG)."""
+    ttl_file, owl_file, examples_file = get_ontology_files()
+    
+    # Load and combine graphs
+    ontology_graph = load_ontology_graph(ttl_file, TTL_FORMAT)
+    examples_graph = load_ontology_graph(examples_file, TTL_FORMAT)
+    combined_graph = Graph()
+    combined_graph += ontology_graph
+    combined_graph += examples_graph
+    
+    # Connect to ArangoDB
+    client = ArangoClient(hosts='http://localhost:8529')
+    db = client.db('aws_ontology_lpg', username='root', password=os.getenv('ARANGO_PASSWORD', 'openSesame'))
+    arango_rdf = ArangoRDF(db)
+    
+    # Import as LPG
+    arango_rdf.insert_rdf(
+        combined_graph, 
+        overwrite=True,
+        schema_type="lpg",
+        vertex_collections=["vertices"],
+        edge_collections=["edges"]
+    )
+    print("✅ Successfully imported AWS ontology as Labeled Property Graph")
+    print("   📋 Structure: Vertices and edges collections")
+
+def import_as_pg():
+    """Import AWS ontology as ArangoDB Property Graph (PG)."""
+    ttl_file, owl_file, examples_file = get_ontology_files()
+    
+    # Load and combine graphs
+    ontology_graph = load_ontology_graph(ttl_file, TTL_FORMAT)
+    examples_graph = load_ontology_graph(examples_file, TTL_FORMAT)
+    combined_graph = Graph()
+    combined_graph += ontology_graph
+    combined_graph += examples_graph
+    
+    # Connect to ArangoDB
+    client = ArangoClient(hosts='http://localhost:8529')
+    db = client.db('aws_ontology_pg', username='root', password=os.getenv('ARANGO_PASSWORD', 'openSesame'))
+    arango_rdf = ArangoRDF(db)
+    
+    # Import as native Property Graph
+    arango_rdf.insert_rdf(
+        combined_graph,
+        overwrite=True,
+        schema_type="pg",
+        collection_mapping={
+            "http://www.semanticweb.org/aws-ontology#EC2Instance": "ec2_instances",
+            "http://www.semanticweb.org/aws-ontology#S3Bucket": "s3_buckets",
+            "http://www.semanticweb.org/aws-ontology#VPC": "vpcs",
+            "http://www.semanticweb.org/aws-ontology#RDSInstance": "rds_instances",
+            "http://www.semanticweb.org/aws-ontology#belongsToVPC": "belongs_to_vpc",
+            "http://www.semanticweb.org/aws-ontology#routesTo": "routes_to",
+            "http://www.semanticweb.org/aws-ontology#connectsTo": "connects_to"
+        }
+    )
+    print("✅ Successfully imported AWS ontology as ArangoDB Property Graph")
+    print("   📋 Structure: Native collections (ec2_instances, vpcs, etc.)")
+
 if __name__ == "__main__":
-    success = import_aws_ontology()
+    import sys
+    import os
+    
+    # Default: RDF Graph Schema
+    if len(sys.argv) == 1 or sys.argv[1] == "rdf":
+        success = import_aws_ontology()
+    elif sys.argv[1] == "lpg":
+        success = import_as_lpg()
+    elif sys.argv[1] == "pg":
+        success = import_as_pg()
+    else:
+        print("Usage: python import_script.py [rdf|lpg|pg]")
+        print("  rdf: RDF Graph Schema (default) - triple-based structure")
+        print("  lpg: Labeled Property Graph - vertices and edges")
+        print("  pg:  ArangoDB Property Graph - native collections")
+        sys.exit(1)
+    
     sys.exit(0 if success else 1)
 ```
 
@@ -233,23 +315,44 @@ if __name__ == "__main__":
 
 ```bash
 # Make sure ArangoDB is running
+
+# Import as RDF Graph Schema (default - triple-based)
 python tools/import_to_arangodb.py
+# or explicitly:
+python tools/import_to_arangodb.py rdf
+
+# Import as Labeled Property Graph (LPG)
+python tools/import_to_arangodb.py lpg
+
+# Import as ArangoDB Property Graph (PG)
+python tools/import_to_arangodb.py pg
 ```
+
+**Graph Type Comparison:**
+- **RDF**: Creates `statements` collection with subject-predicate-object triples
+- **LPG**: Creates `vertices` and `edges` collections with labeled relationships
+- **PG**: Creates native collections like `ec2_instances`, `vpcs`, `belongs_to_vpc` edges
 
 ## Querying the Imported Data
 
-### 1. Basic AQL Queries
+ArangoRDF supports multiple physical graph representations. The query approach depends on which schema type you choose during import:
 
-Once imported, you can query the ontology using AQL:
+- **RDF Graph Schema**: Maintains triple-based structure (subject-predicate-object)
+- **Labeled Property Graph (LPG)**: Industry-standard property graph format
+- **ArangoDB Property Graph (PG)**: Native ArangoDB graph structure
+
+### RDF Graph Queries
+
+The following examples demonstrate querying RDF-structured data (the default ArangoRDF import format):
 
 ```python
 from arango import ArangoClient
 
 # Connect to database
 client = ArangoClient(hosts='http://localhost:8529')
-db = client.db('aws_ontology', username='root', password='openSesame')
+db = client.db('aws_ontology', username='root', password=os.getenv('ARANGO_PASSWORD', 'openSesame'))
 
-# Query all AWS service classes
+# Query all AWS service classes (RDF format)
 aql = """
 FOR doc IN statements
     FILTER doc.predicate == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
@@ -263,10 +366,10 @@ aws_classes = [doc for doc in cursor]
 print(f"Found {len(aws_classes)} AWS classes")
 ```
 
-### 2. Graph Traversal Queries
+#### RDF Graph Traversal
 
 ```python
-# Find all resources in a specific VPC
+# Find all resources in a specific VPC (RDF format)
 aql = """
 FOR vpc IN statements
     FILTER vpc.predicate == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
@@ -285,10 +388,10 @@ cursor = db.aql.execute(aql)
 vpc_resources = [doc for doc in cursor]
 ```
 
-### 3. SPARQL-like Queries
+#### RDF Property Queries
 
 ```python
-# Find EC2 instances and their properties
+# Find EC2 instances and their properties (RDF format)
 aql = """
 FOR instance IN statements
     FILTER instance.predicate == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
@@ -311,21 +414,158 @@ FOR instance IN statements
 """
 ```
 
-## Advanced Usage
+### Labeled Property Graph (LPG) Queries
 
-### 1. Custom Graph Collections
-
-You can organize the ontology into specific collections:
+When using LPG format, AWS resources become vertices with properties, and relationships become labeled edges:
 
 ```python
-# Create separate collections for different AWS services
+# Import with LPG schema (requires ArangoRDF configuration)
+# arango_rdf.insert_rdf(graph, schema_type="lpg")
+
+# Query EC2 instances in LPG format
+aql = """
+FOR instance IN vertices
+    FILTER instance.type == "EC2Instance"
+    RETURN {
+        id: instance._key,
+        instanceType: instance.instanceType,
+        state: instance.state,
+        availabilityZone: instance.availabilityZone
+    }
+"""
+
+# Find VPC and its connected resources using edge traversal
+aql = """
+FOR vpc IN vertices
+    FILTER vpc.type == "VPC"
+    FILTER vpc.vpcId == "vpc-12345"
+    
+    FOR vertex, edge IN 1..2 OUTBOUND vpc edges
+        RETURN {
+            vpc: vpc.vpcId,
+            resource: vertex._key,
+            resourceType: vertex.type,
+            relationship: edge.label
+        }
+"""
+```
+
+### ArangoDB Property Graph (PG) Queries
+
+Native ArangoDB property graphs optimize for performance and leverage ArangoDB's graph capabilities:
+
+```python
+# Import with native PG schema
+# arango_rdf.insert_rdf(graph, schema_type="pg")
+
+# Query using native graph collections
+aql = """
+FOR instance IN ec2_instances
+    FILTER instance.state == "running"
+    
+    FOR vpc IN 1..1 OUTBOUND instance belongs_to_vpc
+        RETURN {
+            instance: instance.instanceId,
+            vpc: vpc.vpcId,
+            subnet: instance.subnetId
+        }
+"""
+
+# Complex traversal with multiple edge types
+aql = """
+FOR loadbalancer IN load_balancers
+    FILTER loadbalancer.scheme == "internet-facing"
+    
+    FOR target IN 2..3 OUTBOUND loadbalancer 
+        routes_to, targets
+        FILTER target.type == "EC2Instance"
+        
+        RETURN {
+            loadBalancer: loadbalancer.name,
+            targetInstance: target.instanceId,
+            path: CONCAT_SEPARATOR(" -> ", 
+                loadbalancer.name, 
+                target.instanceId
+            )
+        }
+"""
+
+# Aggregate queries for infrastructure analysis
+aql = """
+FOR vpc IN vpcs
+    LET instanceCount = LENGTH(
+        FOR instance IN 1..2 OUTBOUND vpc contains, runs_in
+            FILTER instance.type == "EC2Instance"
+            RETURN instance
+    )
+    
+    LET totalCost = SUM(
+        FOR resource IN 1..3 OUTBOUND vpc contains, runs_in, uses
+            RETURN resource.monthlyCost || 0
+    )
+    
+    RETURN {
+        vpc: vpc.vpcId,
+        instanceCount: instanceCount,
+        estimatedMonthlyCost: totalCost
+    }
+"""
+```
+
+### Choosing the Right Schema Type
+
+**RDF Graph Schema** - Best for:
+- Semantic web applications
+- SPARQL-like queries
+- Maintaining ontology semantics
+- Research and analysis requiring RDF standards
+
+**Labeled Property Graph (LPG)** - Best for:
+- Cross-platform compatibility
+- Integration with other graph databases
+- Standard graph algorithms
+- Familiar property graph patterns
+
+**ArangoDB Property Graph (PG)** - Best for:
+- Maximum performance
+- Native ArangoDB features
+- Complex multi-model queries
+- Production applications requiring speed
+
+## Advanced Usage
+
+### 1. Schema-Specific Import Options
+
+Configure ArangoRDF for different schema types:
+
+```python
+# RDF Graph Schema (default)
 arango_rdf.insert_rdf(
-    ontology_graph, 
+    combined_graph,
     overwrite=True,
+    # Uses statements collection for triples
+)
+
+# Labeled Property Graph (LPG)
+arango_rdf.insert_rdf(
+    combined_graph,
+    overwrite=True,
+    schema_type="lpg",
+    vertex_collections=["vertices"],
+    edge_collections=["edges"]
+)
+
+# ArangoDB Property Graph (PG)
+arango_rdf.insert_rdf(
+    combined_graph,
+    overwrite=True,
+    schema_type="pg",
     collection_mapping={
         "http://www.semanticweb.org/aws-ontology#EC2Instance": "ec2_instances",
         "http://www.semanticweb.org/aws-ontology#S3Bucket": "s3_buckets",
-        "http://www.semanticweb.org/aws-ontology#VPC": "vpcs"
+        "http://www.semanticweb.org/aws-ontology#VPC": "vpcs",
+        "http://www.semanticweb.org/aws-ontology#belongsToVPC": "belongs_to_vpc",
+        "http://www.semanticweb.org/aws-ontology#routesTo": "routes_to"
     }
 )
 ```
@@ -407,7 +647,7 @@ for i in range(0, len(triples), batch_size):
 ### Common Issues
 
 1. **Connection Failed**: Ensure ArangoDB is running and accessible
-2. **Authentication Error**: Check username/password (default: root/openSesame)
+2. **Authentication Error**: Check username/password (set ARANGO_PASSWORD environment variable)
 3. **Memory Issues**: Use batch processing for large ontologies
 4. **Import Errors**: Verify RDF syntax and ArangoRDF compatibility
 

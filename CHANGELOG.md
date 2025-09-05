@@ -9,19 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **README.md**: Enhanced project introduction and value proposition
-  - Added compelling teaser in opening paragraph highlighting ArangoDB integration benefits
-  - Toned down promotional language to be more professional and factual
   - Added "Why Use the AWS Ontology?" section explaining project development benefits
   - Included Protégé visualization showing ontology class hierarchy and relationships
-  - Added hyperlink to ArangoDB integration documentation
-- **ArangoDB Documentation**: Enhanced integration guide with comprehensive benefits explanation
+- **ArangoDB Documentation**: Comprehensive enhancement of integration guide
+  - **Query Examples by Schema Type**: Added distinct query examples for RDF, LPG, and PG formats
+  - **Import Script Clarity**: Enhanced import script to clearly specify graph schema types (RDF default, LPG, PG options)
+  - **Schema Selection Guidance**: Added detailed comparison of when to use each graph type
+  - **Multi-Format Support**: Complete examples for all three physical graph representations
   - Added detailed explanation of flexible physical schema options (LPG, PG, RDF)
   - Highlighted accelerated project development advantages for AWS graph use cases
   - Updated installation instructions to focus on Docker deployment
-  - Corrected service name references from "ArangoDB Cloud" to "ArangoGraph"
   - Added ArangoGraph free trial information
   - Included reference to official ArangoDB installation guide with Kubernetes and Linux coverage
-  - Removed potentially problematic Community Edition recommendation language
 
 ## [0.4.2] - 2025-01-04
 
@@ -52,7 +51,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - **Dependencies**: Installed missing `feedparser` dependency for AWS change monitoring tool
 - **Virtual Environment**: Set up proper Python virtual environment with all required dependencies
-- **ArangoRDF Integration**: Installed local ArangoRDF clone for enhanced graph database support
 - **Documentation**: Updated README.md metrics to reflect accurate example instance count (535+)
 - **Monitoring**: AWS change monitoring tool now fully functional, tracking 52 recent changes across 11 services
 
@@ -99,7 +97,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Ontology Growth**: 84% increase in triples (596 → 1,095), doubled classes (35 → 71), tripled properties (45 → 155)
 - **Enhanced Examples**: 390+ example instances with container, API, and integration scenarios
 - **Improved Testing**: Extended test suite for container services, API services, and relationship validation
-- **Repository Structure**: Separated public ontology from private ArangoDB integration tools
 
 ### Fixed
 - **Format Synchronization**: Robust OWL ↔ TTL conversion and validation
@@ -189,6 +186,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Examples significantly expanded
 
 ## Links
-- [GitHub Releases](https://github.com/ArthurKeen/AWS_Ontology/releases)
+- [GitHub Releases](https://github.com/YOUR_USERNAME/AWS_Ontology/releases)
 - [Contributing Guide](README.md#development)
 - [Maintenance Strategy](docs/MAINTENANCE_STRATEGY.md) 

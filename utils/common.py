@@ -5,6 +5,7 @@ Provides shared functionality to reduce code duplication.
 """
 
 import sys
+import logging
 from pathlib import Path
 from typing import Optional, Tuple
 
@@ -13,7 +14,7 @@ try:
     from rdflib.namespace import XSD
     RDFLIB_AVAILABLE = True
 except ImportError:
-    print("rdflib not installed. Install with: pip install rdflib")
+    logging.warning("rdflib not installed. Install with: pip install rdflib")
     RDFLIB_AVAILABLE = False
 
 
@@ -63,7 +64,7 @@ def load_ontology_graph(file_path: Path, format: str = TTL_FORMAT) -> Optional[G
         graph.parse(str(file_path), format=format)
         return graph
     except Exception as e:
-        print(f"Failed to load ontology from {file_path}: {e}")
+        logging.error(f"Failed to load ontology from {file_path}: {e}")
         return None
 
 
@@ -108,11 +109,11 @@ def validate_file_exists(file_path: Path, description: str = "File") -> bool:
         True if file exists and is readable, False otherwise
     """
     if not file_path.exists():
-        print(f"❌ {description} not found: {file_path}")
+        logging.error(f"{description} not found: {file_path}")
         return False
     
     if not file_path.is_file():
-        print(f"❌ {description} is not a file: {file_path}")
+        logging.error(f"{description} is not a file: {file_path}")
         return False
         
     try:
@@ -120,5 +121,5 @@ def validate_file_exists(file_path: Path, description: str = "File") -> bool:
             f.read(1)  # Try to read one character
         return True
     except Exception as e:
-        print(f"❌ {description} is not readable: {e}")
+        logging.error(f"{description} is not readable: {e}")
         return False

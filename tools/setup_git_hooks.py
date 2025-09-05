@@ -7,7 +7,15 @@ import os
 import shutil
 import stat
 import sys
+import logging
 from pathlib import Path
+
+# Add project root to path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+from utils.cli_common import create_base_parser, handle_keyboard_interrupt
+from utils.logging_config import setup_tool_logging
 
 
 def setup_git_hooks():
@@ -18,7 +26,7 @@ def setup_git_hooks():
     
     # Check if we're in a Git repository
     if not git_hooks_dir.parent.exists():
-        print("❌ Not in a Git repository. Please run this from the project root.")
+        logging.error("Not in a Git repository. Please run this from the project root.")
         return False
     
     # Create hooks directory if it doesn't exist
@@ -40,46 +48,57 @@ def setup_git_hooks():
                     current_permissions = dest_file.stat().st_mode
                     dest_file.chmod(current_permissions | stat.S_IEXEC)
                     
-                    print(f"✅ Installed {hook_file.name} hook")
+                    logging.info(f"Installed {hook_file.name} hook")
                     hooks_installed += 1
                     
                 except Exception as e:
-                    print(f"❌ Failed to install {hook_file.name}: {e}")
+                    logging.error(f"Failed to install {hook_file.name}: {e}")
                     return False
     
     if hooks_installed == 0:
-        print("ℹ️  No hooks found to install")
+        logging.info("No hooks found to install")
         return True
     
-    print(f"\n🎉 Successfully installed {hooks_installed} Git hook(s)")
-    print("\nHooks installed:")
-    print("  - pre-commit: Checks ontology file synchronization")
-    print("\nTo disable a hook temporarily, rename it (e.g., pre-commit -> pre-commit.disabled)")
-    print("To remove all hooks, run: rm .git/hooks/*")
+    logging.info(f"Successfully installed {hooks_installed} Git hook(s)")
+    logging.info("Hooks installed:")
+    logging.info("  - pre-commit: Checks ontology file synchronization")
+    logging.info("To disable a hook temporarily, rename it (e.g., pre-commit -> pre-commit.disabled)")
+    logging.info("To remove all hooks, run: rm .git/hooks/*")
     
     return True
 
 
+@handle_keyboard_interrupt
 def main():
     """Main function."""
-    print("Setting up Git hooks for AWS Ontology project...")
-    print("=" * 50)
+    parser = create_base_parser(
+        "setup_git_hooks",
+        "Setup Git hooks for the AWS Ontology project",
+        version="0.4.0"
+    )
+    
+    args = parser.parse_args()
+    
+    # Set up logging
+    logger = setup_tool_logging("setup_git_hooks", args.verbose)
+    
+    logging.info("Setting up Git hooks for AWS Ontology project...")
     
     success = setup_git_hooks()
     
     if success:
-        print("\n✅ Git hooks setup completed successfully!")
+        logging.info("Git hooks setup completed successfully!")
         
         # Suggest testing the hooks
-        print("\nTo test the pre-commit hook:")
-        print("  1. Make a change to one ontology file (not both)")
-        print("  2. Stage it: git add ontology/aws.ttl")
-        print("  3. Try to commit: git commit -m 'test'")
-        print("  4. The hook should prevent the commit")
+        logging.info("To test the pre-commit hook:")
+        logging.info("  1. Make a change to one ontology file (not both)")
+        logging.info("  2. Stage it: git add ontology/aws.ttl")
+        logging.info("  3. Try to commit: git commit -m 'test'")
+        logging.info("  4. The hook should prevent the commit")
         
         sys.exit(0)
     else:
-        print("\n❌ Git hooks setup failed!")
+        logging.error("Git hooks setup failed!")
         sys.exit(1)
 
 

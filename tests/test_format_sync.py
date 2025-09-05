@@ -9,7 +9,8 @@ import sys
 from pathlib import Path
 
 # Add project root to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
 
 from tests.base_test import BaseOntologyTest
 from utils.common import get_ontology_files

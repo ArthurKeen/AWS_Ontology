@@ -81,7 +81,7 @@ This approach allows you to choose the most appropriate representation for your 
 
 ```bash
 # Clone the repository
-git clone https://github.com/ArthurKeen/AWS_Ontology.git
+git clone https://github.com/YOUR_USERNAME/AWS_Ontology.git
 cd AWS_Ontology
 
 # Set up virtual environment (recommended)
@@ -275,7 +275,7 @@ python tools/import_to_arangodb.py
 # Query with AQL
 from arango import ArangoClient
 client = ArangoClient(hosts='http://localhost:8529')
-db = client.db('aws_ontology', username='root', password='openSesame')
+db = client.db('aws_ontology', username='root', password=os.getenv('ARANGO_PASSWORD', 'your_password'))
 ```
 
 ### Analysis Tools
@@ -287,12 +287,12 @@ db = client.db('aws_ontology', username='root', password='openSesame')
 
 ## 📚 Documentation
 
-- **[PRD](docs/PRD.md)**: Product Requirements Document
-- **[Protégé Guide](docs/PROTEGE_GUIDE.md)**: Visual exploration
-- **[SPARQL Examples](docs/SPARQL_EXAMPLES.md)**: Query collection
-- **[Usage Guide](docs/USAGE_GUIDE.md)**: Comprehensive usage
-- **[ArangoDB Integration](docs/ARANGODB_INTEGRATION.md)**: Graph database integration
-- **[Maintenance Strategy](docs/MAINTENANCE_STRATEGY.md)**: Update processes
+- [Usage Guide](docs/USAGE_GUIDE.md) - Comprehensive usage instructions
+- [SPARQL Examples](docs/SPARQL_EXAMPLES.md) - Query examples and patterns
+- [ArangoDB Integration](docs/ARANGODB_INTEGRATION.md) - Graph database setup and usage
+- [Environment Variables](docs/ENVIRONMENT_VARIABLES.md) - Configuration and deployment settings
+- [Protégé Guide](docs/PROTEGE_GUIDE.md) - Visual ontology exploration
+- [Maintenance Strategy](docs/MAINTENANCE_STRATEGY.md) - Long-term maintenance approach
 
 ## 🤝 Community
 

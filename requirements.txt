@@ -6,14 +6,16 @@ owlready2>=0.45
 feedparser>=6.0.0
 
 # ArangoDB integration dependencies
-# Note: Install ArangoRDF from local clone: pip install -e ~/code/ArangoRDF
-# arangordf>=0.1.0
+arango-rdf>=2.0.0
 python-arango>=7.5.0
 
 # AWS Ontology dependency (public repository)
-# Install with: pip install git+https://github.com/ArthurKeen/AWS_Ontology.git
+# Install with: pip install git+https://github.com/YOUR_USERNAME/AWS_Ontology.git
 
-# Optional dependencies for testing
+# Development dependencies (optional)
 # Install with: pip install -r requirements.txt
 # For reasoning tests (optional):
-# owlrl>=6.0.0 
+# owlrl>=6.0.0
+# mypy>=1.0.0
+# coverage>=7.0.0
+# pre-commit>=3.0.0 

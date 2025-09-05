@@ -8,7 +8,7 @@ This guide provides step-by-step instructions for using all the tools and featur
 
 ```bash
 # Clone the repository (if not already done)
-git clone https://github.com/ArthurKeen/AWS_Ontology.git
+git clone https://github.com/YOUR_USERNAME/AWS_Ontology.git
 cd AWS_Ontology
 
 # Set up Python virtual environment (required)
@@ -19,7 +19,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install rdflib owlready2 feedparser
 
 # Install ArangoRDF from local clone (if available)
-pip install -e ~/code/ArangoRDF
+pip install -e /path/to/ArangoRDF
 
 # OR install remaining dependencies manually
 pip install python-arango
@@ -180,7 +180,7 @@ Affected Services:
 docker run -d \
   --name arangodb \
   -p 8529:8529 \
-  -e ARANGO_ROOT_PASSWORD=openSesame \
+  -e ARANGO_ROOT_PASSWORD=${ARANGO_PASSWORD:-openSesame} \
   arangodb/arangodb:latest
 
 # Verify ArangoDB is running
@@ -195,7 +195,7 @@ curl http://localhost:8529/_api/version
 docker run -d \
   --name arangodb-ee \
   -p 8529:8529 \
-  -e ARANGO_ROOT_PASSWORD=openSesame \
+  -e ARANGO_ROOT_PASSWORD=${ARANGO_PASSWORD:-openSesame} \
   -e ARANGO_LICENSE_KEY=your-license-key \
   arangodb/enterprise:latest
 ```
@@ -227,8 +227,8 @@ pip install python-arango
 
 # ArangoRDF should already be installed from local clone
 # If not available, install from source:
-# git clone https://github.com/arangoml/arango-rdf.git ~/code/ArangoRDF
-# pip install -e ~/code/ArangoRDF
+# git clone https://github.com/arangoml/arango-rdf.git /path/to/ArangoRDF
+# pip install -e /path/to/ArangoRDF
 ```
 
 ### Importing AWS Ontology into ArangoDB
@@ -238,7 +238,7 @@ pip install python-arango
 python tools/import_to_arangodb.py
 
 # Import with custom settings
-python tools/import_to_arangodb.py --host http://localhost:8529 --username root --password openSesame --database aws_ontology
+python tools/import_to_arangodb.py --host http://localhost:8529 --username root --password $ARANGO_PASSWORD --database aws_ontology
 
 # Import only ontology (no examples)
 python tools/import_to_arangodb.py --no-examples
@@ -259,7 +259,7 @@ from arango import ArangoClient
 
 # Connect to database
 client = ArangoClient(hosts='http://localhost:8529')
-db = client.db('aws_ontology', username='root', password='openSesame')
+db = client.db('aws_ontology', username='root', password=os.getenv('ARANGO_PASSWORD', 'your_password'))
 
 # Query all AWS service classes
 aql = """
@@ -399,10 +399,10 @@ curl http://localhost:8529/_api/version
 
 # If ArangoRDF import fails
 # Ensure ArangoRDF is installed from local clone
-pip install -e ~/code/ArangoRDF
+pip install -e /path/to/ArangoRDF
 
 # If authentication fails
-# Check username/password (default: root/openSesame)
+# Check username/password (set ARANGO_PASSWORD environment variable)
 python tools/import_to_arangodb.py --username root --password YOUR_PASSWORD
 
 # If import is slow
