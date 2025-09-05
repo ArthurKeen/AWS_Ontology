@@ -1,6 +1,6 @@
 # AWS Ontology
 
-A comprehensive semantic ontology for Amazon Web Services (AWS) resources and their relationships. This project provides a formal OWL ontology that models AWS infrastructure, services, and their complex interdependencies for advanced analysis, compliance monitoring, and automation. The AWS ontology can be used to bootstrap AWS graph projects for infrastructure mapping, security analysis, and cost optimization. For example, it can be used with the [ArangoDB semantic layer integration](docs/ARANGODB_INTEGRATION.md) to generate flexible physical graph models (LPG, Property Graphs, RDF).
+A comprehensive semantic ontology for Amazon Web Services (AWS) resources and their relationships. This project provides a formal OWL ontology that models AWS infrastructure, services, and their complex interdependencies for advanced analysis, compliance monitoring, and automation. The AWS ontology can be used to bootstrap AWS graph projects for infrastructure mapping, security analysis, and cost optimization on graph databases that can ingest ontologies.  These include RDF databases that work natively with ontologies and property graph databases with RDF adapters, for example, it can be used with the [ArangoDB semantic layer integration](docs/ARANGODB_INTEGRATION.md) to generate flexible physical graph models (LPG, Property Graphs, RDF).
 
 ## 🎯 Overview
 
@@ -23,11 +23,130 @@ The AWS Ontology is a production-ready semantic web resource that:
 | **Data Properties** | 98 | +36 new properties |
 | **Example Instances** | 535+ | +143 new examples |
 
+## ⚡ Quick Example
+
+Get started in 30 seconds - here's how to query AWS resources using SPARQL:
+
+```sparql
+# Find all S3 buckets and their encryption status
+PREFIX aws: <http://www.semanticweb.org/aws-ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?bucket ?label ?encrypted WHERE {
+  ?bucket a aws:S3Bucket .
+  ?bucket rdfs:label ?label .
+  ?bucket aws:isEncrypted ?encrypted .
+}
+```
+
+```python
+# Python example using rdflib
+from rdflib import Graph, Namespace
+
+g = Graph()
+g.parse("ontology/aws.ttl", format="turtle")
+g.parse("ontology/examples.ttl", format="turtle")
+
+# Execute SPARQL query
+results = g.query("""
+    PREFIX aws: <http://www.semanticweb.org/aws-ontology#>
+    SELECT ?service ?depends_on WHERE {
+        ?service aws:dependsOn ?depends_on .
+    }
+""")
+
+for row in results:
+    print(f"{row.service} depends on {row.depends_on}")
+```
+
+```javascript
+// AQL example using ArangoDB Property Graph (PG)
+// Find running EC2 instances and their VPCs with cost analysis
+FOR instance IN ec2_instances
+    FILTER instance.state == "running"
+    
+    FOR vpc IN 1..1 OUTBOUND instance belongs_to_vpc
+        LET totalCost = SUM(
+            FOR resource IN 1..3 OUTBOUND vpc contains, runs_in, uses
+                RETURN resource.monthlyCost || 0
+        )
+        
+        RETURN {
+            instance: instance.instanceId,
+            vpc: vpc.vpcId,
+            instanceType: instance.instanceType,
+            estimatedMonthlyCost: totalCost
+        }
+```
+
+**What you get:** Immediate insight into your AWS infrastructure relationships, security posture, dependencies, and cost optimization opportunities through semantic queries across multiple database platforms.
+
 ## 🏗️ Ontology Structure
 
 ### Visual Overview
 ![AWS Ontology Class Hierarchy](docs/images/ontology-protege-view.png)
 *AWS Ontology class hierarchy and relationships as viewed in Protégé*
+
+### Architecture Overview
+```mermaid
+graph TB
+    subgraph "AWS Environment"
+        AWS[AWS Infrastructure<br/>Services & Resources]
+        API[AWS APIs]
+    end
+    
+    subgraph "AWS Ontology Project"
+        OWL[aws.owl<br/>Ontology Definition]
+        TTL[aws.ttl<br/>Human Readable]
+        EX[examples.ttl<br/>Real Examples]
+        TOOLS[Sync Tools<br/>& Validation]
+    end
+    
+    subgraph "Analysis Platforms"
+        RDF[(RDF Triplestore<br/>SPARQL Queries)]
+        ARANGO[(ArangoDB<br/>Multi-Model)]
+        LPG[(Property Graph<br/>Cypher/Gremlin)]
+        CUSTOM[(Custom Analytics<br/>Python/R/Java)]
+    end
+    
+    subgraph "Use Cases"
+        INFRA[Infrastructure<br/>Dependency Mapping]
+        SEC[Security<br/>Analysis]
+        COST[Cost<br/>Optimization]
+        COMP[Compliance<br/>Monitoring]
+        DOC[Automated<br/>Documentation]
+    end
+    
+    AWS --> API
+    API -.-> OWL
+    OWL <--> TTL
+    TTL --> EX
+    TOOLS --> OWL
+    TOOLS --> TTL
+    
+    OWL --> RDF
+    TTL --> ARANGO
+    TTL --> LPG
+    EX --> CUSTOM
+    
+    RDF --> INFRA
+    RDF --> SEC
+    ARANGO --> COST
+    ARANGO --> COMP
+    LPG --> DOC
+    CUSTOM --> INFRA
+    
+    classDef awsStyle fill:#ff9900,stroke:#232f3e,stroke-width:2px,color:#fff
+    classDef ontologyStyle fill:#4a90e2,stroke:#2c5282,stroke-width:2px,color:#fff
+    classDef platformStyle fill:#48bb78,stroke:#2f855a,stroke-width:2px,color:#fff
+    classDef usecaseStyle fill:#ed8936,stroke:#c05621,stroke-width:2px,color:#fff
+    
+    class AWS,API awsStyle
+    class OWL,TTL,EX,TOOLS ontologyStyle
+    class RDF,ARANGO,LPG,CUSTOM platformStyle
+    class INFRA,SEC,COST,COMP,DOC usecaseStyle
+```
+*How the AWS Ontology integrates into analysis workflows across different platforms and use cases*
 
 ### Core Service Categories
 - **🔧 Container Services**: ECS, EKS, Fargate, ECR
