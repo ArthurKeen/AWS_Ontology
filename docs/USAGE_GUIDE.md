@@ -171,29 +171,49 @@ Affected Services:
 
 ### Prerequisites
 
+**Note**: ArangoDB no longer provides native packages for macOS and Windows. Use Docker for all platforms.
+
+#### Option 1: Docker Community Edition
+
 ```bash
-# Install and start ArangoDB
-# See: https://www.arangodb.com/download/
+# Run ArangoDB Community Edition with Docker
+docker run -d \
+  --name arangodb \
+  -p 8529:8529 \
+  -e ARANGO_ROOT_PASSWORD=openSesame \
+  arangodb/arangodb:latest
 
-# macOS (using Homebrew)
-brew install arangodb
-
-# Ubuntu/Debian
-curl -OL https://download.arangodb.com/arangodb310/DEBIAN/Release.key
-sudo apt-key add - < Release.key
-echo 'deb https://download.arangodb.com/arangodb310/DEBIAN/ /' | sudo tee /etc/apt/sources.list.d/arangodb.list
-sudo apt-get update
-sudo apt-get install arangodb3
-
-# Docker
-docker run -p 8529:8529 -e ARANGO_ROOT_PASSWORD=openSesame arangodb/arangodb:latest
-
-# Start ArangoDB service
-sudo systemctl start arangodb3  # Linux
-# Or start manually: arangod
-
-# Verify ArangoDB is running (default: localhost:8529)
+# Verify ArangoDB is running
+docker logs arangodb
 curl http://localhost:8529/_api/version
+```
+
+#### Option 2: ArangoDB Enterprise Edition
+
+```bash
+# Enterprise Edition (requires license from ArangoDB)
+docker run -d \
+  --name arangodb-ee \
+  -p 8529:8529 \
+  -e ARANGO_ROOT_PASSWORD=openSesame \
+  -e ARANGO_LICENSE_KEY=your-license-key \
+  arangodb/enterprise:latest
+```
+
+#### Option 3: ArangoGraph (Managed Service)
+
+For production use, consider ArangoGraph at [cloud.arangodb.com](https://cloud.arangodb.com):
+- Free trial available to get started
+- Automatic backups and scaling
+- Professional monitoring and maintenance
+- No Docker setup required
+
+```bash
+# Example with ArangoGraph
+python tools/import_to_arangodb.py \
+  --host https://your-deployment.arangodb.cloud:8529 \
+  --username your-username \
+  --password your-password
 ```
 
 ### Installing ArangoRDF Dependencies

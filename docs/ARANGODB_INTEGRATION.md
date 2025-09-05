@@ -10,41 +10,118 @@ ArangoRDF is a Python library that bridges RDF data and ArangoDB's multi-model d
 - Leverage ArangoDB's graph algorithms and analytics
 - Combine ontology data with other data models (documents, key-value)
 
+### Why Use ArangoDB Integration?
+
+The ArangoDB integration provides significant advantages for working with the AWS Ontology:
+
+**Flexible Physical Schema Options**: ArangoRDF can generate different physical schemas in ArangoDB to match your specific use case:
+- **Labeled Property Graphs (LPG)**: Industry-standard graph format compatible with most graph databases
+- **ArangoDB-native Property Graphs (PG)**: Optimized for ArangoDB's native graph capabilities and performance
+- **RDF Graph Physical Schemas**: Maintains semantic web standards while leveraging ArangoDB's multi-model features
+
+**Accelerated Project Development**: This flexibility gives you a "leg up" when starting projects involving AWS graph use cases such as:
+- Infrastructure dependency mapping and impact analysis
+- Security policy validation and compliance checking
+- Cost optimization through resource relationship analysis
+- Multi-account governance and resource discovery
+- Automated architecture documentation and visualization
+
+By providing multiple schema options, you can choose the most appropriate representation for your specific AWS infrastructure analysis needs without being locked into a single graph model.
+
+## Getting Started
+
 ## Prerequisites
 
 ### 1. ArangoDB Installation
 
-Install ArangoDB on your system:
+**Note**: ArangoDB no longer provides native packages for macOS and Windows. The recommended installation method is Docker.
+
+For comprehensive installation instructions and additional deployment options, including Kubernetes and Linux installations, see the [official ArangoDB Installation Guide](https://docs.arangodb.com/3.12/operations/installation/).
+
+#### Option 1: Docker Community Edition
 
 ```bash
-# macOS (using Homebrew)
-brew install arangodb
+# Run ArangoDB Community Edition with Docker
+docker run -d \
+  --name arangodb \
+  -p 8529:8529 \
+  -e ARANGO_ROOT_PASSWORD=openSesame \
+  arangodb/arangodb:latest
 
-# Ubuntu/Debian
-curl -OL https://download.arangodb.com/arangodb310/DEBIAN/Release.key
-sudo apt-key add - < Release.key
-echo 'deb https://download.arangodb.com/arangodb310/DEBIAN/ /' | sudo tee /etc/apt/sources.list.d/arangodb.list
-sudo apt-get update
-sudo apt-get install arangodb3
-
-# Docker
-docker run -p 8529:8529 -e ARANGO_ROOT_PASSWORD=openSesame arangodb/arangodb:latest
+# Verify ArangoDB is running
+docker logs arangodb
 ```
 
-### 2. Start ArangoDB Service
+#### Option 2: ArangoDB Enterprise Edition
+
+For enterprise features, you can use the Enterprise Edition:
 
 ```bash
-# macOS/Linux service
-sudo systemctl start arangodb3
-
-# Or start manually
-arangod
-
-# Docker (if using container)
-# ArangoDB will start automatically in the container
+# Enterprise Edition (requires license)
+docker run -d \
+  --name arangodb-ee \
+  -p 8529:8529 \
+  -e ARANGO_ROOT_PASSWORD=openSesame \
+  -e ARANGO_LICENSE_KEY=your-license-key \
+  arangodb/enterprise:latest
 ```
 
-Access the ArangoDB web interface at `http://localhost:8529`
+**Note**: Enterprise Edition requires a valid license from ArangoDB. Contact [ArangoDB](https://www.arangodb.com/enterprise/) for licensing information.
+
+#### Option 3: ArangoGraph (Managed Service)
+
+For production use or if you prefer a managed service:
+
+1. Visit [cloud.arangodb.com](https://cloud.arangodb.com) to access ArangoGraph
+2. Create an account and set up a deployment
+3. **Free Trial Available**: ArangoGraph offers a free trial to get started
+4. Use the provided connection details in your import script
+5. Benefits: Automatic backups, scaling, monitoring, and maintenance
+
+```bash
+# Example with ArangoGraph
+python tools/import_to_arangodb.py \
+  --host https://your-deployment.arangodb.cloud:8529 \
+  --username your-username \
+  --password your-password
+```
+
+### 2. Access ArangoDB
+
+```bash
+# Check if Docker container is running
+docker ps | grep arangodb
+
+# Start container if stopped
+docker start arangodb
+
+# Stop container when done
+docker stop arangodb
+
+# Remove container (data will be lost unless using volumes)
+docker rm arangodb
+```
+
+**Web Interface**: Access ArangoDB at `http://localhost:8529`
+- **Username**: `root`
+- **Password**: `openSesame` (or your custom password)
+
+#### Persistent Data Storage
+
+To persist data across container restarts:
+
+```bash
+# Create a volume for data persistence
+docker volume create arangodb_data
+
+# Run with persistent storage
+docker run -d \
+  --name arangodb \
+  -p 8529:8529 \
+  -e ARANGO_ROOT_PASSWORD=openSesame \
+  -v arangodb_data:/var/lib/arangodb3 \
+  arangodb/arangodb:latest
+```
 
 ### 3. Python Dependencies
 

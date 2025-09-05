@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **ArangoDB Documentation**: Enhanced integration guide with comprehensive benefits explanation
+  - Added detailed explanation of flexible physical schema options (LPG, PG, RDF)
+  - Highlighted accelerated project development advantages for AWS graph use cases
+  - Updated installation instructions to focus on Docker deployment
+  - Corrected service name references from "ArangoDB Cloud" to "ArangoGraph"
+  - Added ArangoGraph free trial information
+  - Included reference to official ArangoDB installation guide with Kubernetes and Linux coverage
+  - Removed potentially problematic Community Edition recommendation language
+
 ## [0.4.2] - 2025-01-04
 
 ### Added
