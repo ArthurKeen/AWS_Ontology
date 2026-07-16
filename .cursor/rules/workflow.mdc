@@ -4,19 +4,33 @@ alwaysApply: true
 
 # Project workflow rules
 
+## What counts as implementation
+The ontology files (`ontology/*.ttl`, `ontology/*.owl`) ARE this repo's implementation, along
+with the Python tools. Edits to any of them count as implementation changes.
+
 ## PRD drift detection
-- This project uses a formal PRD at `docs/PRD.md`.
-- When you modify an implementation file, remind the user to run `/prd-sync` at session end.
+- The PRD at `docs/PRD.md` is the source of truth. Requirements carry stable `REQ-NNN` IDs.
 - Never claim a requirement is implemented without a `file:line` reference.
 - A test is not an implementation.
+- After modifying implementation files, run `/prd-sync` before ending the session.
 
-## Before solving any non-trivial problem
-1. Ask: "Should I search shared memory for prior solutions to this?"
-2. If yes, query ArangoDB `shared_patterns` collection via the arangodb-memory-mcp MCP:
-   `FOR p IN shared_patterns FILTER CONTAINS(LOWER(p.problem_description), "<keyword>") SORT p.created_at DESC LIMIT 5 RETURN p`
+## Before solving any non-trivial problem (mandatory — do not ask first)
+Run `/pattern-search <problem description>`. It calls the server-side `pattern-search` MCP tool
+(hybrid vector + BM25 retrieval over `shared_patterns`) — do not hand-write CONTAINS/AQL queries
+for this.
 
-## After solving a reusable problem
-- Offer to save the solution to `shared_patterns` via the MCP `upsert-document` tool.
+## After fixing a drift gap or discovering a reusable technique
+Run `/pattern-save` to write the verified solution to shared memory.
 
-## Session end
-- Remind the user to run `/prd-sync` if implementation files changed.
+## Ontology editing invariants
+- Edit `ontology/aws.ttl`, then regenerate the OWL serialization:
+  `venv/bin/python tools/sync_formats.py ttl-to-owl && venv/bin/python tools/sync_formats.py check`
+- Run the test suite before committing (`tests/test_format_sync.py`, `tests/test_ontology_quality.py`,
+  `tests/test_examples_validation.py`).
+- Keep `owl:versionInfo` in sync with the latest CHANGELOG release.
+- Stay within OWL 2 DL (no inverse-functional datatype properties; use `owl:hasKey` for keys).
+
+## Session end checklist
+- `/prd-sync` if implementation files changed
+- `/pattern-save` for any technique worth sharing
+- Check `.prd-drift-queue/` for queued change alerts

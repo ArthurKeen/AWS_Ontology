@@ -1,220 +1,145 @@
 # AWS Object and Relationship Ontology Development - Product Requirements Document
 
-**Document Version:** 1.1  
-**Date:** December 2024
+**Document Version:** 1.2
+**Date:** July 2026
+
+> **Requirement identifiers.** Every testable requirement in this document carries a stable
+> `REQ-NNN` identifier. Drift tooling (`/prd-sync`) audits the implementation against these IDs
+> and records gaps in the shared `drift_alerts` collection keyed as `aws-ontology_REQ-NNN`.
+> IDs are never renumbered; retired requirements are marked **RETIRED** in place.
 
 ## 1. Introduction
 
-This document outlines the requirements for an Artificial Intelligence (AI) system tasked with developing a formal ontology for Amazon Web Services (AWS) objects and their interrelationships. The goal is to create a machine-readable model that ensures consistent data representation, facilitates advanced querying, and enables comprehensive analysis of AWS configurations.
+This document outlines the requirements for an ontology of Amazon Web Services (AWS) objects and
+their interrelationships. The goal is a machine-readable model that ensures consistent data
+representation, facilitates advanced querying, and enables comprehensive analysis of AWS
+configurations.
 
 ## 2. Objective
 
-The primary objective is to define a comprehensive and semantically rich ontology of AWS resources and their operational, structural, and logical connections. This ontology will serve as a foundational knowledge base for understanding complex AWS environments.
+Define a comprehensive and semantically rich ontology of AWS resources and their operational,
+structural, and logical connections, serving as a foundational knowledge base for understanding
+complex AWS environments.
 
 ## 3. Scope
 
-The ontology should primarily focus on core and widely used AWS services. Initial focus areas include:
+The ontology primarily covers core and widely used AWS services:
 
-### Core Services
 - **Compute:** EC2 (Instances, AMIs, Security Groups, Load Balancers, Auto Scaling Groups), Lambda
-- **Storage:** S3 (Buckets, Objects), EBS (Volumes, Snapshots), RDS (Instances, Databases)
-- **Networking:** VPC (Subnets, Route Tables, Internet Gateways, NAT Gateways), Security Groups, Network ACLs
+- **Containers:** ECS, EKS, Fargate, ECR
+- **Storage:** S3 (Buckets, Objects), EBS (Volumes, Snapshots), EFS, RDS (Instances, Databases)
+- **Networking:** VPC (Subnets, Route Tables, Internet Gateways, NAT Gateways), Security Groups,
+  Network ACLs, CloudFront
 - **Identity & Access Management (IAM):** Users, Roles, Policies, Groups
-- **Databases:** DynamoDB, Aurora (as part of RDS)
+- **Databases:** DynamoDB, Aurora (as part of RDS), DocumentDB, Redshift
+- **Integration:** API Gateway, Step Functions, EventBridge, SNS, SQS
+- **Security:** KMS, Secrets Manager
 - **Monitoring & Logging:** CloudWatch, CloudTrail
 
-The ontology prioritizes relationships that are fundamental to how these services interact and are managed.
+### Future scope (roadmap, not yet requirements)
+
+The following 2023+ service areas are candidates for promotion to requirements in a future PRD
+revision: Bedrock/GenAI, SageMaker, analytics (Glue, Athena, Kinesis, EMR, OpenSearch),
+IAM Identity Center, Organizations/Control Tower, Cognito, security services (GuardDuty,
+Security Hub, WAF, Config), Route 53, Transit Gateway/Direct Connect, ElastiCache,
+CloudFormation/IaC, CodePipeline, Systems Manager.
 
 ## 4. Key Entities (Classes)
 
-Required classes for AWS objects include:
+| ID | Requirement |
+|----|-------------|
+| REQ-001 | Infrastructure classes MUST exist: `AWSAccount`, `AWSRegion`, `AvailabilityZone` |
+| REQ-002 | Compute classes MUST exist: `EC2Instance`, `EC2AMI`, `EC2SecurityGroup`, `EC2LoadBalancer`, `LambdaFunction` |
+| REQ-003 | Storage classes MUST exist: `S3Bucket`, `S3Object`, `EBSVolume`, `EBSSnapshot`, `RDSInstance`, `RDSDatabase` |
+| REQ-004 | Identity classes MUST exist: `IAMUser`, `IAMRole`, `IAMPolicy`, `IAMGroup` |
+| REQ-005 | Networking classes MUST exist: `VPC`, `Subnet`, `RouteTable`, `InternetGateway`, `NATGateway` |
+| REQ-006 | Monitoring classes MUST exist: `CloudWatchMetric`, `CloudWatchAlarm`, `CloudTrailLog` |
+| REQ-007 | Database classes MUST cover DynamoDB (`DynamoDBTable`) and Aurora (as part of the RDS class family) |
 
-### Infrastructure Classes
-- AWSAccount
-- AWSRegion
-- AvailabilityZone
-
-### Compute Classes
-- EC2Instance
-- EC2AMI
-- EC2SecurityGroup
-- EC2LoadBalancer
-
-### Storage Classes
-- S3Bucket
-- S3Object
-- EBSVolume
-- EBSSnapshot
-- RDSInstance
-- RDSDatabase
-
-### Identity Classes
-- IAMUser
-- IAMRole
-- IAMPolicy
-- IAMGroup
-
-### Networking Classes
-- VPC
-- Subnet
-- RouteTable
-- InternetGateway
-- NATGateway
-
-### Monitoring Classes
-- CloudWatchMetric
-- CloudWatchAlarm
-- CloudTrailLog
-- LambdaFunction
-
-Additional classes may be inferred as necessary to represent the AWS ecosystem accurately.
+Additional classes may be added as necessary to represent the AWS ecosystem accurately; the
+implemented ontology may exceed this list.
 
 ## 5. Relationships (Properties)
 
-### Structural/Compositional
-- hasRegion (AWSAccount -> AWSRegion)
-- hasAvailabilityZone (AWSRegion -> AvailabilityZone)
-- contains (VPC -> Subnet, S3Bucket -> S3Object)
-- attachedTo (EBSVolume -> EC2Instance)
-- belongsToVPC (EC2Instance -> VPC, Subnet -> VPC)
-
-### Access/Permission
-- canAssumeRole (IAMUser/IAMRole -> IAMRole)
-- hasPolicy (IAMUser/IAMRole/IAMGroup -> IAMPolicy)
-- appliesTo (EC2SecurityGroup -> EC2Instance)
-
-### Operational/Functional
-- uses (EC2Instance -> EC2AMI, LambdaFunction -> S3Bucket)
-- manages (RDSInstance -> RDSDatabase)
-- monitors (CloudWatchAlarm -> CloudWatchMetric)
-- logsActivityOf (CloudTrailLog -> AWSAccount)
-- routesTrafficThrough (RouteTable -> InternetGateway/NATGateway)
-
-### Dependency
-- dependsOn (general dependency, to be refined)
-- isSourceFor (e.g., Snapshot is source for Volume)
-
-Inverse properties should be defined where semantically meaningful. Data properties should be identified for key attributes.
+| ID | Requirement |
+|----|-------------|
+| REQ-008 | Structural/compositional properties MUST exist: `hasRegion`, `hasAvailabilityZone`, `contains`, `attachedTo`, `belongsToVPC` |
+| REQ-009 | `canAssumeRole` MUST relate IAM principals (users/roles) to IAM roles they may assume |
+| REQ-010 | `hasPolicy` MUST relate IAM entities (users/roles/groups) to attached policies (the equivalent `hasPolicyAttachment` satisfies this via an `owl:equivalentProperty` axiom) |
+| REQ-011 | `appliesTo` MUST relate security groups to the resources they protect |
+| REQ-012 | Operational/functional properties MUST exist: `uses`, `manages`, `monitors`, `logsActivityOf`, `routesTrafficThrough` |
+| REQ-013 | Dependency properties MUST exist: `dependsOn` (general), `isSourceFor` (e.g., snapshot → volume) |
+| REQ-014 | Inverse properties MUST be defined where semantically meaningful |
 
 ## 6. Output Format
 
-The final output must be a comprehensive OWL (Web Ontology Language) file that:
-
-- Adheres strictly to OWL 2 DL specifications
-- Defines all identified classes using owl:Class
-- Defines all relationships using owl:ObjectProperty and owl:DatatypeProperty
-- Specifies domain and range for all properties
-- Includes inverse properties where applicable
-- Utilizes appropriate OWL axioms
-- Is well-structured, readable, and includes comments
-- Is machine-readable and parsable by standard OWL reasoners and tools
+| ID | Requirement |
+|----|-------------|
+| REQ-015 | The ontology MUST adhere to OWL 2 DL (validated with standard OWL reasoners/tools) |
+| REQ-016 | Properties MUST specify `rdfs:domain` and `rdfs:range`, EXCEPT deliberately generic properties (`contains`, `uses`, `dependsOn`, and similar cross-cutting relations) where broad applicability is intended |
+| REQ-017 | Every class and property MUST have an `rdfs:label` and `rdfs:comment` |
+| REQ-018 | The ontology MUST ship with at least 50 example instances spanning all major service categories |
+| REQ-019 | The ontology MUST be published in two synchronized serializations (Turtle and OWL/XML) verified semantically identical |
 
 ## 7. Data Sources
 
-The ontology should be based on:
-
-- AWS Service Documentation
-- AWS Whitepapers
-- AWS API Reference documentation
+AWS Service Documentation, AWS Whitepapers, and AWS API Reference documentation
+(publicly available information only).
 
 ## 8. Quality Criteria
 
-The ontology will be evaluated based on:
+Consistency (no contradictions), completeness (coverage of specified scope), accuracy
+(faithful to AWS behavior), expressiveness (effective OWL constructs), usability
+(querying/reasoning/integration), modularity (structured for extension).
 
-- **Consistency:** Logically consistent and free from contradictions
-- **Completeness:** Comprehensive coverage of specified scope
-- **Accuracy:** Accurate reflection of AWS services behavior and structure
-- **Expressiveness:** Effective use of OWL constructs
-- **Usability:** Facilitates querying, reasoning, and integration
-- **Modularity:** (Optional) Structured for easy extension and maintenance
+## 9. Integration and Performance
 
-## 9. Success Metrics
+| ID | Requirement |
+|----|-------------|
+| REQ-020 | The ontology MUST be transformable into at least one graph database (ArangoDB via ArangoRDF), with a working import tool |
+| REQ-021 | Performance budgets: complete ontology loads in <5s in standard tools; common SPARQL/AQL queries respond in <1s; ArangoDB transformation completes in <30s; reasoning stays under 500MB RAM |
 
-The project success will be measured using the following quantitative and qualitative metrics:
+### Coverage targets (informational)
 
-### Coverage Metrics
-- **Service Coverage:** >90% of specified AWS services represented in ontology
-- **Relationship Coverage:** >80% of critical service relationships modeled
-- **IAM Coverage:** 100% coverage of core IAM concepts (Users, Roles, Policies, Groups)
-
-### Performance Metrics
-- **Ontology Loading:** <5 seconds for complete ontology loading in standard tools
-- **Query Response Time:** <1 second for common SPARQL/AQL query patterns
-- **Transformation Time:** <30 seconds for ArangoDB transformation of complete ontology
-- **Memory Usage:** <500MB RAM for ontology reasoning operations
-
-### Quality Metrics
-- **OWL Compliance:** 100% OWL 2 DL specification compliance
-- **Validation Success:** 100% successful validation with standard OWL reasoners
-- **Example Coverage:** >50 real-world example instances across all major service categories
-- **Documentation Coverage:** 100% of classes and properties documented with labels and comments
-
-### Integration Metrics
-- **Format Support:** Support for minimum 2 RDF serialization formats (OWL/XML, Turtle)
-- **Tool Compatibility:** Compatible with minimum 3 major ontology tools (Protégé, Apache Jena, etc.)
-- **Database Integration:** Successful transformation to minimum 1 graph database format (ArangoDB)
+- Service coverage: >90% of the services listed in §3
+- Relationship coverage: >80% of critical service relationships
+- IAM coverage: 100% of core IAM concepts (Users, Roles, Policies, Groups)
+- Tool compatibility: minimum 3 major ontology tools (Protégé, Apache Jena, rdflib)
 
 ## 10. Maintenance and Versioning Strategy
 
 ### Version Control
-- **Semantic Versioning:** Use MAJOR.MINOR.PATCH versioning scheme
-  - MAJOR: Breaking changes to ontology structure
-  - MINOR: New AWS services or non-breaking additions
-  - PATCH: Bug fixes, documentation updates, example additions
+- **Semantic Versioning:** MAJOR (breaking structure changes) / MINOR (new services,
+  non-breaking additions) / PATCH (bug fixes, documentation, examples)
+- `owl:versionInfo` MUST match the latest CHANGELOG release
 
 ### Update Schedule
-- **Quarterly Reviews:** Regular assessment of new AWS services and features
-- **Annual Major Updates:** Comprehensive review and potential restructuring
-- **On-Demand Updates:** Critical security-related updates as needed
+- **Quarterly Reviews:** assessment of new AWS services and features
+- **Annual Major Updates:** comprehensive review and potential restructuring
+- **On-Demand Updates:** critical security-related updates as needed
 
 ### Backward Compatibility
-- **API Stability:** Maintain backward compatibility for existing relationships and classes
-- **Deprecation Policy:** 6-month notice period for deprecated concepts
-- **Migration Support:** Provide transformation scripts for major version updates
+- Maintain backward compatibility for existing relationships and classes
+- 6-month notice period for deprecated concepts (mark with `owl:deprecated`)
+- Provide transformation scripts for major version updates
 
 ### Change Management
-- **Change Documentation:** All modifications documented with rationale and impact assessment
-- **Testing Requirements:** All changes validated against test suites and example instances
-- **Stakeholder Review:** Major changes reviewed by project stakeholders before implementation
-
-### Maintenance Responsibilities
-- **Technical Maintenance:** Regular updates to reflect AWS service changes
-- **Documentation Maintenance:** Keep all documentation current with implementation
-- **Example Maintenance:** Ensure examples remain valid and representative
-- **Tool Compatibility:** Verify compatibility with updated versions of dependent tools
+- All modifications documented in CHANGELOG with rationale
+- All changes validated against the test suite and example instances
+- Major changes reviewed by project stakeholders before implementation
 
 ## 11. Security and Privacy Considerations
 
-### Information Security
-- **Public Information Only:** Ontology based exclusively on publicly available AWS documentation
-- **No Proprietary Data:** No inclusion of internal AWS architecture or proprietary information
-- **Sanitized Examples:** All example instances use fictional or anonymized data
-- **Private Development:** Development conducted in private repository to protect work-in-progress
-
-### Data Privacy
-- **No Personal Data:** Examples contain no personally identifiable information (PII)
-- **Generic Resource Names:** Use generic naming patterns in examples
-- **Anonymized Configurations:** Real-world configurations anonymized before inclusion
-
-### Access Control
-- **Repository Security:** Private repository with controlled access
-- **Contributor Validation:** All contributors verified before repository access
-- **Secure Communication:** All project communications through secure channels
-
-### Compliance Considerations
-- **License Compliance:** Ensure all dependencies and tools comply with project licensing
-- **Export Control:** Verify no export control restrictions on ontology or tools
-- **Attribution Requirements:** Proper attribution for any derived or referenced work
-
-### Risk Mitigation
-- **Regular Security Reviews:** Periodic review of security practices and repository access
-- **Backup Strategy:** Regular backups of ontology and development artifacts
-- **Version Recovery:** Ability to recover previous versions if security issues identified
-- **Incident Response:** Defined process for handling potential security incidents
+- **Public information only:** based exclusively on publicly available AWS documentation;
+  no proprietary AWS architecture or internal information
+- **Sanitized examples:** fictional or anonymized data only; no PII; generic resource names
+- **License compliance:** all dependencies and tools comply with project licensing
+- **No credentials in code:** database and service credentials come from environment
+  variables, never hardcoded defaults
 
 ## 12. Constraints and Assumptions
 
 - Based on publicly available information only
-- Represents conceptual model of AWS resources
+- Represents a conceptual model of AWS resources
 - Prioritizes common and general relationships over edge cases
-- No access to internal AWS system diagrams or proprietary information 
+- No access to internal AWS system diagrams or proprietary information

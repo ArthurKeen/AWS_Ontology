@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **PRD-required IAM properties** (closes drift alerts REQ-009/REQ-010): `canAssumeRole`
+  (IAM principal → assumable role) and `hasPolicy` (declared `owl:equivalentProperty` to the
+  existing `hasPolicyAttachment`)
+- **PRD v1.2**: all testable requirements now carry stable `REQ-NNN` identifiers used by
+  drift tooling; scope updated to reflect implemented service coverage, with 2023+ services
+  listed as roadmap
+
 ### Fixed
 - **Ontology axioms**: Declared previously-missing `belongsToRegion` object property
   (was referenced only by VPC's cardinality restriction)

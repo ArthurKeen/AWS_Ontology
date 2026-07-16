@@ -2,9 +2,9 @@
 
 ## Identity
 - PROJECT_ID: aws-ontology  (e.g. "my-api", "frontend-v2")
-- PROJECT_TYPE: other
+- PROJECT_TYPE: ontology
 - PRD_FILE: docs/PRD.md
-- TECH_STACK: TBD
+- TECH_STACK: OWL 2 / RDF (Turtle + OWL/XML), Python 3 (rdflib), ArangoDB (python-arango, ArangoRDF)
 
 ## Dark factory operating mode
 This project uses autonomous drift detection. Three skills are registered:
@@ -21,6 +21,11 @@ This project uses autonomous drift detection. Three skills are registered:
 The PRD is at `docs/PRD.md`. It is the source of truth for what this system must do.
 All implementation must be traceable to a requirement in the PRD.
 If a requirement is missing from the PRD but exists in code, add it to the PRD.
+
+## Implementation files
+The ontology serializations (`ontology/*.ttl`, `ontology/*.owl`) ARE this repo's implementation,
+alongside the Python tools. The PRD's requirements carry stable `REQ-NNN` IDs; drift alerts are
+keyed `aws-ontology_REQ-NNN`.
 
 ## Drift policy
 - A MISSING requirement is a bug, not a TODO.

@@ -145,6 +145,11 @@
     rdfs:comment "Relates resources to their VPC" ;
     rdfs:range :VPC .
 
+:canAssumeRole a owl:ObjectProperty ;
+    rdfs:label "can assume role" ;
+    rdfs:comment "Relates an IAM principal (user or role) to an IAM role it is permitted to assume via sts:AssumeRole" ;
+    rdfs:range :IAMRole .
+
 :billingMode a owl:DatatypeProperty ;
     rdfs:label "billing mode" ;
     rdfs:comment "Billing mode (on-demand, reserved, spot, etc.)" ;
@@ -339,6 +344,12 @@
     rdfs:domain :IAMRole,
         :IAMUser ;
     rdfs:range :IAMPermissionBoundary .
+
+:hasPolicy a owl:ObjectProperty ;
+    rdfs:label "has policy" ;
+    rdfs:comment "Relates IAM entities (users, roles, groups) to their attached policies" ;
+    rdfs:range :IAMPolicy ;
+    owl:equivalentProperty :hasPolicyAttachment .
 
 :hasPolicyAttachment a owl:ObjectProperty ;
     rdfs:label "has policy attachment" ;
