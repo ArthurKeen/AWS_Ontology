@@ -87,4 +87,7 @@ outputs/
 *.tmp
 *.temp
 temp/
-tmp/ 
+tmp/
+
+# Drift-detection queue (session-local, managed by .claude/settings.json hooks)
+.prd-drift-queue/
