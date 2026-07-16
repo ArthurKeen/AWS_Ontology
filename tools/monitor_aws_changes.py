@@ -360,9 +360,7 @@ def main():
     parser.add_argument('--output', help='Output file for detailed report')
     parser.add_argument('--compare', action='store_true',
                        help='Compare with cached data (for cloudformation)')
-    parser.add_argument('--quiet', action='store_true',
-                       help='Suppress console output')
-    
+
     args = parser.parse_args()
     
     # Set up logging

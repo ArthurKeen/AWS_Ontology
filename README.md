@@ -17,25 +17,24 @@ The AWS Ontology is a production-ready semantic web resource that:
 
 | Metric | Count | Recent Growth |
 |--------|-------|---------------|
-| **Total Triples** | 1,380 | +285 triples |
+| **Total Triples** | 1,386 | +291 triples |
 | **Classes** | 88 | +17 new AWS services |
-| **Object Properties** | 98 | +5 new properties |
+| **Object Properties** | 99 | +6 new properties |
 | **Data Properties** | 98 | +36 new properties |
-| **Example Instances** | 535+ | +143 new examples |
+| **Example Instances** | 115 | typed individuals in examples.ttl |
 
 ## ⚡ Quick Example
 
 Get started in 30 seconds - here's how to query AWS resources using SPARQL:
 
 ```sparql
-# Find all S3 buckets and their encryption status
+# Find all resources and their encryption status
 PREFIX aws: <http://www.semanticweb.org/aws-ontology#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?bucket ?label ?encrypted WHERE {
-  ?bucket a aws:S3Bucket .
-  ?bucket rdfs:label ?label .
-  ?bucket aws:isEncrypted ?encrypted .
+SELECT ?resource ?label ?encrypted WHERE {
+  ?resource aws:encrypted ?encrypted .
+  ?resource rdfs:label ?label .
 }
 ```
 
@@ -248,8 +247,8 @@ open ontology/aws.owl
 ```
 
 **Key Protégé Features:**
-- **Class Hierarchy**: Browse 71 AWS resource classes
-- **Object Properties**: Explore 93 relationship types
+- **Class Hierarchy**: Browse 88 AWS resource classes
+- **Object Properties**: Explore 99 relationship types
 - **Reasoning**: Validate with HermiT reasoner
 - **OntoGraf**: Visualize relationships graphically
 - **SPARQL**: Test queries from our examples

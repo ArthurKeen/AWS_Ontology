@@ -6,7 +6,7 @@
 <http://www.semanticweb.org/aws-ontology> a owl:Ontology ;
     rdfs:label "AWS Resource Ontology" ;
     rdfs:comment "An ontology for describing AWS resources, services, and their relationships." ;
-    owl:versionInfo "0.4.0" .
+    owl:versionInfo "0.4.2" .
 
 :AWSManagedPolicy a owl:Class ;
     rdfs:label "AWS Managed Policy" ;
@@ -134,6 +134,11 @@
     rdfs:domain :AvailabilityZone ;
     rdfs:range :AWSRegion ;
     owl:inverseOf :hasAvailabilityZone .
+
+:belongsToRegion a owl:ObjectProperty ;
+    rdfs:label "belongs to region" ;
+    rdfs:comment "Relates resources to the AWS region they reside in" ;
+    rdfs:range :AWSRegion .
 
 :belongsToVPC a owl:ObjectProperty ;
     rdfs:label "belongs to VPC" ;
@@ -839,8 +844,7 @@
     rdfs:range :AWSResource .
 
 :arn a owl:DatatypeProperty,
-        owl:FunctionalProperty,
-        owl:InverseFunctionalProperty ;
+        owl:FunctionalProperty ;
     rdfs:label "ARN" ;
     rdfs:comment "Amazon Resource Name" ;
     rdfs:domain :AWSResource ;
@@ -1662,5 +1666,6 @@
     rdfs:comment "Base class for all AWS resources" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:cardinality "1"^^xsd:nonNegativeInteger ;
-            owl:onProperty :arn ] .
+            owl:onProperty :arn ] ;
+    owl:hasKey ( :arn ) .
 

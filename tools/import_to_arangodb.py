@@ -35,8 +35,12 @@ def connect_to_arangodb(host: str = 'http://localhost:8529',
                        db_name: str = 'aws_ontology') -> Optional[object]:
     """Connect to ArangoDB and create/access database."""
     if password is None:
-        password = os.getenv('ARANGO_PASSWORD', 'openSesame')
-    
+        password = os.getenv('ARANGO_PASSWORD')
+    if not password:
+        logging.error("No ArangoDB password provided. Set the ARANGO_PASSWORD "
+                      "environment variable or pass --password.")
+        return None
+
     try:
         logging.info(f"Connecting to ArangoDB at {host}...")
         client = ArangoClient(hosts=host)

@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Ontology axioms**: Declared previously-missing `belongsToRegion` object property
+  (was referenced only by VPC's cardinality restriction)
+- **OWL 2 DL compliance**: Removed illegal `owl:InverseFunctionalProperty` typing from the
+  `arn` datatype property; ARN uniqueness is now expressed with a DL-legal `owl:hasKey`
+  axiom on `AWSResource`
+- **Version metadata**: `owl:versionInfo` synchronized with CHANGELOG (0.4.0 → 0.4.2)
+- **Documentation accuracy**: Corrected example-instance count (115 typed individuals, not
+  535+), fixed README quick-example to use the real `encrypted` property, refreshed stale
+  class/property counts, and corrected CHANGELOG release dates to match git history
+- **Tooling**: Fixed `--quiet` argparse crash in `tools/monitor_aws_changes.py`; removed
+  hardcoded ArangoDB password fallback in `tools/import_to_arangodb.py`
+
 ### Changed
 - **README.md**: Enhanced project introduction and value proposition
   - Added "Why Use the AWS Ontology?" section explaining project development benefits
@@ -22,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added ArangoGraph free trial information
   - Included reference to official ArangoDB installation guide with Kubernetes and Linux coverage
 
-## [0.4.2] - 2025-01-04
+## [0.4.2] - 2025-09-04
 
 ### Added
 - **ArangoDB Integration**: Complete graph database integration using ArangoRDF
@@ -46,7 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Build Artifacts**: Cleaned up all `__pycache__` directories and `.pyc` files
 - **Test Reliability**: Fixed test compatibility issues with new base class structure
 
-## [0.4.1] - 2025-01-04
+## [0.4.1] - 2025-09-04
 
 ### Fixed
 - **Dependencies**: Installed missing `feedparser` dependency for AWS change monitoring tool
@@ -58,7 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Development Environment**: Enhanced with complete dependency management and virtual environment setup
 - **Testing**: All quality tests continue to pass with updated environment
 
-## [0.4.0] - 2024-12-19
+## [0.4.0] - 2025-09-04
 
 ### Added
 - **Missing AWS Services**: Comprehensive addition of 17 new AWS service classes to complete ontology coverage
@@ -82,7 +95,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Format Synchronization**: Maintained OWL ↔ TTL consistency throughout all additions
 - **Quality Assurance**: All ontology quality tests passing after enhancements
 
-## [0.3.0] - 2024-07-31
+## [0.3.0] - 2025-07-31
 
 ### Added
 - **Container Services**: Complete ECS, EKS, Fargate, and ECR modeling (10 classes, 18 properties)
@@ -104,7 +117,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Test Coverage**: Comprehensive validation across all new service categories
 - Updated requirements.txt with optional testing dependencies
 
-## [0.2.0] - 2024-12-XX
+## [0.2.0] - 2025-07-30
 
 ### Added
 - Comprehensive IAM classes and properties
@@ -127,7 +140,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Corrected cardinality constraints for IAM entities
 - Fixed property inheritance issues
 
-## [0.1.0] - 2024-12-XX
+## [0.1.0] - 2025-07-30
 
 ### Added
 - Initial ontology structure with core AWS classes
@@ -174,6 +187,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History Summary
 
+- **v0.4.2**: ArangoDB integration, code quality improvements
+- **v0.4.1**: Documentation and metrics corrections
+- **v0.4.0**: Expanded service coverage (security, analytics-adjacent, storage), new properties
+- **v0.3.0**: Container services, API integration, Protégé support
 - **v0.2.0**: Enhanced IAM focus, dual-format support, comprehensive testing
 - **v0.1.0**: Initial ontology with core AWS service coverage
 

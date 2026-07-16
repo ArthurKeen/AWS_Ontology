@@ -4,6 +4,10 @@ owlready2>=0.45
 
 # AWS monitoring dependencies
 feedparser>=6.0.0
+requests>=2.28.0
+
+# Scheduling dependencies (automation/schedule_monitoring.py)
+schedule>=1.2.0
 
 # ArangoDB integration dependencies
 arango-rdf>=2.0.0

@@ -2,7 +2,7 @@
 
 ## 🎯 Overview
 
-This guide helps you explore the enhanced AWS Ontology using Protégé, the premier OWL ontology editor. Your ontology contains **1,095 triples** across **71 classes** and **155 properties**.
+This guide helps you explore the enhanced AWS Ontology using Protégé, the premier OWL ontology editor. Your ontology contains **1,386 triples** across **88 classes** and **197 properties**.
 
 ## 🚀 Getting Started
 
@@ -20,13 +20,13 @@ open ontology/aws.owl
 
 ## 📊 What You'll Find
 
-### Class Hierarchy (71 Classes)
+### Class Hierarchy (88 Classes)
 - **Base Resources**: `ComputeResource`, `StorageResource`, `NetworkingResource`, `IntegrationResource`
 - **Container Services**: `ECSCluster`, `EKSCluster`, `FargateService`, `ECRRepository`
 - **API & Integration**: `APIGateway`, `StepFunction`, `EventBridge`, `SNSTopic`, `SQSQueue`
 - **Enhanced IAM**: `IAMUser`, `IAMRole`, `IAMPolicy` with subtypes
 
-### Object Properties (93 Properties)
+### Object Properties (99 Properties)
 - **Container Relationships**: `runsOnCluster`, `hasTaskDefinition`, `usesContainerImage`
 - **API Relationships**: `hasStage`, `triggersStepFunction`, `publishesToTopic`
 - **Temporal Relationships**: `createdBefore`, `replacedBy`, `migratedFrom`, `succeeds`
@@ -134,10 +134,10 @@ SELECT ?property WHERE {
 ## 📈 Ontology Metrics Validation
 
 Your ontology should show:
-- **Total Triples**: 1,095
-- **Classes**: 71
-- **Object Properties**: 93
-- **Data Properties**: 62
+- **Total Triples**: 1,386
+- **Classes**: 88
+- **Object Properties**: 99
+- **Data Properties**: 98
 
 ## 🔍 Troubleshooting
 
