@@ -29,28 +29,12 @@ All medium and low priority code quality recommendations have been successfully 
 - Better debugging and monitoring capabilities
 - Professional logging standards
 
-### 2. Configuration Validation with Schemas ✅
+### 2. Configuration Validation with Schemas — REMOVED (July 2026)
 
-**Status**: COMPLETED  
-**Priority**: Medium  
-
-**Changes Made**:
-- Created `utils/config_validation.py` with comprehensive validation framework
-- Implemented dataclass-based configuration schemas:
-  - `NotificationConfig` - Email notification settings
-  - `ScheduleConfig` - Monitoring schedule validation
-  - `DatabaseConfig` - Database connection parameters
-  - `MonitoringConfig` - Monitoring and logging settings
-  - `AppConfig` - Main application configuration
-- Added JSON configuration file support with validation
-- Created sample configuration generation functionality
-- Implemented detailed error reporting for invalid configurations
-
-**Benefits**:
-- Prevents runtime errors from invalid configurations
-- Provides clear validation error messages
-- Supports complex nested configuration structures
-- Enables configuration file templates and examples
+The `utils/config_validation.py` framework described in earlier revisions was never imported
+by any code path and was removed as dead code during the 2026 modernization. Configuration
+for the scheduler lives in `automation/schedule_monitoring.py` defaults; schema validation
+will be reintroduced if/when the automation daemon is replaced (see PRD roadmap).
 
 ### 3. CLI Help Consistency Across Tools ✅
 
@@ -147,23 +131,6 @@ def setup_tool_logging(tool_name: str, verbose: bool = False) -> logging.Logger:
     # Configures formatters, handlers, and log levels
 ```
 
-### Configuration Validation Framework
-
-Schema-based validation using Python dataclasses:
-
-```python
-# utils/config_validation.py
-@dataclass
-class AppConfig:
-    notifications: NotificationConfig
-    schedules: ScheduleConfig
-    database: DatabaseConfig
-    monitoring: MonitoringConfig
-    
-    def validate(self) -> List[str]:
-        # Returns list of validation errors
-```
-
 ### CLI Standardization
 
 Common CLI utilities for consistent user experience:
@@ -224,16 +191,6 @@ coverage html
 # Pre-commit hooks
 pre-commit install
 pre-commit run --all-files
-```
-
-### Configuration Validation
-
-```python
-from utils.config_validation import load_and_validate_config
-
-config = load_and_validate_config(Path("config.json"))
-if config:
-    print("Configuration is valid!")
 ```
 
 ### Structured Logging

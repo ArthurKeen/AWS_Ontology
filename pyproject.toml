@@ -1,0 +1,67 @@
+[project]
+name = "aws-ontology"
+version = "0.4.2"
+description = "Formal OWL 2 ontology of AWS resources and their relationships, with synchronization, validation, and ArangoDB integration tooling"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Arthur Keen" }]
+requires-python = ">=3.11"
+dependencies = [
+    "rdflib>=6.0.0",
+    "owlready2>=0.45",
+    "feedparser>=6.0.0",
+    "requests>=2.28.0",
+    "schedule>=1.2.0",
+    "arango-rdf>=2.0.0",
+    "python-arango>=7.5.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.8",
+    "coverage>=7.0",
+    "pre-commit>=3.6",
+]
+
+# This repo is an ontology plus operational scripts, not an importable library —
+# there is deliberately no build backend / wheel. Tools run as `python tools/<name>.py`.
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["venv", ".venv"]
+
+[tool.ruff.lint]
+# E402: tools/tests bootstrap sys.path before importing utils/ — inherent to the
+# script-based (non-packaged) layout; revisit if the repo ever becomes a package.
+per-file-ignores = { "tools/*" = ["E402"], "tests/*" = ["E402"], "automation/*" = ["E402"] }
+select = [
+    "E4", "E7", "E9", # pycodestyle errors
+    "F",              # pyflakes
+    "I",              # isort
+    "UP",             # pyupgrade
+    "B",              # bugbear
+]
+
+[tool.coverage.run]
+source = ["tools", "utils", "automation"]
+omit = ["*/venv/*", "*/tests/*", "*/site-packages/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"

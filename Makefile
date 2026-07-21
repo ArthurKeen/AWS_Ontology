@@ -1,18 +1,22 @@
 # AWS Ontology Project Makefile
 
-.PHONY: help test test-all test-sync test-quality test-examples test-performance sync-check sync-ttl-to-owl sync-owl-to-ttl install-deps setup-hooks monitor-changes schedule-setup schedule-daemon schedule-test clean
+.PHONY: help test test-all test-sync test-quality test-examples test-performance test-smoke test-dl lint format sync-check sync-ttl-to-owl sync-owl-to-ttl install-deps setup-hooks monitor-changes schedule-setup schedule-daemon schedule-test clean
 
 # Default target
 help:
 	@echo "AWS Ontology Project - Available Commands:"
 	@echo ""
 	@echo "Testing:"
-	@echo "  test           - Run essential tests"
-	@echo "  test-all       - Run comprehensive test suite"
+	@echo "  test           - Run the full pytest suite"
+	@echo "  test-all       - Alias for test"
 	@echo "  test-sync      - Test OWL/TTL format synchronization"
 	@echo "  test-quality   - Test ontology quality and structure"
 	@echo "  test-examples  - Test example instances validation"
 	@echo "  test-performance - Test ontology performance metrics"
+	@echo "  test-smoke     - Smoke-test the CLI tools"
+	@echo "  test-dl        - OWL 2 DL compliance checks"
+	@echo "  lint           - Run ruff lint + format check"
+	@echo "  format         - Auto-format with ruff"
 	@echo ""
 	@echo "Synchronization:"
 	@echo "  sync-check     - Check if OWL and TTL files are synchronized"
@@ -39,43 +43,54 @@ help:
 	@echo "  clean          - Clean temporary files"
 	@echo ""
 
-# Install Python dependencies
+# Install Python dependencies (runtime + dev). Prefer uv when available.
 install-deps:
 	@echo "Installing Python dependencies..."
-	pip install -r requirements.txt
+	@command -v uv >/dev/null 2>&1 && uv sync || pip install -r requirements.txt pytest ruff
 
 # Set up Git hooks
 setup-hooks:
 	@echo "Setting up Git hooks..."
 	python3 tools/setup_git_hooks.py
 
-# Run essential tests
-test: test-sync
-	@echo "Essential tests completed!"
+# Run the full test suite
+test:
+	python -m pytest
 
-# Run comprehensive test suite
-test-all: test-sync test-quality test-examples test-performance
-	@echo "All tests completed!"
+test-all: test
 
 # Test format synchronization
 test-sync:
-	@echo "Testing OWL/TTL synchronization..."
-	python tests/test_format_sync.py
+	python -m pytest tests/test_format_sync.py
 
 # Test ontology quality
 test-quality:
-	@echo "Testing ontology quality..."
-	python tests/test_ontology_quality.py
+	python -m pytest tests/test_ontology_quality.py
 
 # Test examples validation
 test-examples:
-	@echo "Testing example instances..."
-	python tests/test_examples_validation.py
+	python -m pytest tests/test_examples_validation.py
 
 # Test performance
 test-performance:
-	@echo "Testing ontology performance..."
-	python tests/test_performance.py
+	python -m pytest tests/test_performance.py
+
+# Smoke-test the CLI tools
+test-smoke:
+	python -m pytest tests/test_tools_smoke.py
+
+# OWL 2 DL compliance checks
+test-dl:
+	python -m pytest tests/test_dl_compliance.py
+
+# Lint and format
+lint:
+	ruff check .
+	ruff format --check .
+
+format:
+	ruff check . --fix
+	ruff format .
 
 # Check synchronization status
 sync-check:

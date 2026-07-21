@@ -8,6 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Modern Python toolchain**: `pyproject.toml` (PEP 621) as the canonical dependency
+  manifest with a `uv.lock` lockfile; ruff replaces black/isort/flake8/mypy; pytest runs
+  the suite (`make test`, `make lint`, `make format`)
+- **GitHub Actions CI**: lint + test matrix (Python 3.11/3.14) + TTL/OWL sync verification
+  on every push and pull request
+- **CLI smoke tests** (`tests/test_tools_smoke.py`): every tool must answer `--help` and
+  byte-compile — guards against the argparse-crash class of bug
+- **OWL 2 DL compliance tests** (`tests/test_dl_compliance.py`): undeclared-term references
+  and illegal axiom constructs (e.g. inverse-functional datatype properties) now fail CI
+
+### Removed
+- Dead code: `utils/config_validation.py` (296 lines, never imported), `mypy.ini`,
+  `.coveragerc` (coverage config folded into `pyproject.toml`)
 - **PRD-required IAM properties** (closes drift alerts REQ-009/REQ-010): `canAssumeRole`
   (IAM principal → assumable role) and `hasPolicy` (declared `owl:equivalentProperty` to the
   existing `hasPolicyAttachment`)

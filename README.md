@@ -1,5 +1,7 @@
 # AWS Ontology
 
+[![CI](https://github.com/ArthurKeen/AWS_Ontology/actions/workflows/ci.yml/badge.svg)](https://github.com/ArthurKeen/AWS_Ontology/actions/workflows/ci.yml)
+
 A comprehensive semantic ontology for Amazon Web Services (AWS) resources and their relationships. This project provides a formal OWL ontology that models AWS infrastructure, services, and their complex interdependencies for advanced analysis, compliance monitoring, and automation. The AWS ontology can be used to bootstrap AWS graph projects for infrastructure mapping, security analysis, and cost optimization on graph databases that can ingest ontologies.  These include RDF databases that work natively with ontologies and property graph databases with RDF adapters, for example, it can be used with the [ArangoDB semantic layer integration](docs/ARANGODB_INTEGRATION.md) to generate flexible physical graph models (LPG, Property Graphs, RDF).
 
 ## 🎯 Overview
@@ -199,21 +201,22 @@ This approach allows you to choose the most appropriate representation for your 
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/AWS_Ontology.git
+git clone https://github.com/ArthurKeen/AWS_Ontology.git
 cd AWS_Ontology
 
-# Set up virtual environment (recommended)
+# Option A (recommended): uv — creates .venv from the lockfile
+uv sync
+
+# Option B: classic venv + pip
 python3 -m venv venv
 source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
+pip install -r requirements.txt pytest ruff
 
 # Verify ontology integrity
 python tools/sync_formats.py check
 
-# Run quality tests
-python -m unittest tests.test_ontology_quality -v
+# Run the test suite
+python -m pytest
 ```
 
 ## 📁 Repository Structure
@@ -296,9 +299,13 @@ python tools/sync_formats.py ttl-to-owl
 make test
 
 # Test specific aspects
-python -m unittest tests.test_ontology_quality -v
-python -m unittest tests.test_examples_validation -v
-python -m unittest tests.test_format_sync -v
+python -m pytest tests/test_ontology_quality.py -v
+python -m pytest tests/test_examples_validation.py -v
+python -m pytest tests/test_format_sync.py -v
+
+# Lint and format
+make lint
+make format
 ```
 
 ### AWS Change Monitoring
@@ -345,6 +352,10 @@ Comprehensive testing ensures ontology quality:
 - **Ontology Quality**: Class/property validation
 - **Example Validation**: Instance integrity
 - **Performance**: Loading and query benchmarks
+- **DL Compliance**: OWL 2 DL profile checks (undeclared terms, illegal axioms)
+- **Tool Smoke Tests**: every CLI must start up and answer `--help`
+
+All of the above run in GitHub Actions CI on every push and pull request.
 
 ```bash
 # Run all tests
@@ -355,15 +366,17 @@ make test-sync     # Format synchronization
 make test-quality  # Ontology structure
 make test-examples # Example validation
 make test-performance # Performance benchmarks
+make test-dl       # OWL 2 DL compliance
+make test-smoke    # CLI smoke tests
 ```
 
 ## 📈 Development Workflow
 
 ### Adding New Services
-1. Define classes in `ontology/aws.owl`
-2. Add relationships and properties
+1. Define classes and properties in `ontology/aws.ttl` (the editing source)
+2. Regenerate the OWL serialization: `python tools/sync_formats.py ttl-to-owl`
 3. Create examples in `ontology/examples.ttl`
-4. Sync formats: `python tools/sync_formats.py sync`
+4. Verify sync: `python tools/sync_formats.py check`
 5. Run tests: `make test`
 6. Update documentation
 

@@ -13,13 +13,6 @@ schedule>=1.2.0
 arango-rdf>=2.0.0
 python-arango>=7.5.0
 
-# AWS Ontology dependency (public repository)
-# Install with: pip install git+https://github.com/YOUR_USERNAME/AWS_Ontology.git
-
-# Development dependencies (optional)
-# Install with: pip install -r requirements.txt
-# For reasoning tests (optional):
-# owlrl>=6.0.0
-# mypy>=1.0.0
-# coverage>=7.0.0
-# pre-commit>=3.0.0 
+# NOTE: pyproject.toml is the canonical dependency manifest (use `uv sync`).
+# This file is kept for pip-based installs and the Docker image.
+# Dev tools (pytest, ruff, coverage, pre-commit) live in pyproject's dev group. 
