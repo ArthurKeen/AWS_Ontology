@@ -2,11 +2,13 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 
 <http://www.semanticweb.org/aws-ontology> a owl:Ontology ;
     rdfs:label "AWS Resource Ontology" ;
     rdfs:comment "An ontology for describing AWS resources, services, and their relationships." ;
-    owl:versionInfo "0.4.2" .
+    owl:versionInfo "0.5.0" .
 
 :AWSManagedPolicy a owl:Class ;
     rdfs:label "AWS Managed Policy" ;
@@ -1677,6 +1679,250 @@
     rdfs:comment "Base class for all AWS resources" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:cardinality "1"^^xsd:nonNegativeInteger ;
-            owl:onProperty :arn ] ;
+            owl:onProperty :arn ],
+        prov:Entity ;
     owl:hasKey ( :arn ) .
+
+### PROV-O alignment
+# AWSResource -> prov:Entity is declared above. Model invocations (see AI Resources,
+# below) are prov:Activity instances, giving the ontology a hook for provenance
+# chains (wasGeneratedBy, used, wasAssociatedWith) without importing PROV-O's full
+# axiomatization (avoids a network-fetch dependency at load time).
+
+### AI Resources (Amazon Bedrock and related generative-AI services)
+
+:AIResource a owl:Class ;
+    rdfs:label "AI Resource" ;
+    rdfs:comment "Base class for artificial intelligence and generative AI resources" ;
+    rdfs:subClassOf :AWSResource ;
+    owl:disjointWith :ComputeResource,
+        :DatabaseResource,
+        :IdentityResource,
+        :IntegrationResource,
+        :MonitoringResource,
+        :NetworkingResource,
+        :SecurityResource,
+        :StorageResource .
+
+:FoundationModel a owl:Class ;
+    rdfs:label "Foundation Model" ;
+    rdfs:comment "An Amazon Bedrock foundation model available for invocation" ;
+    rdfs:subClassOf :AIResource .
+
+:BedrockAgent a owl:Class ;
+    rdfs:label "Bedrock Agent" ;
+    rdfs:comment "An Amazon Bedrock agent that orchestrates foundation model calls with tools and knowledge bases" ;
+    rdfs:subClassOf :AIResource .
+
+:BedrockKnowledgeBase a owl:Class ;
+    rdfs:label "Bedrock Knowledge Base" ;
+    rdfs:comment "An Amazon Bedrock knowledge base providing retrieval-augmented generation over ingested data sources" ;
+    rdfs:subClassOf :AIResource .
+
+:BedrockGuardrail a owl:Class ;
+    rdfs:label "Bedrock Guardrail" ;
+    rdfs:comment "A content-filtering policy applied to Bedrock model invocations" ;
+    rdfs:subClassOf :AIResource .
+
+:BedrockDataSource a owl:Class ;
+    rdfs:label "Bedrock Data Source" ;
+    rdfs:comment "A data source (e.g. an S3 bucket) ingested into a Bedrock knowledge base" ;
+    rdfs:subClassOf :AIResource .
+
+:ModelInvocation a owl:Class ;
+    rdfs:label "Model Invocation" ;
+    rdfs:comment "A single invocation of a foundation model by a Bedrock agent" ;
+    rdfs:subClassOf :AIResource,
+        prov:Activity .
+
+:invokesModel a owl:ObjectProperty ;
+    rdfs:label "invokes model" ;
+    rdfs:comment "Relates a Bedrock agent to a foundation model it may invoke" ;
+    rdfs:subPropertyOf :uses ;
+    rdfs:domain :BedrockAgent ;
+    rdfs:range :FoundationModel .
+
+:usesKnowledgeBase a owl:ObjectProperty ;
+    rdfs:label "uses knowledge base" ;
+    rdfs:comment "Relates a Bedrock agent to a knowledge base it queries for retrieval-augmented generation" ;
+    rdfs:subPropertyOf :uses ;
+    rdfs:domain :BedrockAgent ;
+    rdfs:range :BedrockKnowledgeBase .
+
+:ingestsDataSource a owl:ObjectProperty ;
+    rdfs:label "ingests data source" ;
+    rdfs:comment "Relates a Bedrock knowledge base to a data source it ingests" ;
+    rdfs:subPropertyOf :uses ;
+    rdfs:domain :BedrockKnowledgeBase ;
+    rdfs:range :BedrockDataSource .
+
+:hasGuardrail a owl:ObjectProperty ;
+    rdfs:label "has guardrail" ;
+    rdfs:comment "Relates a Bedrock agent to a guardrail applied to its model invocations" ;
+    rdfs:domain :BedrockAgent ;
+    rdfs:range :BedrockGuardrail .
+
+:invocationOf a owl:ObjectProperty ;
+    rdfs:label "invocation of" ;
+    rdfs:comment "Relates a model invocation to the foundation model that was invoked" ;
+    rdfs:domain :ModelInvocation ;
+    rdfs:range :FoundationModel .
+
+:modelId a owl:DatatypeProperty ;
+    rdfs:label "model ID" ;
+    rdfs:comment "The Bedrock model identifier (e.g. a foundation model ID)" ;
+    rdfs:domain :FoundationModel ;
+    rdfs:range xsd:string .
+
+:guardrailAction a owl:DatatypeProperty ;
+    rdfs:label "guardrail action" ;
+    rdfs:comment "The action a guardrail takes on a policy violation (e.g. BLOCK, ANONYMIZE)" ;
+    rdfs:domain :BedrockGuardrail ;
+    rdfs:range xsd:string .
+
+### Identity Center resources (AWS IAM Identity Center / workforce SSO)
+
+:IdentityCenterInstance a owl:Class ;
+    rdfs:label "Identity Center Instance" ;
+    rdfs:comment "An AWS IAM Identity Center instance providing centralized workforce access management across an AWS Organization" ;
+    rdfs:subClassOf :IdentityResource .
+
+:IdentityCenterPrincipal a owl:Class ;
+    rdfs:label "Identity Center Principal" ;
+    rdfs:comment "Abstract base class for Identity Center directory principals (users and groups)" ;
+    rdfs:subClassOf :IdentityResource .
+
+:IdentityCenterUser a owl:Class ;
+    rdfs:label "Identity Center User" ;
+    rdfs:comment "A user in the IAM Identity Center directory, distinct from an IAM user" ;
+    rdfs:subClassOf :IdentityCenterPrincipal .
+
+:IdentityCenterGroup a owl:Class ;
+    rdfs:label "Identity Center Group" ;
+    rdfs:comment "A group in the IAM Identity Center directory" ;
+    rdfs:subClassOf :IdentityCenterPrincipal .
+
+:PermissionSet a owl:Class ;
+    rdfs:label "Permission Set" ;
+    rdfs:comment "An IAM Identity Center permission set defining the permissions granted by an account assignment" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+            owl:onProperty :hasPolicy ],
+        :IdentityResource .
+
+:AccountAssignment a owl:Class ;
+    rdfs:label "Account Assignment" ;
+    rdfs:comment "Assigns an Identity Center principal to an AWS account via a permission set" ;
+    rdfs:subClassOf :IdentityResource .
+
+:hasPermissionSet a owl:ObjectProperty ;
+    rdfs:label "has permission set" ;
+    rdfs:comment "Relates an Identity Center instance to a permission set it defines" ;
+    rdfs:subPropertyOf :contains ;
+    rdfs:domain :IdentityCenterInstance ;
+    rdfs:range :PermissionSet .
+
+:assignsPermissionSet a owl:ObjectProperty ;
+    rdfs:label "assigns permission set" ;
+    rdfs:comment "Relates an account assignment to the permission set it grants" ;
+    rdfs:domain :AccountAssignment ;
+    rdfs:range :PermissionSet .
+
+:assignsPrincipal a owl:ObjectProperty ;
+    rdfs:label "assigns principal" ;
+    rdfs:comment "Relates an account assignment to the Identity Center principal it applies to" ;
+    rdfs:domain :AccountAssignment ;
+    rdfs:range :IdentityCenterPrincipal .
+
+:assignsToAccount a owl:ObjectProperty ;
+    rdfs:label "assigns to account" ;
+    rdfs:comment "Relates an account assignment to the target AWS account" ;
+    rdfs:domain :AccountAssignment ;
+    rdfs:range :AWSAccount .
+
+### Property hierarchy refinements
+# Ties existing specific relationships to the generic cross-cutting properties
+# (contains/uses/dependsOn) so transitive/general-purpose queries over the
+# generic properties also pick up these specific ones.
+
+:podRunsOn rdfs:subPropertyOf :dependsOn .
+
+:runsOnCluster rdfs:subPropertyOf :dependsOn .
+
+:usesContainerImage rdfs:subPropertyOf :uses .
+
+:hasNodeGroup rdfs:subPropertyOf :contains .
+
+:hasTaskDefinition rdfs:subPropertyOf :contains .
+
+:attachedTo rdfs:subPropertyOf :dependsOn .
+
+:encryptedWith rdfs:subPropertyOf :uses .
+
+:routesTrafficThrough rdfs:subPropertyOf :dependsOn .
+
+### SKOS concept scheme: AWS resource categories
+# Orthogonal to the OWL class hierarchy (which uses owl:disjointWith for strict
+# partitioning): a thesaurus-style, browsable taxonomy of the top-level resource
+# categories. Each category class is punned as a skos:Concept (legal under OWL 2
+# DL's class/individual punning) so the same IRI serves both roles.
+
+:AWSResourceCategoryScheme a skos:ConceptScheme ;
+    rdfs:label "AWS Resource Category Scheme" ;
+    skos:prefLabel "AWS Resource Category Scheme" .
+
+:ComputeResource a skos:Concept ;
+    skos:prefLabel "Compute Resource" ;
+    skos:inScheme :AWSResourceCategoryScheme ;
+    skos:topConceptOf :AWSResourceCategoryScheme .
+
+:StorageResource a skos:Concept ;
+    skos:prefLabel "Storage Resource" ;
+    skos:inScheme :AWSResourceCategoryScheme ;
+    skos:topConceptOf :AWSResourceCategoryScheme .
+
+:NetworkingResource a skos:Concept ;
+    skos:prefLabel "Networking Resource" ;
+    skos:inScheme :AWSResourceCategoryScheme ;
+    skos:topConceptOf :AWSResourceCategoryScheme .
+
+:IdentityResource a skos:Concept ;
+    skos:prefLabel "Identity Resource" ;
+    skos:inScheme :AWSResourceCategoryScheme ;
+    skos:topConceptOf :AWSResourceCategoryScheme .
+
+:MonitoringResource a skos:Concept ;
+    skos:prefLabel "Monitoring Resource" ;
+    skos:inScheme :AWSResourceCategoryScheme ;
+    skos:topConceptOf :AWSResourceCategoryScheme .
+
+:IntegrationResource a skos:Concept ;
+    skos:prefLabel "Integration Resource" ;
+    skos:inScheme :AWSResourceCategoryScheme ;
+    skos:topConceptOf :AWSResourceCategoryScheme .
+
+:DatabaseResource a skos:Concept ;
+    skos:prefLabel "Database Resource" ;
+    skos:inScheme :AWSResourceCategoryScheme ;
+    skos:topConceptOf :AWSResourceCategoryScheme .
+
+:SecurityResource a skos:Concept ;
+    skos:prefLabel "Security Resource" ;
+    skos:inScheme :AWSResourceCategoryScheme ;
+    skos:topConceptOf :AWSResourceCategoryScheme .
+
+:AIResource a skos:Concept ;
+    skos:prefLabel "AI Resource" ;
+    skos:inScheme :AWSResourceCategoryScheme ;
+    skos:topConceptOf :AWSResourceCategoryScheme .
+
+:AWSResourceCategoryScheme skos:hasTopConcept :ComputeResource,
+        :StorageResource,
+        :NetworkingResource,
+        :IdentityResource,
+        :MonitoringResource,
+        :IntegrationResource,
+        :DatabaseResource,
+        :SecurityResource,
+        :AIResource .
 

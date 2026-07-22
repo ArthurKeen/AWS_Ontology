@@ -8,8 +8,8 @@ A comprehensive semantic ontology for Amazon Web Services (AWS) resources and th
 
 The AWS Ontology is a production-ready semantic web resource that:
 
-- **Models 88 AWS resource types** across compute, storage, networking, containers, API services, and integration
-- **Defines 196 relationships** including temporal, cost, and compliance associations
+- **Models 101 AWS resource types** across compute, storage, networking, containers, API services, generative AI, and workforce identity
+- **Defines 210 relationships** including temporal, cost, and compliance associations
 - **Provides comprehensive examples** with real-world AWS configurations
 - **Supports multiple formats** (OWL/XML, Turtle, with format synchronization)
 - **Includes semantic constraints** (cardinality, disjoint classes, property characteristics)
@@ -19,10 +19,10 @@ The AWS Ontology is a production-ready semantic web resource that:
 
 | Metric | Count | Recent Growth |
 |--------|-------|---------------|
-| **Total Triples** | 1,386 | +291 triples |
-| **Classes** | 88 | +17 new AWS services |
-| **Object Properties** | 99 | +6 new properties |
-| **Data Properties** | 98 | +36 new properties |
+| **Total Triples** | 1,576 | +190 triples |
+| **Classes** | 101 | +13 new classes (Bedrock/GenAI, Identity Center) |
+| **Object Properties** | 110 | +11 new properties |
+| **Data Properties** | 100 | +2 new properties |
 | **Example Instances** | 115 | typed individuals in examples.ttl |
 
 ## ⚡ Quick Example
@@ -150,6 +150,8 @@ graph TB
 *How the AWS Ontology integrates into analysis workflows across different platforms and use cases*
 
 ### Core Service Categories
+- **🤖 AI/Generative AI**: Bedrock Foundation Models, Agents, Knowledge Bases, Guardrails
+- **👤 Workforce Identity**: IAM Identity Center Instances, Permission Sets, Account Assignments
 - **🔧 Container Services**: ECS, EKS, Fargate, ECR
 - **🔗 API & Integration**: API Gateway, Step Functions, EventBridge, SNS, SQS
 - **💻 Compute**: EC2, Lambda, Auto Scaling Groups
@@ -250,8 +252,8 @@ open ontology/aws.owl
 ```
 
 **Key Protégé Features:**
-- **Class Hierarchy**: Browse 88 AWS resource classes
-- **Object Properties**: Explore 99 relationship types
+- **Class Hierarchy**: Browse 101 AWS resource classes
+- **Object Properties**: Explore 110 relationship types
 - **Reasoning**: Validate with HermiT reasoner
 - **OntoGraf**: Visualize relationships graphically
 - **SPARQL**: Test queries from our examples

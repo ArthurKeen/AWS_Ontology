@@ -2,7 +2,7 @@
 
 ## 🎯 Overview
 
-This guide helps you explore the enhanced AWS Ontology using Protégé, the premier OWL ontology editor. Your ontology contains **1,386 triples** across **88 classes** and **197 properties**.
+This guide helps you explore the enhanced AWS Ontology using Protégé, the premier OWL ontology editor. Your ontology contains **1,576 triples** across **101 classes** and **210 properties**.
 
 ## 🚀 Getting Started
 
@@ -20,20 +20,20 @@ open ontology/aws.owl
 
 ## 📊 What You'll Find
 
-### Class Hierarchy (88 Classes)
+### Class Hierarchy (101 Classes)
 - **Base Resources**: `ComputeResource`, `StorageResource`, `NetworkingResource`, `IntegrationResource`
 - **Container Services**: `ECSCluster`, `EKSCluster`, `FargateService`, `ECRRepository`
 - **API & Integration**: `APIGateway`, `StepFunction`, `EventBridge`, `SNSTopic`, `SQSQueue`
 - **Enhanced IAM**: `IAMUser`, `IAMRole`, `IAMPolicy` with subtypes
 
-### Object Properties (99 Properties)
+### Object Properties (110 Properties)
 - **Container Relationships**: `runsOnCluster`, `hasTaskDefinition`, `usesContainerImage`
 - **API Relationships**: `hasStage`, `triggersStepFunction`, `publishesToTopic`
 - **Temporal Relationships**: `createdBefore`, `replacedBy`, `migratedFrom`, `succeeds`
 - **Cost Relationships**: `incursChargeFor`, `optimizedBy`, `allocatesCostTo`
 - **Compliance Relationships**: `compliesWith`, `auditedBy`, `controlledBy`
 
-### Data Properties (62 Properties)
+### Data Properties (100 Properties)
 - **Temporal**: `lastModifiedDate`, `deprecatedDate`, `retentionPeriodDays`
 - **Cost**: `monthlyCostUSD`, `costCenter`, `billingMode`, `budgetAllocated`
 - **Compliance**: `complianceStatus`, `dataClassification`, `encryptionRequired`
@@ -134,10 +134,10 @@ SELECT ?property WHERE {
 ## 📈 Ontology Metrics Validation
 
 Your ontology should show:
-- **Total Triples**: 1,386
-- **Classes**: 88
-- **Object Properties**: 99
-- **Data Properties**: 98
+- **Total Triples**: 1,576
+- **Classes**: 101
+- **Object Properties**: 110
+- **Data Properties**: 100
 
 ## 🔍 Troubleshooting
 

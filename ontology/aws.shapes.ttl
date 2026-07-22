@@ -1,0 +1,109 @@
+@prefix : <http://www.semanticweb.org/aws-ontology#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# SHACL shapes for the AWS Resource Ontology.
+#
+# OWL's open-world semantics can declare a cardinality restriction (e.g. AWSResource
+# has exactly one :arn) without ever being able to flag a specific individual as
+# violating it — a reasoner can only ever conclude "not enough information," never
+# "wrong." SHACL closes the world for validation: these shapes check actual instance
+# data (ontology/examples.ttl) and can fail a specific resource by name.
+#
+# Severity is set deliberately, not uniformly at sh:Violation:
+# - sh:Violation shapes below are already satisfied by every current example
+#   individual (verified by tests/test_shacl_validation.py) and are enforced in CI.
+# - sh:Warning is used where the underlying data set has a known, tracked gap
+#   (most pre-2026 example individuals predate :arn and were never backfilled —
+#   see drift alert aws-ontology_REQ-018-arn-completeness) so the shape surfaces
+#   the gap without failing the build on data that already shipped.
+
+:AWSResourceShape a sh:NodeShape ;
+    sh:targetClass :AWSResource ;
+    sh:property [
+        sh:path :arn ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:pattern "^arn:aws" ;
+        sh:severity sh:Warning ;
+        sh:message "Every AWS resource should carry exactly one ARN matching ^arn:aws (PRD REQ-016 key)." ;
+    ] .
+
+:VPCShape a sh:NodeShape ;
+    sh:targetClass :VPC ;
+    sh:property [
+        sh:path :belongsToRegion ;
+        sh:class :AWSRegion ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation ;
+        sh:message "A VPC must belong to exactly one AWS region." ;
+    ] .
+
+:StepFunctionShape a sh:NodeShape ;
+    sh:targetClass :StepFunction ;
+    sh:property [
+        sh:path :hasActivity ;
+        sh:class :StepFunctionActivity ;
+        sh:minCount 1 ;
+        sh:severity sh:Violation ;
+        sh:message "A Step Function must have at least one activity." ;
+    ] .
+
+:PermissionSetShape a sh:NodeShape ;
+    sh:targetClass :PermissionSet ;
+    sh:property [
+        sh:path :hasPolicy ;
+        sh:class :IAMPolicy ;
+        sh:minCount 1 ;
+        sh:severity sh:Violation ;
+        sh:message "A permission set must grant at least one policy." ;
+    ] .
+
+:AccountAssignmentShape a sh:NodeShape ;
+    sh:targetClass :AccountAssignment ;
+    sh:property [
+        sh:path :assignsPermissionSet ;
+        sh:class :PermissionSet ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation ;
+        sh:message "An account assignment must grant exactly one permission set." ;
+    ] ;
+    sh:property [
+        sh:path :assignsPrincipal ;
+        sh:class :IdentityCenterPrincipal ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation ;
+        sh:message "An account assignment must target exactly one Identity Center principal." ;
+    ] ;
+    sh:property [
+        sh:path :assignsToAccount ;
+        sh:class :AWSAccount ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation ;
+        sh:message "An account assignment must target exactly one AWS account." ;
+    ] .
+
+:S3BucketShape a sh:NodeShape ;
+    sh:targetClass :S3Bucket ;
+    sh:property [
+        sh:path :encrypted ;
+        sh:datatype xsd:boolean ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation ;
+        sh:message "If present, an S3 bucket's encrypted flag must be a single boolean." ;
+    ] .
+
+:IAMPolicyShape a sh:NodeShape ;
+    sh:targetClass :IAMPolicy ;
+    sh:property [
+        sh:path :hasStatement ;
+        sh:class :PolicyStatement ;
+        sh:minCount 1 ;
+        sh:severity sh:Warning ;
+        sh:message "An IAM policy should have at least one structured statement (many example policies currently only carry :policyDocument text — see drift alert aws-ontology_REQ-018-policy-statement-coverage)." ;
+    ] .

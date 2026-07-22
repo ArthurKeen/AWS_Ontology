@@ -7,7 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-07-22
+
 ### Added
+- **AI/Generative AI resources** (PRD REQ-022): `AIResource` category with `FoundationModel`,
+  `BedrockAgent`, `BedrockKnowledgeBase`, `BedrockGuardrail`, `BedrockDataSource`, and
+  `ModelInvocation`, plus `invokesModel`/`usesKnowledgeBase`/`ingestsDataSource`/`hasGuardrail`/
+  `invocationOf` properties and example instances
+- **IAM Identity Center resources** (PRD REQ-023): `IdentityCenterInstance`,
+  `IdentityCenterPrincipal`/`IdentityCenterUser`/`IdentityCenterGroup`, `PermissionSet`, and
+  `AccountAssignment`, plus `hasPermissionSet`/`assignsPermissionSet`/`assignsPrincipal`/
+  `assignsToAccount` properties and example instances
+- **Property hierarchy** (PRD REQ-024): eight previously-flat properties
+  (`podRunsOn`, `runsOnCluster`, `usesContainerImage`, `hasNodeGroup`, `hasTaskDefinition`,
+  `attachedTo`, `encryptedWith`, `routesTrafficThrough`) declared `rdfs:subPropertyOf` their
+  generic superproperty (`dependsOn`, `uses`, or `contains`)
+- **SHACL shapes** (PRD REQ-025): `ontology/aws.shapes.ttl` with closed-world validation shapes
+  for `VPC`, `StepFunction`, `PermissionSet`, `AccountAssignment`, `S3Bucket`, and `IAMPolicy`,
+  checked in CI via `tests/test_shacl_validation.py` (new `pyshacl` dependency)
+- **PROV-O alignment** (PRD REQ-026): `AWSResource rdfs:subClassOf prov:Entity`;
+  `ModelInvocation rdfs:subClassOf prov:Activity`
+- **SKOS concept scheme** (PRD REQ-027): `AWSResourceCategoryScheme` with the 9 top-level
+  resource categories punned as `skos:Concept` (legal OWL 2 DL class/individual punning) —
+  a browsable taxonomy orthogonal to the strict `owl:disjointWith` partitioning
 - **Modern Python toolchain**: `pyproject.toml` (PEP 621) as the canonical dependency
   manifest with a `uv.lock` lockfile; ruff replaces black/isort/flake8/mypy; pytest runs
   the suite (`make test`, `make lint`, `make format`)
@@ -18,15 +40,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **OWL 2 DL compliance tests** (`tests/test_dl_compliance.py`): undeclared-term references
   and illegal axiom constructs (e.g. inverse-functional datatype properties) now fail CI
 
-### Removed
-- Dead code: `utils/config_validation.py` (296 lines, never imported), `mypy.ini`,
-  `.coveragerc` (coverage config folded into `pyproject.toml`)
 - **PRD-required IAM properties** (closes drift alerts REQ-009/REQ-010): `canAssumeRole`
   (IAM principal → assumable role) and `hasPolicy` (declared `owl:equivalentProperty` to the
   existing `hasPolicyAttachment`)
-- **PRD v1.2**: all testable requirements now carry stable `REQ-NNN` identifiers used by
-  drift tooling; scope updated to reflect implemented service coverage, with 2023+ services
-  listed as roadmap
+- **PRD v1.2, then v1.3**: all testable requirements now carry stable `REQ-NNN` identifiers used
+  by drift tooling; scope updated to reflect implemented service coverage (including this
+  release's AI/GenAI and Identity Center additions)
+
+### Removed
+- Dead code: `utils/config_validation.py` (296 lines, never imported), `mypy.ini`,
+  `.coveragerc` (coverage config folded into `pyproject.toml`)
 
 ### Fixed
 - **Ontology axioms**: Declared previously-missing `belongsToRegion` object property
@@ -40,6 +63,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   class/property counts, and corrected CHANGELOG release dates to match git history
 - **Tooling**: Fixed `--quiet` argparse crash in `tools/monitor_aws_changes.py`; removed
   hardcoded ArangoDB password fallback in `tools/import_to_arangodb.py`
+- **Example data gaps surfaced by SHACL**: `ProductionVPC` was missing both `:arn` and
+  `:belongsToRegion` despite the latter being required by `VPC`'s cardinality restriction since
+  the previous release; `DevOpsCustomPolicy` had a free-text `:policyDocument` but no structured
+  `:hasStatement` link to its existing `:AllowEC2Describe` statement. Both fixed. The broader gap
+  (most pre-2026 example individuals predate `:arn`) is tracked as a Warning-severity SHACL
+  finding rather than backfilled wholesale — see the shapes file header for rationale.
 
 ### Changed
 - **README.md**: Enhanced project introduction and value proposition

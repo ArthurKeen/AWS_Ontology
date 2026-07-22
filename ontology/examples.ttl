@@ -78,6 +78,7 @@
 
 :DevOpsCustomPolicy rdf:type :CustomerManagedPolicy ;
     rdfs:label "DevOps Team Policy" ;
+    :hasStatement :AllowEC2Describe ;
     :policyDocument """
     {
         "Version": "2012-10-17",
@@ -180,6 +181,8 @@
 # Example Infrastructure Resources
 :ProductionVPC rdf:type :VPC ;
     rdfs:label "Production VPC" ;
+    :arn "arn:aws:ec2:us-east-1:123456789012:vpc/vpc-12345678" ;
+    :belongsToRegion :UsEast1Region ;
     :contains :ProdPublicSubnet, :ProdPrivateSubnet .
 
 :ProdPublicSubnet rdf:type :Subnet ;
@@ -761,4 +764,68 @@
     :enabled "true"^^xsd:boolean ;
     :priceClass "PriceClass_100"^^xsd:string ;
     :defaultRootObject "index.html"^^xsd:string ;
+    :environment "production" .
+
+# Examples for AI Resources (Amazon Bedrock)
+:ClaudeFoundationModel rdf:type :FoundationModel ;
+    rdfs:label "Claude Foundation Model" ;
+    :arn "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0" ;
+    :modelId "anthropic.claude-3-sonnet-20240229-v1:0"^^xsd:string ;
+    :environment "production" .
+
+:ProductDocsDataSource rdf:type :BedrockDataSource ;
+    rdfs:label "Product Docs Data Source" ;
+    :arn "arn:aws:s3:::product-docs-bucket" ;
+    :environment "production" .
+
+:ProductDocsKnowledgeBase rdf:type :BedrockKnowledgeBase ;
+    rdfs:label "Product Docs Knowledge Base" ;
+    :arn "arn:aws:bedrock:us-east-1:123456789012:knowledge-base/KB12345678" ;
+    :ingestsDataSource :ProductDocsDataSource ;
+    :environment "production" .
+
+:ContentSafetyGuardrail rdf:type :BedrockGuardrail ;
+    rdfs:label "Content Safety Guardrail" ;
+    :arn "arn:aws:bedrock:us-east-1:123456789012:guardrail/GR1234567" ;
+    :guardrailAction "BLOCK"^^xsd:string ;
+    :environment "production" .
+
+:CustomerSupportAgent rdf:type :BedrockAgent ;
+    rdfs:label "Customer Support Agent" ;
+    :arn "arn:aws:bedrock:us-east-1:123456789012:agent/AGENT1234" ;
+    :invokesModel :ClaudeFoundationModel ;
+    :usesKnowledgeBase :ProductDocsKnowledgeBase ;
+    :hasGuardrail :ContentSafetyGuardrail ;
+    :environment "production" .
+
+:SupportAgentInvocation001 rdf:type :ModelInvocation ;
+    rdfs:label "Support Agent Invocation 001" ;
+    :arn "arn:aws:bedrock:us-east-1:123456789012:model-invocation/INV1234567890" ;
+    :invocationOf :ClaudeFoundationModel ;
+    :environment "production" .
+
+# Examples for IAM Identity Center
+:OrgIdentityCenter rdf:type :IdentityCenterInstance ;
+    rdfs:label "Organization Identity Center" ;
+    :arn "arn:aws:sso:::instance/ssoins-1234567890abcdef" ;
+    :hasPermissionSet :AdminPermissionSet ;
+    :environment "production" .
+
+:AdminPermissionSet rdf:type :PermissionSet ;
+    rdfs:label "Admin Permission Set" ;
+    :arn "arn:aws:sso:::permissionSet/ssoins-1234567890abcdef/ps-1234567890abcdef" ;
+    :hasPolicy :SecurityAuditPolicy ;
+    :environment "production" .
+
+:JaneDoeSSOUser rdf:type :IdentityCenterUser ;
+    rdfs:label "Jane Doe (SSO User)" ;
+    :arn "arn:aws:identitystore::123456789012:user/1234567890abcdef" ;
+    :environment "production" .
+
+:AdminAssignmentToProdAccount rdf:type :AccountAssignment ;
+    rdfs:label "Admin Assignment to Production Account" ;
+    :arn "arn:aws:sso:::account-assignment/ssoins-1234567890abcdef/AdminPermissionSet/123456789012" ;
+    :assignsPermissionSet :AdminPermissionSet ;
+    :assignsPrincipal :JaneDoeSSOUser ;
+    :assignsToAccount :ProductionAccount ;
     :environment "production" . 

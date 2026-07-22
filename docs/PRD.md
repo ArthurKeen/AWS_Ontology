@@ -1,6 +1,6 @@
 # AWS Object and Relationship Ontology Development - Product Requirements Document
 
-**Document Version:** 1.2
+**Document Version:** 1.3
 **Date:** July 2026
 
 > **Requirement identifiers.** Every testable requirement in this document carries a stable
@@ -35,12 +35,14 @@ The ontology primarily covers core and widely used AWS services:
 - **Integration:** API Gateway, Step Functions, EventBridge, SNS, SQS
 - **Security:** KMS, Secrets Manager
 - **Monitoring & Logging:** CloudWatch, CloudTrail
+- **AI/Generative AI:** Amazon Bedrock (foundation models, agents, knowledge bases, guardrails)
+- **Workforce Identity:** IAM Identity Center (instances, permission sets, account assignments)
 
 ### Future scope (roadmap, not yet requirements)
 
 The following 2023+ service areas are candidates for promotion to requirements in a future PRD
-revision: Bedrock/GenAI, SageMaker, analytics (Glue, Athena, Kinesis, EMR, OpenSearch),
-IAM Identity Center, Organizations/Control Tower, Cognito, security services (GuardDuty,
+revision: SageMaker, analytics (Glue, Athena, Kinesis, EMR, OpenSearch),
+Organizations/Control Tower, Cognito, security services (GuardDuty,
 Security Hub, WAF, Config), Route 53, Transit Gateway/Direct Connect, ElastiCache,
 CloudFormation/IaC, CodePipeline, Systems Manager.
 
@@ -55,6 +57,8 @@ CloudFormation/IaC, CodePipeline, Systems Manager.
 | REQ-005 | Networking classes MUST exist: `VPC`, `Subnet`, `RouteTable`, `InternetGateway`, `NATGateway` |
 | REQ-006 | Monitoring classes MUST exist: `CloudWatchMetric`, `CloudWatchAlarm`, `CloudTrailLog` |
 | REQ-007 | Database classes MUST cover DynamoDB (`DynamoDBTable`) and Aurora (as part of the RDS class family) |
+| REQ-022 | AI/GenAI classes MUST exist: `FoundationModel`, `BedrockAgent`, `BedrockKnowledgeBase`, `BedrockGuardrail`, `ModelInvocation` |
+| REQ-023 | Identity Center classes MUST exist: `IdentityCenterInstance`, `PermissionSet`, `AccountAssignment` |
 
 Additional classes may be added as necessary to represent the AWS ecosystem accurately; the
 implemented ontology may exceed this list.
@@ -70,6 +74,7 @@ implemented ontology may exceed this list.
 | REQ-012 | Operational/functional properties MUST exist: `uses`, `manages`, `monitors`, `logsActivityOf`, `routesTrafficThrough` |
 | REQ-013 | Dependency properties MUST exist: `dependsOn` (general), `isSourceFor` (e.g., snapshot → volume) |
 | REQ-014 | Inverse properties MUST be defined where semantically meaningful |
+| REQ-024 | Specific relationships that are semantically special cases of a generic cross-cutting property (REQ-016's exemption list) MUST be declared `rdfs:subPropertyOf` that generic property, so transitive/general-purpose queries over the generic property also match the specific ones |
 
 ## 6. Output Format
 
@@ -80,6 +85,9 @@ implemented ontology may exceed this list.
 | REQ-017 | Every class and property MUST have an `rdfs:label` and `rdfs:comment` |
 | REQ-018 | The ontology MUST ship with at least 50 example instances spanning all major service categories |
 | REQ-019 | The ontology MUST be published in two synchronized serializations (Turtle and OWL/XML) verified semantically identical |
+| REQ-025 | The ontology MUST ship SHACL shapes (`ontology/aws.shapes.ttl`) providing closed-world validation of instance data where OWL's open-world semantics cannot flag a specific individual as non-conforming |
+| REQ-026 | The ontology MUST align with PROV-O (`AWSResource rdfs:subClassOf prov:Entity`, model-invocation-style events as `prov:Activity`) to support provenance-chain queries, without importing PROV-O's full axiomatization (avoids a network-fetch dependency at load time) |
+| REQ-027 | The ontology MUST provide a SKOS concept scheme grouping the top-level resource categories, as a browsable taxonomy orthogonal to the strict OWL disjoint-class partitioning |
 
 ## 7. Data Sources
 
