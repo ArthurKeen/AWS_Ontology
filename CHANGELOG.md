@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Example data completeness** (closes drift alerts REQ-018-arn-completeness and
+  REQ-018-policy-statement-coverage): backfilled `:arn` on all 70 example individuals whose AWS
+  type has a real ARN, including 7 real public AWS-managed-policy ARNs (`AmazonEKSClusterPolicy`,
+  `AmazonS3ReadOnlyAccess`, etc.); added 7 new `:PolicyStatement` individuals mirroring existing
+  `:policyDocument` JSON, linked via `:hasStatement`. SHACL warnings dropped from 110 to 40 — the
+  remainder is individuals of types confirmed to have no real AWS ARN (regions, availability
+  zones, policy statements, trust policies, etc.) or AWS-managed policies whose content is owned
+  by AWS, both expected by design rather than a backlog (see `ontology/aws.shapes.ttl` header)
+
 ## [0.5.0] - 2026-07-22
 
 ### Added
