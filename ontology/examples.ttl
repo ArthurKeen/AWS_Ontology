@@ -13,7 +13,8 @@
     rdfs:label "Production AWS Account" ;
     :arn "arn:aws:organizations::123456789012:account/o-a1b2c3d4e5/123456789012" ;
     :hasRegion :UsEast1Region ;
-    :controlledByServiceControlPolicy :ProdRestrictedRegionsPolicy .
+    :controlledByServiceControlPolicy :ProdRestrictedRegionsPolicy ;
+    :belongsToOrganizationalUnit :WorkloadsOU .
 
 :UsEast1Region rdf:type :AWSRegion ;
     rdfs:label "us-east-1" ;
@@ -1007,3 +1008,94 @@
 
 :SQSSendMessageAction rdf:type :Action ;
     rdfs:label "sqs:SendMessage" .
+
+# Examples for AWS Organizations and Control Tower
+:MainOrganization rdf:type :Organization ;
+    rdfs:label "Main Organization" ;
+    :arn "arn:aws:organizations::123456789012:organization/o-a1b2c3d4e5" ;
+    :hasOrganizationalUnit :SecurityOU, :WorkloadsOU ;
+    :hasAccount :ProductionAccount ;
+    :environment "production" .
+
+:SecurityOU rdf:type :OrganizationalUnit ;
+    rdfs:label "Security OU" ;
+    :arn "arn:aws:organizations::123456789012:ou/o-a1b2c3d4e5/ou-root-sec12345" ;
+    :environment "production" .
+
+:WorkloadsOU rdf:type :OrganizationalUnit ;
+    rdfs:label "Workloads OU" ;
+    :arn "arn:aws:organizations::123456789012:ou/o-a1b2c3d4e5/ou-root-wkld6789" ;
+    :environment "production" .
+
+:MainLandingZone rdf:type :ControlTowerLandingZone ;
+    rdfs:label "Main Landing Zone" ;
+    :arn "arn:aws:controltower:us-east-1:123456789012:landingzone/A1B2C3D4-E5F6-7890-ABCD-EF1234567890" ;
+    :governsOrganization :MainOrganization ;
+    :environment "production" .
+
+# Examples for Amazon Cognito
+:AppUserPool rdf:type :CognitoUserPool ;
+    rdfs:label "App User Pool" ;
+    :arn "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_AbCdEfGhI" ;
+    :hasUserPoolClient :WebAppClient ;
+    :environment "production" .
+
+:WebAppClient rdf:type :CognitoUserPoolClient ;
+    rdfs:label "Web App Client" ;
+    :environment "production" .
+
+:AppIdentityPool rdf:type :CognitoIdentityPool ;
+    rdfs:label "App Identity Pool" ;
+    :arn "arn:aws:cognito-identity:us-east-1:123456789012:identitypool/us-east-1:a1b2c3d4-e5f6-7890-abcd-ef1234567890" ;
+    :federatesUserPool :AppUserPool ;
+    :environment "production" .
+
+# Examples for GuardDuty and Security Hub
+:MainGuardDutyDetector rdf:type :GuardDutyDetector ;
+    rdfs:label "Main GuardDuty Detector" ;
+    :arn "arn:aws:guardduty:us-east-1:123456789012:detector/12abc34def567890ghi123jk456lmno7" ;
+    :hasFinding :SSHBruteForceFinding ;
+    :environment "production" .
+
+:SSHBruteForceFinding rdf:type :GuardDutyFinding ;
+    rdfs:label "SSH Brute Force Finding" ;
+    :arn "arn:aws:guardduty:us-east-1:123456789012:detector/12abc34def567890ghi123jk456lmno7/finding/98zyx76wvu543210tsr987qponmlk654" ;
+    :findingSeverity "5.0"^^xsd:decimal ;
+    :findingType "UnauthorizedAccess:EC2/SSHBruteForce"^^xsd:string ;
+    :environment "production" .
+
+:MainSecurityHub rdf:type :SecurityHubHub ;
+    rdfs:label "Main Security Hub" ;
+    :arn "arn:aws:securityhub:us-east-1:123456789012:hub/default" ;
+    :aggregatesFinding :SSHBruteForceFinding ;
+    :hasStandardsSubscription :CISFoundationsSubscription ;
+    :environment "production" .
+
+:CISFoundationsSubscription rdf:type :SecurityHubStandardsSubscription ;
+    rdfs:label "CIS AWS Foundations Subscription" ;
+    :arn "arn:aws:securityhub:us-east-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.4.0" ;
+    :standardName "cis-aws-foundations-benchmark"^^xsd:string ;
+    :environment "production" .
+
+# Examples for Amazon SageMaker
+:FraudDetectionNotebook rdf:type :SageMakerNotebookInstance ;
+    rdfs:label "Fraud Detection Notebook" ;
+    :arn "arn:aws:sagemaker:us-east-1:123456789012:notebook-instance/fraud-detection-notebook" ;
+    :environment "production" .
+
+:FraudDetectionTrainingJob rdf:type :SageMakerTrainingJob ;
+    rdfs:label "Fraud Detection Training Job" ;
+    :arn "arn:aws:sagemaker:us-east-1:123456789012:training-job/fraud-detection-training-2026-07-30" ;
+    :producesModel :FraudDetectionModel ;
+    :environment "production" .
+
+:FraudDetectionModel rdf:type :SageMakerModel ;
+    rdfs:label "Fraud Detection Model" ;
+    :arn "arn:aws:sagemaker:us-east-1:123456789012:model/fraud-detection-model" ;
+    :environment "production" .
+
+:FraudDetectionEndpoint rdf:type :SageMakerEndpoint ;
+    rdfs:label "Fraud Detection Endpoint" ;
+    :arn "arn:aws:sagemaker:us-east-1:123456789012:endpoint/fraud-detection-endpoint" ;
+    :deploysModel :FraudDetectionModel ;
+    :environment "production" .
