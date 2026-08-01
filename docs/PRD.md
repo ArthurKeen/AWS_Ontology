@@ -1,7 +1,7 @@
 # AWS Object and Relationship Ontology Development - Product Requirements Document
 
-**Document Version:** 1.3
-**Date:** July 2026
+**Document Version:** 1.4
+**Date:** August 2026
 
 > **Requirement identifiers.** Every testable requirement in this document carries a stable
 > `REQ-NNN` identifier. Drift tooling (`/prd-sync`) audits the implementation against these IDs
@@ -35,16 +35,21 @@ The ontology primarily covers core and widely used AWS services:
 - **Integration:** API Gateway, Step Functions, EventBridge, SNS, SQS
 - **Security:** KMS, Secrets Manager
 - **Monitoring & Logging:** CloudWatch, CloudTrail
-- **AI/Generative AI:** Amazon Bedrock (foundation models, agents, knowledge bases, guardrails)
+- **AI/Generative AI:** Amazon Bedrock (foundation models, agents, knowledge bases, guardrails);
+  Amazon SageMaker (notebooks, training jobs, models, endpoints)
 - **Workforce Identity:** IAM Identity Center (instances, permission sets, account assignments)
+- **Consumer Identity:** Amazon Cognito (user pools, user pool clients, identity pools)
+- **Governance:** AWS Organizations (Organization, Organizational Units), Control Tower
+  (Landing Zones)
+- **Detective Security:** GuardDuty (detectors, findings), Security Hub (hub, standards
+  subscriptions)
 
 ### Future scope (roadmap, not yet requirements)
 
 The following 2023+ service areas are candidates for promotion to requirements in a future PRD
-revision: SageMaker, analytics (Glue, Athena, Kinesis, EMR, OpenSearch),
-Organizations/Control Tower, Cognito, security services (GuardDuty,
-Security Hub, WAF, Config), Route 53, Transit Gateway/Direct Connect, ElastiCache,
-CloudFormation/IaC, CodePipeline, Systems Manager.
+revision: analytics (Glue, Athena, Kinesis, EMR, OpenSearch), Cognito federation providers beyond
+user pools, security services WAF and Config, Route 53, Transit Gateway/Direct Connect,
+ElastiCache, CloudFormation/IaC, CodePipeline, Systems Manager.
 
 ## 4. Key Entities (Classes)
 
@@ -59,6 +64,10 @@ CloudFormation/IaC, CodePipeline, Systems Manager.
 | REQ-007 | Database classes MUST cover DynamoDB (`DynamoDBTable`) and Aurora (as part of the RDS class family) |
 | REQ-022 | AI/GenAI classes MUST exist: `FoundationModel`, `BedrockAgent`, `BedrockKnowledgeBase`, `BedrockGuardrail`, `ModelInvocation` |
 | REQ-023 | Identity Center classes MUST exist: `IdentityCenterInstance`, `PermissionSet`, `AccountAssignment` |
+| REQ-028 | Governance classes MUST exist: `Organization`, `OrganizationalUnit`, `ControlTowerLandingZone` |
+| REQ-029 | Cognito classes MUST exist: `CognitoUserPool`, `CognitoUserPoolClient`, `CognitoIdentityPool` |
+| REQ-030 | Detective security classes MUST exist: `GuardDutyDetector`, `GuardDutyFinding`, `SecurityHubHub`, `SecurityHubStandardsSubscription` |
+| REQ-031 | SageMaker classes MUST exist: `SageMakerNotebookInstance`, `SageMakerModel`, `SageMakerEndpoint`, `SageMakerTrainingJob` |
 
 Additional classes may be added as necessary to represent the AWS ecosystem accurately; the
 implemented ontology may exceed this list.

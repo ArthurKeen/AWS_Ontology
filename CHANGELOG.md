@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Service coverage expansion**: AWS Organizations & Control Tower (`Organization`,
+  `OrganizationalUnit`, `ControlTowerLandingZone`), Amazon Cognito (`CognitoUserPool`,
+  `CognitoUserPoolClient`, `CognitoIdentityPool`), GuardDuty & Security Hub
+  (`GuardDutyDetector`/`Finding`, `SecurityHubHub`/`StandardsSubscription`), and Amazon SageMaker
+  (`NotebookInstance`, `Model`, `Endpoint`, `TrainingJob`, the latter also `prov:Activity`) —
+  115 classes total (was 101), 121 object + 103 datatype properties, 1712 triples
+- **PRD v1.4**: four `new-requirement` patches (REQ-028–031) proposed via the new bidirectional
+  `/prd-sync` protocol and accepted, promoting the four service areas above from §3's roadmap
+  into numbered requirements
 - **Example data completeness** (closes drift alerts REQ-018-arn-completeness and
   REQ-018-policy-statement-coverage): backfilled `:arn` on all 70 example individuals whose AWS
   type has a real ARN, including 7 real public AWS-managed-policy ARNs (`AmazonEKSClusterPolicy`,
