@@ -4,33 +4,36 @@ alwaysApply: true
 
 # Project workflow rules
 
-## What counts as implementation
-The ontology files (`ontology/*.ttl`, `ontology/*.owl`) ARE this repo's implementation, along
-with the Python tools. Edits to any of them count as implementation changes.
-
 ## PRD drift detection
-- The PRD at `docs/PRD.md` is the source of truth. Requirements carry stable `REQ-NNN` IDs.
+- This project uses a formal PRD at `docs/PRD.md`.
+- When you modify an implementation file, remind the user to run `/prd-sync` at session end.
+- When the PRD file itself is modified, requirements may have changed — recommend `/prd-sync`.
 - Never claim a requirement is implemented without a `file:line` reference.
 - A test is not an implementation.
-- After modifying implementation files, run `/prd-sync` before ending the session.
+- If the implementation legitimately diverges from the PRD (obsolete or imprecise
+  requirement), propose a PRD patch (`prd_patches`, review_state `proposed`) — never
+  silently absorb the divergence, and never edit the PRD without user acceptance.
 
-## Before solving any non-trivial problem (mandatory — do not ask first)
-Run `/pattern-search <problem description>`. It calls the server-side `pattern-search` MCP tool
-(hybrid vector + BM25 retrieval over `shared_patterns`) — do not hand-write CONTAINS/AQL queries
-for this.
+## Before solving any non-trivial problem
+1. Search shared memory first via the `pattern-search` MCP tool (server-side hybrid
+   semantic + keyword retrieval — pass text, get ranked results):
+   - `query_text`: the full problem description
+   - `project_id`: the PROJECT_ID from CLAUDE.md
+   - `limit`: 8
+2. Present the top results (problem, solution, tags, source project) and ask which to apply.
+3. If you apply one or more results, record it with the `pattern-applied` tool
+   (pass only the `_key`s actually used).
 
-## After fixing a drift gap or discovering a reusable technique
-Run `/pattern-save` to write the verified solution to shared memory.
+## After solving a reusable problem
+- Offer to save it with the `save-pattern` MCP tool (it embeds the text and inserts the
+  document with its embedding in one server-side step — required because the collection
+  has a vector index; do NOT insert documents directly with `upsert-document`).
+- Memory types: `pattern` (default), `feedback` (include `why` and `how_to_apply`),
+  `user`, `project`, `reference`. Only save verified successes; never save secrets or
+  client-specific data.
 
-## Ontology editing invariants
-- Edit `ontology/aws.ttl`, then regenerate the OWL serialization:
-  `venv/bin/python tools/sync_formats.py ttl-to-owl && venv/bin/python tools/sync_formats.py check`
-- Run the test suite before committing (`tests/test_format_sync.py`, `tests/test_ontology_quality.py`,
-  `tests/test_examples_validation.py`).
-- Keep `owl:versionInfo` in sync with the latest CHANGELOG release.
-- Stay within OWL 2 DL (no inverse-functional datatype properties; use `owl:hasKey` for keys).
+## Session end
+- Remind the user to run `/prd-sync` if implementation files (or the PRD) changed.
 
-## Session end checklist
-- `/prd-sync` if implementation files changed
-- `/pattern-save` for any technique worth sharing
-- Check `.prd-drift-queue/` for queued change alerts
+> Note: Cursor does not run the Claude Code hooks in `.claude/` (session digest, drift
+> queue, stop gate) — in Cursor these rules are the enforcement layer, so follow them.
