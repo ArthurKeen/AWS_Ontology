@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **PRD v1.6**: four `new-requirement` patches (REQ-033–036) for the round-2 service expansion
+  below, proposed via `/prd-sync` and accepted
 - **Service coverage expansion round 2**: Amazon Route 53 (`Route53HostedZone`, `Route53RecordSet`,
   `Route53HealthCheck`), AWS Transit Gateway (`TransitGateway`, `TransitGatewayAttachment`,
   `TransitGatewayRouteTable`), Amazon ElastiCache (`ElastiCacheCluster`,
