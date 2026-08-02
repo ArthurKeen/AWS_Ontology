@@ -1,6 +1,6 @@
 # AWS Object and Relationship Ontology Development - Product Requirements Document
 
-**Document Version:** 1.4
+**Document Version:** 1.5
 **Date:** August 2026
 
 > **Requirement identifiers.** Every testable requirement in this document carries a stable
@@ -115,6 +115,7 @@ Consistency (no contradictions), completeness (coverage of specified scope), acc
 |----|-------------|
 | REQ-020 | The ontology MUST be transformable into at least one graph database (ArangoDB via ArangoRDF), with a working import tool |
 | REQ-021 | Performance budgets: complete ontology loads in <5s in standard tools; common SPARQL/AQL queries respond in <1s; ArangoDB transformation completes in <30s; reasoning stays under 500MB RAM |
+| REQ-032 | The project MUST provide automated tooling that periodically checks for new AWS services/features and proposes ontology extensions for human review, supporting the §10 quarterly-review commitment |
 
 ### Coverage targets (informational)
 
