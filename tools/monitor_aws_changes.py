@@ -79,7 +79,10 @@ class AWSChangeMonitor:
         recent_changes = []
 
         for entry in feed.entries:
-            # Parse entry date
+            # Parse entry date; feedparser sets published_parsed to None for
+            # malformed/missing dates rather than raising.
+            if not entry.get("published_parsed"):
+                continue
             entry_date = datetime(*entry.published_parsed[:6])
 
             if entry_date < cutoff_date:

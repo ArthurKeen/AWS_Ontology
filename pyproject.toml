@@ -15,6 +15,7 @@ dependencies = [
     "arango-rdf>=2.0.0",
     "python-arango>=7.5.0",
     "pyshacl>=0.25",
+    "anthropic>=0.68.0",
 ]
 
 [dependency-groups]
@@ -37,7 +38,7 @@ pythonpath = ["."]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-extend-exclude = ["venv", ".venv"]
+extend-exclude = ["venv", ".venv", ".claude"]
 
 [tool.ruff.lint]
 # E402: tools/tests bootstrap sys.path before importing utils/ — inherent to the

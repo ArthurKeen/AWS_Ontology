@@ -16,6 +16,9 @@ python-arango>=7.5.0
 # SHACL validation
 pyshacl>=0.25
 
+# Agentic ontology-coverage monitor (tools/propose_ontology_updates.py)
+anthropic>=0.68.0
+
 # NOTE: pyproject.toml is the canonical dependency manifest (use `uv sync`).
 # This file is kept for pip-based installs and the Docker image.
 # Dev tools (pytest, ruff, coverage, pre-commit) live in pyproject's dev group. 
