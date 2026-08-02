@@ -2098,3 +2098,137 @@
     rdfs:comment "Relates a SageMaker training job to the model artifact it produces" ;
     rdfs:domain :SageMakerTrainingJob ;
     rdfs:range :SageMakerModel .
+
+### Amazon Route 53
+
+:Route53HostedZone a owl:Class ;
+    rdfs:label "Route 53 Hosted Zone" ;
+    rdfs:comment "A DNS hosted zone managed by Amazon Route 53" ;
+    rdfs:subClassOf :NetworkingResource .
+
+:Route53RecordSet a owl:Class ;
+    rdfs:label "Route 53 Record Set" ;
+    rdfs:comment "A DNS record set within a Route 53 hosted zone" ;
+    rdfs:subClassOf :NetworkingResource .
+
+:Route53HealthCheck a owl:Class ;
+    rdfs:label "Route 53 Health Check" ;
+    rdfs:comment "A Route 53 health check monitoring an endpoint's availability" ;
+    rdfs:subClassOf :NetworkingResource .
+
+:hasRecordSet a owl:ObjectProperty ;
+    rdfs:label "has record set" ;
+    rdfs:comment "Relates a Route 53 hosted zone to a DNS record set it contains" ;
+    rdfs:subPropertyOf :contains ;
+    rdfs:domain :Route53HostedZone ;
+    rdfs:range :Route53RecordSet .
+
+:hasHealthCheck a owl:ObjectProperty ;
+    rdfs:label "has health check" ;
+    rdfs:comment "Relates a Route 53 record set to the health check governing its failover routing" ;
+    rdfs:domain :Route53RecordSet ;
+    rdfs:range :Route53HealthCheck .
+
+:recordType a owl:DatatypeProperty ;
+    rdfs:label "record type" ;
+    rdfs:comment "The DNS record type (e.g. A, CNAME, MX, TXT)" ;
+    rdfs:domain :Route53RecordSet ;
+    rdfs:range xsd:string .
+
+:dnsName a owl:DatatypeProperty ;
+    rdfs:label "DNS name" ;
+    rdfs:comment "The fully qualified domain name for a Route 53 record set" ;
+    rdfs:domain :Route53RecordSet ;
+    rdfs:range xsd:string .
+
+### AWS Transit Gateway
+
+:TransitGateway a owl:Class ;
+    rdfs:label "Transit Gateway" ;
+    rdfs:comment "A network transit hub connecting VPCs and on-premises networks" ;
+    rdfs:subClassOf :NetworkingResource .
+
+:TransitGatewayAttachment a owl:Class ;
+    rdfs:label "Transit Gateway Attachment" ;
+    rdfs:comment "Attaches a VPC, VPN, Direct Connect gateway, or peering connection to a Transit Gateway" ;
+    rdfs:subClassOf :NetworkingResource .
+
+:TransitGatewayRouteTable a owl:Class ;
+    rdfs:label "Transit Gateway Route Table" ;
+    rdfs:comment "A route table controlling traffic between Transit Gateway attachments" ;
+    rdfs:subClassOf :NetworkingResource .
+
+:hasAttachment a owl:ObjectProperty ;
+    rdfs:label "has attachment" ;
+    rdfs:comment "Relates a Transit Gateway to an attachment it manages" ;
+    rdfs:subPropertyOf :contains ;
+    rdfs:domain :TransitGateway ;
+    rdfs:range :TransitGatewayAttachment .
+
+:attachesVPC a owl:ObjectProperty ;
+    rdfs:label "attaches VPC" ;
+    rdfs:comment "Relates a Transit Gateway attachment to the VPC it connects" ;
+    rdfs:domain :TransitGatewayAttachment ;
+    rdfs:range :VPC .
+
+:hasRouteTable a owl:ObjectProperty ;
+    rdfs:label "has route table" ;
+    rdfs:comment "Relates a Transit Gateway to a route table it manages" ;
+    rdfs:subPropertyOf :contains ;
+    rdfs:domain :TransitGateway ;
+    rdfs:range :TransitGatewayRouteTable .
+
+### Amazon ElastiCache
+
+:ElastiCacheCluster a owl:Class ;
+    rdfs:label "ElastiCache Cluster" ;
+    rdfs:comment "An Amazon ElastiCache cluster (a Redis or Memcached cache node group)" ;
+    rdfs:subClassOf :DatabaseResource .
+
+:ElastiCacheReplicationGroup a owl:Class ;
+    rdfs:label "ElastiCache Replication Group" ;
+    rdfs:comment "An ElastiCache for Redis replication group providing multi-AZ failover across clusters" ;
+    rdfs:subClassOf :DatabaseResource .
+
+:hasCacheCluster a owl:ObjectProperty ;
+    rdfs:label "has cache cluster" ;
+    rdfs:comment "Relates an ElastiCache replication group to a cluster (shard) it comprises" ;
+    rdfs:subPropertyOf :contains ;
+    rdfs:domain :ElastiCacheReplicationGroup ;
+    rdfs:range :ElastiCacheCluster .
+
+:engineType a owl:DatatypeProperty ;
+    rdfs:label "engine type" ;
+    rdfs:comment "The cache engine (redis or memcached)" ;
+    rdfs:domain :ElastiCacheCluster ;
+    rdfs:range xsd:string .
+
+:cacheNodeType a owl:DatatypeProperty ;
+    rdfs:label "cache node type" ;
+    rdfs:comment "The compute and memory capacity class of a cache node (e.g. cache.r6g.large)" ;
+    rdfs:domain :ElastiCacheCluster ;
+    rdfs:range xsd:string .
+
+### AWS Systems Manager
+
+:SSMParameter a owl:Class ;
+    rdfs:label "SSM Parameter" ;
+    rdfs:comment "A Systems Manager Parameter Store parameter" ;
+    rdfs:subClassOf :MonitoringResource .
+
+:SSMDocument a owl:Class ;
+    rdfs:label "SSM Document" ;
+    rdfs:comment "A Systems Manager automation or command document" ;
+    rdfs:subClassOf :MonitoringResource .
+
+:SSMPatchBaseline a owl:Class ;
+    rdfs:label "SSM Patch Baseline" ;
+    rdfs:comment "A Systems Manager patch baseline defining approved patches for managed instances" ;
+    rdfs:subClassOf :MonitoringResource .
+
+:governsPatchingFor a owl:ObjectProperty ;
+    rdfs:label "governs patching for" ;
+    rdfs:comment "Relates an SSM patch baseline to a resource whose patching it governs" ;
+    rdfs:subPropertyOf :manages ;
+    rdfs:domain :SSMPatchBaseline ;
+    rdfs:range :AWSResource .

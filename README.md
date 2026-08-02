@@ -8,8 +8,8 @@ A comprehensive semantic ontology for Amazon Web Services (AWS) resources and th
 
 The AWS Ontology is a production-ready semantic web resource that:
 
-- **Models 115 AWS resource types** across compute, storage, networking, containers, API services, generative AI, workforce identity, governance, and detective security
-- **Defines 224 relationships** including temporal, cost, and compliance associations
+- **Models 126 AWS resource types** across compute, storage, networking, containers, API services, generative AI, workforce identity, governance, detective security, DNS, and caching
+- **Defines 235 relationships** including temporal, cost, and compliance associations
 - **Provides comprehensive examples** with real-world AWS configurations
 - **Supports multiple formats** (OWL/XML, Turtle, with format synchronization)
 - **Includes semantic constraints** (cardinality, disjoint classes, property characteristics)
@@ -19,11 +19,11 @@ The AWS Ontology is a production-ready semantic web resource that:
 
 | Metric | Count | Recent Growth |
 |--------|-------|---------------|
-| **Total Triples** | 1,712 | +136 triples |
-| **Classes** | 115 | +14 new classes (Organizations, Cognito, GuardDuty/Security Hub, SageMaker) |
-| **Object Properties** | 121 | +11 new properties |
-| **Data Properties** | 103 | +3 new properties |
-| **Example Instances** | 164 | typed individuals in examples.ttl |
+| **Total Triples** | 1,816 | +104 triples |
+| **Classes** | 126 | +11 new classes (Route 53, Transit Gateway, ElastiCache, Systems Manager) |
+| **Object Properties** | 128 | +7 new properties |
+| **Data Properties** | 107 | +4 new properties |
+| **Example Instances** | 175 | typed individuals in examples.ttl |
 
 ## ⚡ Quick Example
 
@@ -158,12 +158,12 @@ graph TB
 - **🔗 API & Integration**: API Gateway, Step Functions, EventBridge, SNS, SQS
 - **💻 Compute**: EC2, Lambda, Auto Scaling Groups
 - **💾 Storage**: S3, EBS, EFS, RDS Clusters & Snapshots
-- **🗄️ Database**: DynamoDB, DocumentDB, Redshift, RDS
-- **🌐 Networking**: VPC, Security Groups, Load Balancers, Elastic IPs, NAT/Internet Gateways, VPC Endpoints
+- **🗄️ Database**: DynamoDB, DocumentDB, Redshift, RDS, ElastiCache
+- **🌐 Networking**: VPC, Security Groups, Load Balancers, Elastic IPs, NAT/Internet Gateways, VPC Endpoints, Route 53, Transit Gateway
 - **🔐 Identity & Access**: IAM Users, Roles, Policies, Instance Profiles
 - **🔒 Security**: KMS Keys & Aliases, Secrets Manager, Network ACLs, Security Group Rules
 - **🌍 Content Delivery**: CloudFront Distributions
-- **📊 Monitoring**: CloudWatch, CloudTrail
+- **📊 Monitoring**: CloudWatch, CloudTrail, Systems Manager
 
 ### Advanced Relationship Types
 - **⏰ Temporal**: `createdBefore`, `replacedBy`, `migratedFrom`
@@ -254,8 +254,8 @@ open ontology/aws.owl
 ```
 
 **Key Protégé Features:**
-- **Class Hierarchy**: Browse 115 AWS resource classes
-- **Object Properties**: Explore 121 relationship types
+- **Class Hierarchy**: Browse 126 AWS resource classes
+- **Object Properties**: Explore 128 relationship types
 - **Reasoning**: Validate with HermiT reasoner
 - **OntoGraf**: Visualize relationships graphically
 - **SPARQL**: Test queries from our examples

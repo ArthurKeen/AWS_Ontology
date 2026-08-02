@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Service coverage expansion round 2**: Amazon Route 53 (`Route53HostedZone`, `Route53RecordSet`,
+  `Route53HealthCheck`), AWS Transit Gateway (`TransitGateway`, `TransitGatewayAttachment`,
+  `TransitGatewayRouteTable`), Amazon ElastiCache (`ElastiCacheCluster`,
+  `ElastiCacheReplicationGroup`), and AWS Systems Manager (`SSMParameter`, `SSMDocument`,
+  `SSMPatchBaseline`) — 126 classes total (was 115), 128 object + 107 datatype properties, 1816
+  triples. Same accuracy discipline as prior rounds: `Route53RecordSet` deliberately has no `:arn`
+  (record sets aren't independently ARN-addressable in real AWS). Remaining §3 roadmap items
+  (analytics, WAF/Config, CloudFormation/IaC, CodePipeline) deferred to a future round.
+- **Agentic ontology-coverage monitor**: `.github/workflows/ontology-monitor.yml` (weekly cron +
+  manual dispatch) + `tools/propose_ontology_updates.py` — checks the AWS "What's New" feed against
+  the PRD's own declared scope using Claude, opens a PR with draft proposals when it finds
+  something new (never edits `ontology/aws.ttl` directly). Replaces the broken `automation/` daemon
+  (marked deprecated, not deleted — see `automation/README.md`). Requires an `ANTHROPIC_API_KEY`
+  repo secret. PRD REQ-032.
 - **Service coverage expansion**: AWS Organizations & Control Tower (`Organization`,
   `OrganizationalUnit`, `ControlTowerLandingZone`), Amazon Cognito (`CognitoUserPool`,
   `CognitoUserPoolClient`, `CognitoIdentityPool`), GuardDuty & Security Hub

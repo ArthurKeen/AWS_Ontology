@@ -1099,3 +1099,72 @@
     :arn "arn:aws:sagemaker:us-east-1:123456789012:endpoint/fraud-detection-endpoint" ;
     :deploysModel :FraudDetectionModel ;
     :environment "production" .
+
+# Examples for Amazon Route 53
+:CompanyHostedZone rdf:type :Route53HostedZone ;
+    rdfs:label "Company Hosted Zone" ;
+    :arn "arn:aws:route53:::hostedzone/ZEXAMPLE123456A" ;
+    :hasRecordSet :CompanyWebRecord ;
+    :environment "production" .
+
+:CompanyWebRecord rdf:type :Route53RecordSet ;
+    rdfs:label "Company Web Record" ;
+    :recordType "A"^^xsd:string ;
+    :dnsName "www.example.com"^^xsd:string ;
+    :hasHealthCheck :CompanyWebHealthCheck ;
+    :environment "production" .
+
+:CompanyWebHealthCheck rdf:type :Route53HealthCheck ;
+    rdfs:label "Company Web Health Check" ;
+    :arn "arn:aws:route53:::healthcheck/12345678-1234-1234-1234-123456789012" ;
+    :environment "production" .
+
+# Examples for AWS Transit Gateway
+:MainTransitGateway rdf:type :TransitGateway ;
+    rdfs:label "Main Transit Gateway" ;
+    :arn "arn:aws:ec2:us-east-1:123456789012:transit-gateway/tgw-0123456789abcdef0" ;
+    :hasAttachment :ProdVPCAttachment ;
+    :hasRouteTable :MainTGWRouteTable ;
+    :environment "production" .
+
+:ProdVPCAttachment rdf:type :TransitGatewayAttachment ;
+    rdfs:label "Production VPC Attachment" ;
+    :arn "arn:aws:ec2:us-east-1:123456789012:transit-gateway-attachment/tgw-attach-0123456789abcdef0" ;
+    :attachesVPC :ProductionVPC ;
+    :environment "production" .
+
+:MainTGWRouteTable rdf:type :TransitGatewayRouteTable ;
+    rdfs:label "Main Transit Gateway Route Table" ;
+    :arn "arn:aws:ec2:us-east-1:123456789012:transit-gateway-route-table/tgw-rtb-0123456789abcdef0" ;
+    :environment "production" .
+
+# Examples for Amazon ElastiCache
+:SessionCacheReplicationGroup rdf:type :ElastiCacheReplicationGroup ;
+    rdfs:label "Session Cache Replication Group" ;
+    :arn "arn:aws:elasticache:us-east-1:123456789012:replicationgroup:session-cache" ;
+    :hasCacheCluster :SessionCacheCluster001 ;
+    :environment "production" .
+
+:SessionCacheCluster001 rdf:type :ElastiCacheCluster ;
+    rdfs:label "Session Cache Cluster 001" ;
+    :arn "arn:aws:elasticache:us-east-1:123456789012:cluster:session-cache-001" ;
+    :engineType "redis"^^xsd:string ;
+    :cacheNodeType "cache.r6g.large"^^xsd:string ;
+    :environment "production" .
+
+# Examples for AWS Systems Manager
+:DatabasePasswordParameter rdf:type :SSMParameter ;
+    rdfs:label "Database Password Parameter" ;
+    :arn "arn:aws:ssm:us-east-1:123456789012:parameter/prod/database/password" ;
+    :environment "production" .
+
+:PatchLinuxDocument rdf:type :SSMDocument ;
+    rdfs:label "Patch Linux Document" ;
+    :arn "arn:aws:ssm:us-east-1:123456789012:document/AWS-RunPatchBaseline" ;
+    :environment "production" .
+
+:ProdPatchBaseline rdf:type :SSMPatchBaseline ;
+    rdfs:label "Production Patch Baseline" ;
+    :arn "arn:aws:ssm:us-east-1:123456789012:patchbaseline/pb-0123456789abcdef0" ;
+    :governsPatchingFor :WebServerInstance ;
+    :environment "production" .
