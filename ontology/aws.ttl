@@ -2232,3 +2232,213 @@
     rdfs:subPropertyOf :manages ;
     rdfs:domain :SSMPatchBaseline ;
     rdfs:range :AWSResource .
+
+### Analytics Resources (AWS Glue, Athena, Kinesis, EMR, OpenSearch Service)
+
+:AnalyticsResource a owl:Class ;
+    rdfs:label "Analytics Resource" ;
+    rdfs:comment "Base class for data analytics, ETL, streaming, and search-analytics resources" ;
+    rdfs:subClassOf :AWSResource ;
+    owl:disjointWith :AIResource,
+        :ComputeResource,
+        :DatabaseResource,
+        :IdentityResource,
+        :IntegrationResource,
+        :MonitoringResource,
+        :NetworkingResource,
+        :SecurityResource,
+        :StorageResource .
+
+### AWS Glue
+
+:GlueDatabase a owl:Class ;
+    rdfs:label "Glue Database" ;
+    rdfs:comment "A Glue Data Catalog database, a metadata container for tables" ;
+    rdfs:subClassOf :AnalyticsResource .
+
+:GlueTable a owl:Class ;
+    rdfs:label "Glue Table" ;
+    rdfs:comment "A Glue Data Catalog table describing the schema and location of a dataset" ;
+    rdfs:subClassOf :AnalyticsResource .
+
+:GlueCrawler a owl:Class ;
+    rdfs:label "Glue Crawler" ;
+    rdfs:comment "A Glue crawler that inspects data sources and populates the Data Catalog" ;
+    rdfs:subClassOf :AnalyticsResource .
+
+:GlueJob a owl:Class ;
+    rdfs:label "Glue Job" ;
+    rdfs:comment "A Glue ETL job that transforms data between sources" ;
+    rdfs:subClassOf :AnalyticsResource .
+
+:hasTable a owl:ObjectProperty ;
+    rdfs:label "has table" ;
+    rdfs:comment "Relates a Glue database to a table it contains" ;
+    rdfs:subPropertyOf :contains ;
+    rdfs:domain :GlueDatabase ;
+    rdfs:range :GlueTable .
+
+:discoversTable a owl:ObjectProperty ;
+    rdfs:label "discovers table" ;
+    rdfs:comment "Relates a Glue crawler to a table it discovered and catalogued" ;
+    rdfs:subPropertyOf :manages ;
+    rdfs:domain :GlueCrawler ;
+    rdfs:range :GlueTable .
+
+:readsFromTable a owl:ObjectProperty ;
+    rdfs:label "reads from table" ;
+    rdfs:comment "Relates a Glue ETL job to a table it reads as a source" ;
+    rdfs:subPropertyOf :uses ;
+    rdfs:domain :GlueJob ;
+    rdfs:range :GlueTable .
+
+:dataFormat a owl:DatatypeProperty ;
+    rdfs:label "data format" ;
+    rdfs:comment "The storage format of a dataset (e.g. parquet, csv, json)" ;
+    rdfs:domain :GlueTable ;
+    rdfs:range xsd:string .
+
+### Amazon Athena
+
+:AthenaWorkGroup a owl:Class ;
+    rdfs:label "Athena WorkGroup" ;
+    rdfs:comment "An Athena workgroup grouping queries under shared settings and cost controls" ;
+    rdfs:subClassOf :AnalyticsResource .
+
+:AthenaDataCatalog a owl:Class ;
+    rdfs:label "Athena Data Catalog" ;
+    rdfs:comment "A data source catalog registered with Athena (e.g. the AWS Glue Data Catalog)" ;
+    rdfs:subClassOf :AnalyticsResource .
+
+:AthenaQueryExecution a owl:Class ;
+    rdfs:label "Athena Query Execution" ;
+    rdfs:comment "A single execution of a SQL query against Athena" ;
+    rdfs:subClassOf :AnalyticsResource,
+        prov:Activity .
+
+:runsInWorkGroup a owl:ObjectProperty ;
+    rdfs:label "runs in workgroup" ;
+    rdfs:comment "Relates an Athena query execution to the workgroup it ran under" ;
+    rdfs:subPropertyOf :dependsOn ;
+    rdfs:domain :AthenaQueryExecution ;
+    rdfs:range :AthenaWorkGroup .
+
+:queriesTable a owl:ObjectProperty ;
+    rdfs:label "queries table" ;
+    rdfs:comment "Relates an Athena query execution to a Glue table it queried" ;
+    rdfs:subPropertyOf :uses ;
+    rdfs:domain :AthenaQueryExecution ;
+    rdfs:range :GlueTable .
+
+:sqlQuery a owl:DatatypeProperty ;
+    rdfs:label "SQL query" ;
+    rdfs:comment "The SQL text of an Athena query execution" ;
+    rdfs:domain :AthenaQueryExecution ;
+    rdfs:range xsd:string .
+
+### Amazon Kinesis
+
+:KinesisStream a owl:Class ;
+    rdfs:label "Kinesis Stream" ;
+    rdfs:comment "A Kinesis Data Stream for real-time data ingestion" ;
+    rdfs:subClassOf :AnalyticsResource .
+
+:KinesisFirehoseDeliveryStream a owl:Class ;
+    rdfs:label "Kinesis Firehose Delivery Stream" ;
+    rdfs:comment "A Kinesis Data Firehose delivery stream that loads streaming data into a destination" ;
+    rdfs:subClassOf :AnalyticsResource .
+
+:KinesisAnalyticsApplication a owl:Class ;
+    rdfs:label "Kinesis Analytics Application" ;
+    rdfs:comment "A Kinesis Data Analytics (Managed Service for Apache Flink) application processing a stream" ;
+    rdfs:subClassOf :AnalyticsResource .
+
+:sourceStream a owl:ObjectProperty ;
+    rdfs:label "source stream" ;
+    rdfs:comment "Relates a Firehose delivery stream to the Kinesis stream it reads from" ;
+    rdfs:subPropertyOf :dependsOn ;
+    rdfs:domain :KinesisFirehoseDeliveryStream ;
+    rdfs:range :KinesisStream .
+
+:analyzesStream a owl:ObjectProperty ;
+    rdfs:label "analyzes stream" ;
+    rdfs:comment "Relates a Kinesis Analytics application to the stream it processes" ;
+    rdfs:subPropertyOf :uses ;
+    rdfs:domain :KinesisAnalyticsApplication ;
+    rdfs:range :KinesisStream .
+
+:shardCount a owl:DatatypeProperty ;
+    rdfs:label "shard count" ;
+    rdfs:comment "The number of shards provisioned for a Kinesis stream" ;
+    rdfs:domain :KinesisStream ;
+    rdfs:range xsd:integer .
+
+### Amazon EMR
+
+:EMRCluster a owl:Class ;
+    rdfs:label "EMR Cluster" ;
+    rdfs:comment "A managed Hadoop/Spark cluster running on Amazon EMR" ;
+    rdfs:subClassOf :AnalyticsResource .
+
+:EMRStep a owl:Class ;
+    rdfs:label "EMR Step" ;
+    rdfs:comment "A processing step (job) submitted to an EMR cluster" ;
+    rdfs:subClassOf :AnalyticsResource,
+        prov:Activity .
+
+:EMRNotebook a owl:Class ;
+    rdfs:label "EMR Notebook" ;
+    rdfs:comment "An EMR Studio/Notebook editor for interactive analytics on an EMR cluster" ;
+    rdfs:subClassOf :AnalyticsResource .
+
+:hasStep a owl:ObjectProperty ;
+    rdfs:label "has step" ;
+    rdfs:comment "Relates an EMR cluster to a step submitted to it" ;
+    rdfs:subPropertyOf :contains ;
+    rdfs:domain :EMRCluster ;
+    rdfs:range :EMRStep .
+
+:processesTable a owl:ObjectProperty ;
+    rdfs:label "processes table" ;
+    rdfs:comment "Relates an EMR step to a Glue table it reads or writes via the Hive metastore" ;
+    rdfs:subPropertyOf :uses ;
+    rdfs:domain :EMRStep ;
+    rdfs:range :GlueTable .
+
+:instanceCount a owl:DatatypeProperty ;
+    rdfs:label "instance count" ;
+    rdfs:comment "The number of EC2 instances (nodes) in an EMR cluster" ;
+    rdfs:domain :EMRCluster ;
+    rdfs:range xsd:integer .
+
+### Amazon OpenSearch Service
+
+:OpenSearchDomain a owl:Class ;
+    rdfs:label "OpenSearch Domain" ;
+    rdfs:comment "A managed Amazon OpenSearch Service domain (search and analytics cluster)" ;
+    rdfs:subClassOf :AnalyticsResource .
+
+:OpenSearchIndex a owl:Class ;
+    rdfs:label "OpenSearch Index" ;
+    rdfs:comment "A logical index within an OpenSearch domain" ;
+    rdfs:subClassOf :AnalyticsResource .
+
+:hasIndex a owl:ObjectProperty ;
+    rdfs:label "has index" ;
+    rdfs:comment "Relates an OpenSearch domain to an index it hosts" ;
+    rdfs:subPropertyOf :contains ;
+    rdfs:domain :OpenSearchDomain ;
+    rdfs:range :OpenSearchIndex .
+
+:deliversToDomain a owl:ObjectProperty ;
+    rdfs:label "delivers to domain" ;
+    rdfs:comment "Relates a Firehose delivery stream to the OpenSearch domain it delivers records into" ;
+    rdfs:subPropertyOf :dependsOn ;
+    rdfs:domain :KinesisFirehoseDeliveryStream ;
+    rdfs:range :OpenSearchDomain .
+
+:searchEngineVersion a owl:DatatypeProperty ;
+    rdfs:label "search engine version" ;
+    rdfs:comment "The OpenSearch or Elasticsearch engine version running on a domain" ;
+    rdfs:domain :OpenSearchDomain ;
+    rdfs:range xsd:string .

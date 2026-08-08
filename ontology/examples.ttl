@@ -1168,3 +1168,98 @@
     :arn "arn:aws:ssm:us-east-1:123456789012:patchbaseline/pb-0123456789abcdef0" ;
     :governsPatchingFor :WebServerInstance ;
     :environment "production" .
+
+# Examples for AWS Analytics (Glue, Athena, Kinesis, EMR, OpenSearch) — a
+# clickstream analytics pipeline showing real cross-service relationships:
+# Kinesis Stream feeds both Firehose (-> OpenSearch for search, and via
+# crawler -> Glue Catalog for batch analytics) and Kinesis Analytics
+# (real-time metrics); the cataloged table is then queried by Athena, an
+# EMR cluster, and a Glue ETL job.
+
+:ClickstreamKinesisStream rdf:type :KinesisStream ;
+    rdfs:label "Clickstream Kinesis Stream" ;
+    :arn "arn:aws:kinesis:us-east-1:123456789012:stream/clickstream-events" ;
+    :shardCount "4"^^xsd:integer ;
+    :environment "production" .
+
+:ClickstreamFirehose rdf:type :KinesisFirehoseDeliveryStream ;
+    rdfs:label "Clickstream Firehose Delivery Stream" ;
+    :arn "arn:aws:firehose:us-east-1:123456789012:deliverystream/clickstream-delivery" ;
+    :sourceStream :ClickstreamKinesisStream ;
+    :deliversToDomain :ClickstreamSearchDomain ;
+    :environment "production" .
+
+:ClickstreamAnalyticsApp rdf:type :KinesisAnalyticsApplication ;
+    rdfs:label "Clickstream Real-Time Metrics Application" ;
+    :arn "arn:aws:kinesisanalytics:us-east-1:123456789012:application/clickstream-realtime-metrics" ;
+    :analyzesStream :ClickstreamKinesisStream ;
+    :environment "production" .
+
+:AnalyticsDatabase rdf:type :GlueDatabase ;
+    rdfs:label "Analytics Database" ;
+    :arn "arn:aws:glue:us-east-1:123456789012:database/analytics_db" ;
+    :hasTable :ClickstreamTable ;
+    :environment "production" .
+
+:ClickstreamTable rdf:type :GlueTable ;
+    rdfs:label "Clickstream Events Table" ;
+    :arn "arn:aws:glue:us-east-1:123456789012:table/analytics_db/clickstream_events" ;
+    :dataFormat "parquet"^^xsd:string ;
+    :environment "production" .
+
+:ClickstreamCrawler rdf:type :GlueCrawler ;
+    rdfs:label "Clickstream Crawler" ;
+    :arn "arn:aws:glue:us-east-1:123456789012:crawler/clickstream-crawler" ;
+    :discoversTable :ClickstreamTable ;
+    :environment "production" .
+
+:ClickstreamETLJob rdf:type :GlueJob ;
+    rdfs:label "Clickstream ETL Job" ;
+    :arn "arn:aws:glue:us-east-1:123456789012:job/clickstream-etl" ;
+    :readsFromTable :ClickstreamTable ;
+    :environment "production" .
+
+:AdHocQueriesWorkGroup rdf:type :AthenaWorkGroup ;
+    rdfs:label "Ad Hoc Queries WorkGroup" ;
+    :arn "arn:aws:athena:us-east-1:123456789012:workgroup/ad-hoc-queries" ;
+    :environment "production" .
+
+:GlueDataCatalog rdf:type :AthenaDataCatalog ;
+    rdfs:label "Glue Data Catalog" ;
+    :arn "arn:aws:athena:us-east-1:123456789012:datacatalog/AwsDataCatalog" ;
+    :environment "production" .
+
+:ClickstreamQueryExecution rdf:type :AthenaQueryExecution ;
+    rdfs:label "Clickstream Daily Count Query" ;
+    :runsInWorkGroup :AdHocQueriesWorkGroup ;
+    :queriesTable :ClickstreamTable ;
+    :sqlQuery "SELECT COUNT(*) FROM clickstream_events WHERE event_date = current_date"^^xsd:string ;
+    :environment "production" .
+
+:AnalyticsEMRCluster rdf:type :EMRCluster ;
+    rdfs:label "Analytics EMR Cluster" ;
+    :arn "arn:aws:elasticmapreduce:us-east-1:123456789012:cluster/j-2AXXXXXXGAPLF" ;
+    :instanceCount "6"^^xsd:integer ;
+    :hasStep :ClickstreamAggregationStep ;
+    :environment "production" .
+
+:ClickstreamAggregationStep rdf:type :EMRStep ;
+    rdfs:label "Clickstream Aggregation Step" ;
+    :processesTable :ClickstreamTable ;
+    :environment "production" .
+
+:AnalyticsNotebook rdf:type :EMRNotebook ;
+    rdfs:label "Analytics Notebook" ;
+    :arn "arn:aws:elasticmapreduce:us-east-1:123456789012:editor/e-ABCDEFGHIJKLMNOPQRSTUVWXY" ;
+    :environment "production" .
+
+:ClickstreamSearchDomain rdf:type :OpenSearchDomain ;
+    rdfs:label "Clickstream Search Domain" ;
+    :arn "arn:aws:es:us-east-1:123456789012:domain/clickstream-search" ;
+    :searchEngineVersion "OpenSearch_2.11"^^xsd:string ;
+    :hasIndex :ClickstreamIndex ;
+    :environment "production" .
+
+:ClickstreamIndex rdf:type :OpenSearchIndex ;
+    rdfs:label "Clickstream Index" ;
+    :environment "production" .

@@ -8,8 +8,8 @@ A comprehensive semantic ontology for Amazon Web Services (AWS) resources and th
 
 The AWS Ontology is a production-ready semantic web resource that:
 
-- **Models 126 AWS resource types** across compute, storage, networking, containers, API services, generative AI, workforce identity, governance, detective security, DNS, and caching
-- **Defines 235 relationships** including temporal, cost, and compliance associations
+- **Models 142 AWS resource types** across compute, storage, networking, containers, API services, generative AI, workforce identity, governance, detective security, DNS, caching, and analytics
+- **Defines 251 relationships** including temporal, cost, and compliance associations
 - **Provides comprehensive examples** with real-world AWS configurations
 - **Supports multiple formats** (OWL/XML, Turtle, with format synchronization)
 - **Includes semantic constraints** (cardinality, disjoint classes, property characteristics)
@@ -19,11 +19,11 @@ The AWS Ontology is a production-ready semantic web resource that:
 
 | Metric | Count | Recent Growth |
 |--------|-------|---------------|
-| **Total Triples** | 1,816 | +104 triples |
-| **Classes** | 126 | +11 new classes (Route 53, Transit Gateway, ElastiCache, Systems Manager) |
-| **Object Properties** | 128 | +7 new properties |
-| **Data Properties** | 107 | +4 new properties |
-| **Example Instances** | 175 | typed individuals in examples.ttl |
+| **Total Triples** | 1,982 | +166 triples |
+| **Classes** | 142 | +16 new classes (Glue, Athena, Kinesis, EMR, OpenSearch) |
+| **Object Properties** | 139 | +11 new properties |
+| **Data Properties** | 112 | +5 new properties |
+| **Example Instances** | 190 | typed individuals in examples.ttl |
 
 ## ⚡ Quick Example
 
@@ -150,6 +150,7 @@ graph TB
 *How the AWS Ontology integrates into analysis workflows across different platforms and use cases*
 
 ### Core Service Categories
+- **📈 Analytics**: Glue (Databases, Tables, Crawlers, Jobs), Athena (WorkGroups, Data Catalogs, Query Executions), Kinesis (Streams, Firehose, Analytics Applications), EMR (Clusters, Steps, Notebooks), OpenSearch (Domains, Indexes)
 - **🤖 AI/Generative AI**: Bedrock Foundation Models, Agents, Knowledge Bases, Guardrails; SageMaker Notebooks, Training Jobs, Models, Endpoints
 - **👤 Workforce Identity**: IAM Identity Center Instances, Permission Sets, Account Assignments; Cognito User/Identity Pools
 - **🏢 Governance**: Organizations, Organizational Units, Control Tower Landing Zones
@@ -254,8 +255,8 @@ open ontology/aws.owl
 ```
 
 **Key Protégé Features:**
-- **Class Hierarchy**: Browse 126 AWS resource classes
-- **Object Properties**: Explore 128 relationship types
+- **Class Hierarchy**: Browse 142 AWS resource classes
+- **Object Properties**: Explore 139 relationship types
 - **Reasoning**: Validate with HermiT reasoner
 - **OntoGraf**: Visualize relationships graphically
 - **SPARQL**: Test queries from our examples
